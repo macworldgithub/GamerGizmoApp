@@ -33,15 +33,24 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
                   ? "add-circle"
                   : "information-circle-outline"
               }
-              size={route.name === "placead" ? 70 : 30}
+              size={route.name === "placead" ? 90 : 30}
               color={isFocused ? "#ffd33d" : "#888"}
               style={{
                 position: route.name === "placead" ? "absolute" : "relative",
                 bottom: route.name === "placead" ? 10 : 0, // Adjust the bottom positioning if needed
-                right: route.name === "placead" ? 20 : 0,
+                right: route.name === "placead" ? -60 : 0,
               }}
             />
-            <Text style={[styles.tabLabel, isFocused && styles.activeLabel]}>
+            <Text
+              style={[
+                styles.tabLabel,
+                isFocused && styles.activeLabel,
+                {
+                  position: route.name === "placead" ? "absolute" : "relative",
+                  marginTop: route.name === "placead" ? 10 : "",
+                },
+              ]}
+            >
               {options.title}
             </Text>
           </TouchableOpacity>
@@ -66,7 +75,7 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   activeTab: {
-    transform: [{ scale: 1.2 }],
+    transform: [{ scale: 1 }],
   },
   tabLabel: {
     color: "#888",
