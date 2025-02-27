@@ -6,8 +6,8 @@ export default function Page() {
     <View style={styles.container}>
       <View style={styles.main}>
         <Link href="/about">Go to About screen</Link>
-        <Text style={styles.title}>Hello World</Text>
-        <Text style={styles.subtitle}>This is Anas</Text>
+        <Text className="text-6xl font-bold underline text-red-700">Hello World</Text>
+        <Text className="text-2xl text-green-700">This is Anas</Text>
       </View>
     </View>
   );
