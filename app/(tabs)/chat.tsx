@@ -1,21 +1,37 @@
-import { Text, View, StyleSheet } from "react-native";
+import React from "react";
+import { View, Text, Image, TouchableOpacity, ScrollView } from "react-native";
 
-export default function ChatScreen() {
+const Chat = () => {
   return (
-    <View style={styles.container}>
-      <Text style={styles.text}>Chat screen</Text>
+    <View className="bg-white w-full h-full">
+      <View className="items-center justify-center p-6 mt-12">
+        {/* Header */}
+
+        {/* Favorite Image */}
+        <Image
+          source={require("../../assets/images/chat1.png")} // Replace with your image
+        />
+
+        {/* Message */}
+        <Text className="text-lg font-bold text-black text-center mt-12">
+          Your Chat is Empty
+        </Text>
+        <Text className="text-gray-500 text-center mt-2 px-6">
+          Post an ad or message a seller to start seeing conversations here
+        </Text>
+
+        {/* Button */}
+        <TouchableOpacity className="bg-[#6345ED] border border-gray-400 px-16 py-3 rounded-md mt-6">
+          <Text className="text-white font-semibold">Explore</Text>
+        </TouchableOpacity>
+        <TouchableOpacity className="bg-white border border-gray-400 px-12 py-3 rounded-md mt-6">
+          <Text className="text-[#6345ED] font-semibold">Post an Add</Text>
+        </TouchableOpacity>
+
+        {/* Purple Background Section */}
+      </View>
     </View>
   );
-}
+};
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#25292e",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  text: {
-    color: "#fff",
-  },
-});
+export default Chat;
