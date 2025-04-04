@@ -223,9 +223,7 @@ const Processor = () => {
           ipsum
         </Text>
         <View className="mt-3 border border-gray-100" />
-
-        {/* Details Section */}
-        <Text className="text-gray-700 font-semibold mt-7">Details</Text>
+<Text className="text-gray-700 font-semibold mt-7">Details</Text>
         <View className="flex-row justify-between mt-1">
           <Text className="text-black">Condition</Text>
           <Text className="text-gray-500 mr-44">New</Text>
@@ -241,14 +239,14 @@ const Processor = () => {
           <Text className="text-gray-500 mr-28">10 Feb, 2025</Text>
         </View>
 
-        {/* Make an Offer Button */}
+        
         <TouchableOpacity className="border border-purple-600 rounded-lg py-3 mt-8">
           <Text className="text-purple-600 text-center font-semibold">
             Make an Offer
           </Text>
         </TouchableOpacity>
 
-        {/* Description Section */}
+      
         <Text className="text-black font-bold mt-4">Description</Text>
         <Text className="text-gray-700 mt-1">
           Rule your game with AMD RadeonTM RX 6800 XT graphics card with 72
@@ -287,19 +285,19 @@ const Processor = () => {
             </View>
           </View>
 
-          {/* See More */}
+         
           <TouchableOpacity>
             <Text className="text-blue-600 font-semibold">See More</Text>
           </TouchableOpacity>
         </View>
 
-        {/* Report an Ad */}
+        
         <TouchableOpacity className="flex-row items-center justify-center mt-4">
           <FontAwesome name="flag" size={16} color="black" />
           <Text className="text-gray-700 ml-2">Report an ad</Text>
         </TouchableOpacity>
 
-        {/* Swiper for Similar Ads */}
+       
         <View className="mt-6">
           <Text className="text-black font-bold text-lg mb-3">Similar Ads</Text>
           <Swiper
@@ -311,7 +309,7 @@ const Processor = () => {
           >
             {similarAds
               .reduce((acc, _, i) => {
-                if (i % 2 === 0) acc.push(similarAds.slice(i, i + 2)); // 2 items per slide
+                if (i % 2 === 0) acc.push(similarAds.slice(i, i + 2)); 
                 return acc;
               }, [])
               .map((group, index) => (

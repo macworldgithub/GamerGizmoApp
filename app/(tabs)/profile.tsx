@@ -5,11 +5,11 @@ import FontAwesome from "react-native-vector-icons/FontAwesome";
 const Profile = () => {
   return (
     <ScrollView className="bg-white">
-      {/* Profile Header */}
+     
       <View className="bg-white p-4  rounded-2xl mx-4 mt-6 border border-gray-200 ">
         <View className="flex-row items-center space-x-4 gap-4">
           <Image
-            source={require("../../assets/images/profile.png")} // Ensure correct path
+            source={require("../../assets/images/profile.png")} 
             className="w-14 h-14 rounded-full"
           />
 
@@ -28,7 +28,7 @@ const Profile = () => {
         </View>
       </View>
 
-      {/* Buttons */}
+ 
       <View className="flex-row justify-center space-x-4 mt-6 mx-4">
         <TouchableOpacity className="border border-gray-200 px-6 py-3 rounded-xl w-40 flex-column items-center justify-center mr-7 ">
           <FontAwesome name="th-list" size={18} color="purple" />
@@ -40,9 +40,9 @@ const Profile = () => {
         </TouchableOpacity>
       </View>
 
-      {/* Settings List */}
+     
       <View className="mt-6 px-6 gap-3">
-        {/* Profile Section */}
+      
         <TouchableOpacity className="flex-row items-center justify-between py-4 ">
           <View className="flex-row items-center space-x-3">
             <Image source={require("../../assets/images/profile1.png")} />
@@ -54,7 +54,7 @@ const Profile = () => {
           />
         </TouchableOpacity>
 
-        {/* Account Setting */}
+       
         <TouchableOpacity className="flex-row items-center justify-between py-4">
           <View className="flex-row items-center space-x-3">
             <Image
@@ -69,7 +69,7 @@ const Profile = () => {
           />
         </TouchableOpacity>
 
-        {/* Notification Setting */}
+       
         <TouchableOpacity className="flex-row items-center justify-between py-4">
           <View className="flex-row items-center space-x-3">
             <Image
@@ -84,7 +84,7 @@ const Profile = () => {
           />
         </TouchableOpacity>
 
-        {/* Security */}
+      
         <TouchableOpacity className="flex-row items-center justify-between py-4 border-b border-gray-200">
           <View className="flex-row items-center space-x-3">
             <Image
@@ -99,7 +99,7 @@ const Profile = () => {
           />
         </TouchableOpacity>
 
-        {/* City & Language */}
+      
 
         <TouchableOpacity className="flex-row items-center justify-between py-4 ">
           <View className="flex-row items-center space-x-3">
@@ -131,7 +131,7 @@ const Profile = () => {
           />
         </TouchableOpacity>
 
-        {/* Support & Other Options */}
+     
 
         <TouchableOpacity className="flex-row items-center justify-between py-4  ">
           <View className="flex-row items-center space-x-3">

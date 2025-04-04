@@ -9,7 +9,7 @@ const Favorite = () => {
     <ScrollView>
       <View className="bg-white w-full h-full">
         <View className="items-center justify-center p-6">
-          {/* Header */}
+    
           <View className="flex-row items-center justify-between w-full mb-6">
             <Text className="text-xl font-bold text-black">All Favorite</Text>
             <Image
@@ -18,12 +18,12 @@ const Favorite = () => {
             />
           </View>
 
-          {/* Favorite Image */}
+        
           <Image
-            source={require("../../assets/images/favorite.png")} // Replace with your image
+            source={require("../../assets/images/favorite.png")}
           />
 
-          {/* Message */}
+        
           <Text className="text-lg font-bold text-black text-center mt-12">
             You have no favorites saved on this list
           </Text>
@@ -31,12 +31,10 @@ const Favorite = () => {
             Use the favorite icon to save ads that you want to check later
           </Text>
 
-          {/* Button */}
           <TouchableOpacity className="bg-white border border-gray-400 px-6 py-3 rounded-md mt-6">
             <Text className="text-black font-semibold">Continue Searching</Text>
           </TouchableOpacity>
 
-          {/* Purple Background Section */}
           <View className="flex items-center justify-center w-screen h-72 bg-purple-100 mt-6 p-4">
             <View className="bg-white p-4 rounded-xl shadow-lg w-72">
               <Text className="text-sm font-bold text-center text-black">

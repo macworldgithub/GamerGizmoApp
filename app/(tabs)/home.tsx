@@ -229,9 +229,9 @@ export default function GamingStore() {
           </View>
         </View>
         <View className="bg-purple-100 p-4 rounded-xl shadow-md mb-4 mt-6">
-          {/* Row with Text & Image */}
+     
           <View className="flex-row justify-between items-center">
-            {/* Left Side - Text */}
+          
             <View className="w-2/3">
               <Text className="text-lg font-semibold text-gray-900">
                 New Projects
@@ -241,14 +241,14 @@ export default function GamingStore() {
               </Text>
             </View>
 
-            {/* Right Side - Image */}
+           
             <Image
               source={require("../../assets/images/check.png")}
               className="w-20 h-20"
             />
           </View>
 
-          {/* Explore More Button */}
+         
           <TouchableOpacity className="mt-4 self-center w-full">
             <Image
               source={require("../../assets/images/explore.png")}
@@ -258,7 +258,7 @@ export default function GamingStore() {
           </TouchableOpacity>
         </View>
 
-        {/* Verified Badge Card */}
+       
         <View className="bg-purple-200 p-4 rounded-xl shadow-md flex-row items-center justify-between mb-4 h-28">
           <View className="flex-row items-center">
             {/* <MaterialIcons name="verified" size={20} color="#6B46C1" /> */}
@@ -280,7 +280,7 @@ export default function GamingStore() {
           <Image source={require("../../assets/images/right.png")} />
         </View>
 
-        {/* Recently Viewed Card */}
+    
         <View className="bg-white p-4 rounded-xl shadow-md flex-row items-center justify-between h-28">
           <View className="flex-row items-center">
             {/* <FontAwesome5 name="file-alt" size={20} color="#6B46C1" /> */}
@@ -320,7 +320,7 @@ export default function GamingStore() {
           >
             {similarAds
               .reduce((acc, _, i) => {
-                if (i % 2 === 0) acc.push(similarAds.slice(i, i + 2)); // 2 items per slide
+                if (i % 2 === 0) acc.push(similarAds.slice(i, i + 2)); 
                 return acc;
               }, [])
               .map((group, index) => (
@@ -373,7 +373,7 @@ export default function GamingStore() {
           >
             {similarAds
               .reduce((acc, _, i) => {
-                if (i % 2 === 0) acc.push(consoles.slice(i, i + 2)); // 2 items per slide
+                if (i % 2 === 0) acc.push(consoles.slice(i, i + 2)); 
                 return acc;
               }, [])
               .map((group, index) => (
@@ -426,7 +426,7 @@ export default function GamingStore() {
           >
             {similarAds
               .reduce((acc, _, i) => {
-                if (i % 2 === 0) acc.push(cases.slice(i, i + 2)); // 2 items per slide
+                if (i % 2 === 0) acc.push(cases.slice(i, i + 2)); 
                 return acc;
               }, [])
               .map((group, index) => (
@@ -479,7 +479,7 @@ export default function GamingStore() {
           >
             {similarAds
               .reduce((acc, _, i) => {
-                if (i % 2 === 0) acc.push(popular.slice(i, i + 2)); // 2 items per slide
+                if (i % 2 === 0) acc.push(popular.slice(i, i + 2)); 
                 return acc;
               }, [])
               .map((group, index) => (

@@ -16,7 +16,7 @@ const categories = [
 export default function Part() {
   return (
     <View className="flex-1 bg-white">
-      {/* Header */}
+      
       <View className="flex-row items-center p-4 border-b border-gray-200 mt-3 ">
         {/* <Ionicons name="arrow-back" size={24} color="black" /> */}
         <TouchableOpacity>
@@ -27,7 +27,7 @@ export default function Part() {
       </View>
      
 
-      {/* Category List */}
+   
       <View className="mt-2">
         {categories.map((item, index) => (
           <TouchableOpacity key={index} className="p-4 border-b border-gray-200">

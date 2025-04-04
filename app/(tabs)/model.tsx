@@ -376,7 +376,7 @@ const ProcessorCard = () => {
         <Image source={require("../../assets/images/location1.png")} />
       </View>
 
-      {/* Dynamic Processor List using map() */}
+     
       <ScrollView>
         {processors.map((item) => (
           <View key={item.id} className="flex-row items-center p-4 bg-white rounded-2xl shadow-md border border-gray-200 mx-2 mt-5">

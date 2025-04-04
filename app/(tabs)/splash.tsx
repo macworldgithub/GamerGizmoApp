@@ -59,7 +59,7 @@ const SplashScreen = () => {
 
   return (
     <View className="flex-1 items-center justify-center bg-white">
-      {/* Logo */}
+    
       <Image
         source={require("../../assets/images/logo.png")}
         className="w-40 h-40 mb-6"

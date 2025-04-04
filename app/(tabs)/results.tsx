@@ -127,7 +127,7 @@ const RatingStars = ({ rating }) => {
 export default function Results() {
   return (
     <View className="flex-1 bg-white gap-3">
-      {/* Header */}
+     
       <View className="flex-row items-center justify-between px-4 py-3">
         <TouchableOpacity>
           <FontAwesome name="arrow-left" size={15} color="black" />
@@ -153,21 +153,21 @@ export default function Results() {
         </TouchableOpacity>
       </View>
 
-      {/* Scrollable List */}
+    
       <ScrollView className="px-4 py-2 ">
         <View className="bg-white rounded-2xl shadow-md p-3 border border-gray-200 mb-4">
           <View className=" flex-row justify-end ">
             <Image source={require("../../assets/images/heart.png")} />
             <Image source={require("../../assets/images/share.png")} />
           </View>
-          {/* Product Image */}
+       
           <Image
             source={require("../../assets/images/intel.png")}
             className="w-full h-40 rounded-lg"
             resizeMode="contain"
           />
 
-          {/* Product Details */}
+      
           <Text className="text-purple-600 font-bold text-lg mt-2">
             AED 551.00
           </Text>
@@ -175,7 +175,7 @@ export default function Results() {
             USED INTEL CORE I7 7TH GEN PROCESSOR...
           </Text>
 
-          {/* Rating & Location */}
+       
           <View className="flex-row items-center justify-between mt-1">
             <RatingStars rating={0} />
 
@@ -191,7 +191,7 @@ export default function Results() {
             </View>
           </View>
 
-          {/* Buttons */}
+         
           <View className="flex-row justify-between mt-3">
             <TouchableOpacity className="bg-green-300 flex-1 mx-1 py-2 rounded-full">
               <Text className="text-black text-center font-semibold">
@@ -216,7 +216,6 @@ export default function Results() {
             resizeMode="contain"
           />
 
-          {/* Product Details */}
           <Text className="text-purple-600 font-bold text-lg mt-2">
             AED 551.00
           </Text>
@@ -224,7 +223,7 @@ export default function Results() {
             USED INTEL CORE I7 7TH GEN PROCESSOR...
           </Text>
 
-          {/* Rating & Location */}
+         
           <View className="flex-row items-center justify-between mt-1">
             <RatingStars rating={0} />
 
@@ -240,7 +239,7 @@ export default function Results() {
             </View>
           </View>
 
-          {/* Buttons */}
+      
           <View className="flex-row justify-between mt-3">
             <TouchableOpacity className="bg-green-300 flex-1 mx-1 py-2 rounded-full">
               <Text className="text-black text-center font-semibold">
@@ -258,14 +257,14 @@ export default function Results() {
             <Image source={require("../../assets/images/heart.png")} />
             <Image source={require("../../assets/images/share.png")} />
           </View>
-          {/* Product Image */}
+          
           <Image
             source={require("../../assets/images/processor.png")}
             className="w-full h-40 rounded-lg"
             resizeMode="contain"
           />
 
-          {/* Product Details */}
+          
           <Text className="text-purple-600 font-bold text-lg mt-2">
             AED 551.00
           </Text>
@@ -273,7 +272,7 @@ export default function Results() {
             USED INTEL CORE I7 7TH GEN PROCESSOR...
           </Text>
 
-          {/* Rating & Location */}
+         
           <View className="flex-row items-center justify-between mt-1">
             <RatingStars rating={0} />
 

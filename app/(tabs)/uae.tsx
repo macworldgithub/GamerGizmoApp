@@ -38,7 +38,6 @@ const uae = () => {
         </TouchableOpacity>
       </View>
 
-      {/* Swiper */}
       <View className="flex-1">
         <Swiper loop={false} dotColor="#ddd" activeDotColor="#6d28d9">
           {slides.map((slide) => (
@@ -66,7 +65,7 @@ const uae = () => {
         </Swiper>
       </View>
 
-      {/* Button at Bottom */}
+  
       <View className="items-center pb-10">
         <TouchableOpacity>
           <Image source={require("../../assets/images/button.png")} />
