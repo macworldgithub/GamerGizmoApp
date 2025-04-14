@@ -1,24 +1,27 @@
-import React from "react";
-import { NavigationContainer } from "@react-navigation/native";
-import { createStackNavigator } from "@react-navigation/stack";
-import file from "./app/(tabs)/favorite"; 
-import myprofile from "./app/(tabs)/myprofile";
-import login from "./app/(tabs)/login";
-import create from "./app/(tabs)/create";
+// import React from "react";
+// import { NavigationContainer } from "@react-navigation/native";
+// import { createStackNavigator } from "@react-navigation/stack";
 
-const Stack = createStackNavigator();
+// // Screens
+// import Splash from "./app";
+// import GetStart from "./app/getStart";
+// import Login from "./app/login";
+// import MainApp from "./app/(tabs)/_layout"; // This has bottom tabs
 
-export default function App() {
-  return (
-    <NavigationContainer>
-      <Stack.Navigator screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="ProfileScreen" component={file} />
-        <Stack.Screen name="ProfileForm" component={myprofile} />
-      </Stack.Navigator>
-      <Stack.Navigator screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="Login" component={LoginScreen} />
-        <Stack.Screen name="CreateAccount" component={CreateAccount} />
-      </Stack.Navigator>
-    </NavigationContainer>
-  );
-}
+// const Stack = createStackNavigator();
+
+// export default function App() {
+//   return (
+//     <NavigationContainer>
+//       <Stack.Navigator
+//         initialRouteName="Splash"
+//         screenOptions={{ headerShown: false }}
+//       >
+//         <Stack.Screen name="Splash" component={Splash} />
+//         <Stack.Screen name="GetStart" component={GetStart} />
+//         <Stack.Screen name="Login" component={Login} />
+//         {/* <Stack.Screen name="MainApp" component={MainApp} /> */}
+//       </Stack.Navigator>
+//     </NavigationContainer>
+//   );
+// }

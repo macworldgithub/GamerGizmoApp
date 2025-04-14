@@ -7,7 +7,7 @@ const Chat = () => {
       <View className="items-center justify-center p-6 mt-12">
      
         <Image
-          source={require("../../assets/images/chat1.png")} e
+          source={require("../../assets/images/chat1.png")} 
         />
 
     
