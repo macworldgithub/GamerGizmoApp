@@ -32,17 +32,26 @@ export default function OtpModal({ visible, onClose, email }: Props) {
         }),
       });
 
-      const data = await response.json();
+      let data;
+      const text = await response.text();
+      console.log("OTP Verification Response:", text);
+
+      try{
+        data = JSON.parse(text);
+      } catch {
+        data = text
+      }
 
       if (response.ok) {
         Alert.alert("Success", "OTP Verified!");
         onClose(); // Close modal
         router.replace("/home"); // Navigate to Home
       } else {
-        const errorMsg = Array.isArray(data.message) ? data.message[0] : data.message;
+        const errorMsg =  typeof data === "string" ? data : ( Array.isArray(data.message) ? data.message[0] : data.message);
         Alert.alert("Error", errorMsg || "Invalid OTP");
       }
     } catch (err) {
+      console.log("Error OTP:", err);
       Alert.alert("Error", "Something went wrong.");
     } finally {
       setLoading(false);
