@@ -1,8 +1,9 @@
 import React from "react";
 import { View, Text, Image, TouchableOpacity, ScrollView } from "react-native";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
-
+import { useRouter } from 'expo-router'
 const Profile = () => {
+  const router = useRouter();
   return (
     <ScrollView className="bg-white">
      
@@ -43,7 +44,9 @@ const Profile = () => {
      
       <View className="mt-6 px-6 gap-3">
       
-        <TouchableOpacity className="flex-row items-center justify-between py-4 ">
+        <TouchableOpacity
+        onPress={() => router.push('/file')}
+        className="flex-row items-center justify-between py-4 ">
           <View className="flex-row items-center space-x-3">
             <Image source={require("../../assets/images/profile1.png")} />
             <Text className="text-black ml-3">Profile</Text>

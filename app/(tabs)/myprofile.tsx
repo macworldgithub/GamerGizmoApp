@@ -111,7 +111,7 @@ import { View, Text, TextInput, TouchableOpacity, Image } from "react-native";
 import { RadioButton } from "react-native-paper";
 import DatePicker from "react-native-date-picker";
 
-const myprofile = ({ navigation }) => {
+const myprofile = () => {
   const [dob, setDob] = useState(null);
   const [open, setOpen] = useState(false);
   const [gender, setGender] = useState("male");

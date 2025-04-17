@@ -30,8 +30,9 @@
 // }
 
 import { View, Text, TouchableOpacity, Image } from "react-native";
-
-export default function ProfileScreen({ navigation }) {
+import { useRouter } from 'expo-router'
+export default function ProfileScreen() {
+  const router = useRouter();
   return (
     <View className="flex-1 bg-white">
       {/* Header */}
@@ -45,8 +46,9 @@ export default function ProfileScreen({ navigation }) {
       {/* Category List */}
       <View className="mt-2">
         <TouchableOpacity
+        onPress={() => router.push('/myprofile')}
           className="p-4 border-b border-gray-200"
-          onPress={() => navigation.navigate("myprofile")} 
+          
         >
           <Text className="text-sm text-black ml-4 font-semibold">
             My Profile
