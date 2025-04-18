@@ -2,14 +2,19 @@ import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet, Platform } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 
-// @ts-ignore
-const CustomTabBar = ({ state, descriptors, navigation }) => {
+interface CustomTabBarProps {
+  state: any;
+  descriptors: any;
+  navigation: any;
+}
+
+const CustomTabBar = ({ state, descriptors, navigation } : CustomTabBarProps) => {
   const tabOrder = ["home", "favorite", "placead", "chat", "profile"];
 
   return (
     <View style={styles.tabBar}>
       {tabOrder.map((tabName, index) => {
-        const routeIndex = state.routes.findIndex((r) => r.name === tabName);
+        const routeIndex = state.routes.findIndex((r : any) => r.name === tabName);
         const route = state.routes[routeIndex];
         if (!route) return null;
 
@@ -39,7 +44,7 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
                 <View style={styles.placeAdButton}>
                   <Ionicons name="add" size={30} color="white" />
                 </View>
-                <Text style={styles.placeAdLabel}>Place an Ad</Text>
+                <Text style={[styles.placeAdLabel, isFocused && styles.activePlaceAd]}>Place an Ad</Text>
               </View>
             ) : (
               <View
@@ -88,20 +93,18 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     height: 80,
     backgroundColor: "#fff",
-    paddingHorizontal: 5,
+    paddingHorizontal: 3,
     paddingBottom: Platform.OS === "ios" ? 20 : 10,
   },
   tabButton: {
     flex: 1,
+    marginHorizontal: 5,
     alignItems: "center",
     justifyContent: "center",
   },
   tabItem: {
     alignItems: "center",
     justifyContent: "center",
-  },
-  activeTabItem: {
-    // Shadow only when active
   },
   iconShadow: {
     shadowColor: "#6345ED",
@@ -131,8 +134,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   placeAdButton: {
-    width: 70,
-    height: 70,
+    width: 50,
+    height: 50,
     borderRadius: 35,
     backgroundColor: "#6345ED",
     alignItems: "center",
@@ -146,6 +149,10 @@ const styles = StyleSheet.create({
   placeAdLabel: {
     marginTop: 6,
     fontSize: 12,
+    color: "#888",
+    fontWeight: "bold",
+  },
+  activePlaceAd: {
     color: "#6345ED",
     fontWeight: "bold",
   },

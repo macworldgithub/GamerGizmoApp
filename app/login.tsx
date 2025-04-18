@@ -48,7 +48,9 @@ export default function LoginScreen() {
       />
     </TouchableOpacity>
 
-    <TouchableOpacity className="w-4/5 mb-3">
+    <TouchableOpacity className="w-4/5 mb-3"
+    onPress={() => router.push("./auth/login")}
+    >
       <Image
         source={require("../assets/images/email.png")}
         className="w-full h-10"
