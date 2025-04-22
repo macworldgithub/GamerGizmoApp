@@ -140,6 +140,7 @@ import {
 } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
 import Swiper from "react-native-swiper";
+import Add from "../(tabs)/add";
 
 const { width } = Dimensions.get("window");
 
@@ -194,21 +195,21 @@ const Processor = () => {
           />
           <TouchableOpacity className="absolute left-2 bg-white p-2 rounded-full">
             {/* <FontAwesome name="arrow-left" size={20} color="black" /> */}
-            <Image source={require("../../assets/images/arrow.png")}/>
+            <Image source={require("../../assets/images/arrow.png")} />
           </TouchableOpacity>
           <View className="absolute right-2 mt-36 flex-row gap-2">
             <TouchableOpacity className="bg-white p-2 rounded-full">
               {/* <FontAwesome name="heart-o" size={20} color="black" /> */}
-              <Image source={require("../../assets/images/heart.png")}/>
+              <Image source={require("../../assets/images/heart.png")} />
             </TouchableOpacity>
             <TouchableOpacity className="bg-white p-2 rounded-full">
               {/* <FontAwesome name="share-alt" size={20} color="black" /> */}
-              <Image source={require("../../assets/images/share.png")}/>
+              <Image source={require("../../assets/images/share.png")} />
             </TouchableOpacity>
           </View>
         </View>
 
-        {/* Price and Verified Badge */}
+       
         <View className="flex-row items-center mt-10">
           <Text className="text-purple-600 font-bold text-xl">AED 551.00</Text>
           <Image
@@ -217,13 +218,13 @@ const Processor = () => {
           />
         </View>
 
-        {/* Product Name with Black Line */}
+        
         <Text className="text-gray-800 font-semibold text-lg mt-1">
           USED INTEL CORE I7 7TH GEN PROCESSOR lorem ipsum lorem ipsum lorem
           ipsum
         </Text>
         <View className="mt-3 border border-gray-100" />
-<Text className="text-gray-700 font-semibold mt-7">Details</Text>
+        <Text className="text-gray-700 font-semibold mt-7">Details</Text>
         <View className="flex-row justify-between mt-1">
           <Text className="text-black">Condition</Text>
           <Text className="text-gray-500 mr-44">New</Text>
@@ -239,21 +240,22 @@ const Processor = () => {
           <Text className="text-gray-500 mr-28">10 Feb, 2025</Text>
         </View>
 
-        
         <TouchableOpacity className="border border-purple-600 rounded-lg py-3 mt-8">
           <Text className="text-purple-600 text-center font-semibold">
             Make an Offer
           </Text>
         </TouchableOpacity>
 
-      
         <Text className="text-black font-bold mt-4">Description</Text>
         <Text className="text-gray-700 mt-1">
           Rule your game with AMD RadeonTM RX 6800 XT graphics card with 72
           powerful compute units, 128 MB of new AMD Infinity Cache, and up to
           16GB of GDDR6 memory.
         </Text>
-        <View className="mt-3 border border-gray-100" />
+        <View className="mt-10">
+          <Add />
+        </View>
+        <View className="mt-10 border border-gray-100 " />
         <Text className="text-gray-900 font-bold text-lg mt-4 ml-3">
           Location
         </Text>
@@ -262,17 +264,17 @@ const Processor = () => {
           <Text className="text-gray-600 ml-2">Dubai</Text>
         </View>
 
-        {/* Map Placeholder */}
+        
         <View className="bg-gray-300 w-full h-32 mt-3 flex items-center justify-center">
           <Text className="text-gray-700 font-semibold">MAP</Text>
         </View>
 
-        {/* Seller Info Card */}
+     
         <View className="bg-white border border-gray-300 rounded-2xl p-3 mt-4 flex-row items-center shadow-sm">
-          {/* Profile Image Placeholder */}
+          
           <View className="w-16 h-16 bg-gray-300 rounded-full"></View>
 
-          {/* Seller Details */}
+     
           <View className="ml-3 flex-1">
             <Text className="text-gray-700 text-sm">Seller:</Text>
             <Text className="text-black font-semibold">Muhammad Ahmed</Text>
@@ -285,19 +287,18 @@ const Processor = () => {
             </View>
           </View>
 
-         
           <TouchableOpacity>
             <Text className="text-blue-600 font-semibold">See More</Text>
           </TouchableOpacity>
         </View>
 
-        
         <TouchableOpacity className="flex-row items-center justify-center mt-4">
           <FontAwesome name="flag" size={16} color="black" />
           <Text className="text-gray-700 ml-2">Report an ad</Text>
         </TouchableOpacity>
-
-       
+        <View className="mt-10">
+          <Add />
+        </View>
         <View className="mt-6">
           <Text className="text-black font-bold text-lg mb-3">Similar Ads</Text>
           <Swiper
@@ -309,7 +310,7 @@ const Processor = () => {
           >
             {similarAds
               .reduce((acc, _, i) => {
-                if (i % 2 === 0) acc.push(similarAds.slice(i, i + 2)); 
+                if (i % 2 === 0) acc.push(similarAds.slice(i, i + 2));
                 return acc;
               }, [])
               .map((group, index) => (

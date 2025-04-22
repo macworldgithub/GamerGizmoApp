@@ -1,5 +1,3 @@
-
-
 import { useNavigation } from "@react-navigation/native";
 import React, { useState } from "react";
 import {
@@ -10,6 +8,8 @@ import {
   TouchableOpacity,
   ScrollView,
 } from "react-native";
+import Add from "../(tabs)/add";
+import { useRouter } from "expo-router";
 import Swiper from "react-native-swiper";
 const similarAds = [
   {
@@ -198,7 +198,7 @@ const categories = [
 export default function GamingStore() {
   const navigation = useNavigation();
   const [search, setSearch] = useState("");
-
+  const router = useRouter();
   return (
     <View className="p-6 bg-gray-100 h-full">
       {/* Search Bar */}
@@ -229,9 +229,7 @@ export default function GamingStore() {
           </View>
         </View>
         <View className="bg-purple-100 p-4 rounded-xl shadow-md mb-4 mt-6">
-     
           <View className="flex-row justify-between items-center">
-          
             <View className="w-2/3">
               <Text className="text-lg font-semibold text-gray-900">
                 New Projects
@@ -241,14 +239,12 @@ export default function GamingStore() {
               </Text>
             </View>
 
-           
             <Image
               source={require("../../assets/images/check.png")}
               className="w-20 h-20"
             />
           </View>
 
-         
           <TouchableOpacity className="mt-4 self-center w-full">
             <Image
               source={require("../../assets/images/explore.png")}
@@ -258,7 +254,6 @@ export default function GamingStore() {
           </TouchableOpacity>
         </View>
 
-       
         <View className="bg-purple-200 p-4 rounded-xl shadow-md flex-row items-center justify-between mb-4 h-28">
           <View className="flex-row items-center">
             {/* <MaterialIcons name="verified" size={20} color="#6B46C1" /> */}
@@ -279,9 +274,10 @@ export default function GamingStore() {
           {/* <ArrowRight size={20} color="black" /> */}
           <Image source={require("../../assets/images/right.png")} />
         </View>
-
-    
-        <View className="bg-white p-4 rounded-xl shadow-md flex-row items-center justify-between h-28">
+        <View className="">
+          <Add />
+        </View>
+        <View className="bg-white p-4 rounded-xl shadow-md flex-row items-center justify-between h-28 mt-7">
           <View className="flex-row items-center">
             {/* <FontAwesome5 name="file-alt" size={20} color="#6B46C1" /> */}
             <Image source={require("../../assets/images/files.png")} />
@@ -294,7 +290,7 @@ export default function GamingStore() {
               </Text>
             </View>
           </View>
-         
+
           {/* <ArrowRight size={20} color="black" /> */}
           <Image source={require("../../assets/images/right.png")} />
         </View>
@@ -320,7 +316,7 @@ export default function GamingStore() {
           >
             {similarAds
               .reduce((acc, _, i) => {
-                if (i % 2 === 0) acc.push(similarAds.slice(i, i + 2)); 
+                if (i % 2 === 0) acc.push(similarAds.slice(i, i + 2));
                 return acc;
               }, [])
               .map((group, index) => (
@@ -350,6 +346,9 @@ export default function GamingStore() {
               ))}
           </Swiper>
         </View>
+        <View className="mt-10">
+          <Add />
+        </View>
         <View className="mt-6">
           <View className="flex-row items-center justify-between">
             <Text className="text-black font-bold text-lg mb-3">
@@ -373,7 +372,7 @@ export default function GamingStore() {
           >
             {similarAds
               .reduce((acc, _, i) => {
-                if (i % 2 === 0) acc.push(consoles.slice(i, i + 2)); 
+                if (i % 2 === 0) acc.push(consoles.slice(i, i + 2));
                 return acc;
               }, [])
               .map((group, index) => (
@@ -426,7 +425,7 @@ export default function GamingStore() {
           >
             {similarAds
               .reduce((acc, _, i) => {
-                if (i % 2 === 0) acc.push(cases.slice(i, i + 2)); 
+                if (i % 2 === 0) acc.push(cases.slice(i, i + 2));
                 return acc;
               }, [])
               .map((group, index) => (
@@ -456,12 +455,18 @@ export default function GamingStore() {
               ))}
           </Swiper>
         </View>
+        <View className="mt-10">
+          <Add />
+        </View>
         <View className="mt-6">
           <View className="flex-row items-center justify-between">
             <Text className="text-black font-bold text-lg mb-3">
               Popular in Used Gaming PCs
             </Text>
-            <TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => router.push("/results")}
+              className="flex-row items-center justify-between py-4 "
+            >
               {" "}
               <Image source={require("../../assets/images/right.png")} />
             </TouchableOpacity>
@@ -479,7 +484,7 @@ export default function GamingStore() {
           >
             {similarAds
               .reduce((acc, _, i) => {
-                if (i % 2 === 0) acc.push(popular.slice(i, i + 2)); 
+                if (i % 2 === 0) acc.push(popular.slice(i, i + 2));
                 return acc;
               }, [])
               .map((group, index) => (
@@ -514,7 +519,6 @@ export default function GamingStore() {
   );
 }
 
-
 // import React, { useState } from "react";
 // import { View, Text, Image, TouchableOpacity, TextInput, ScrollView } from "react-native";
 // // import { CheckCircle, XCircle } from "lucide-react-native";
@@ -527,13 +531,13 @@ export default function GamingStore() {
 
 // export default function PCInspection() {
 //   const [search, setSearch] = useState("");
-  
+
 //   return (
 //     <ScrollView className="p-4 bg-white rounded-2xl shadow-md">
 //       {/* PC Inspection Section */}
 //       <Text className="text-black text-lg font-semibold">Never buy a used laptop without</Text>
 //       <Text className="text-lg font-bold"><Text className="text-purple-600">GamerGizmo</Text> PCs Inspection</Text>
-      
+
 //       <View className="flex-wrap flex-row mt-3">
 //         {["CPU", "GPU", "Motherboard", "Temperatures", "Cooler", "RAM", "Usb Slots"].map((item, index) => (
 //           <View key={index} className="flex-row items-center mr-3 mb-2">
@@ -542,7 +546,7 @@ export default function GamingStore() {
 //           </View>
 //         ))}
 //       </View>
-      
+
 //       <TouchableOpacity className="bg-purple-600 rounded-full px-4 py-2 mt-3 self-start">
 //         <Text className="text-white font-semibold">Schedule Inspection</Text>
 //       </TouchableOpacity>
@@ -563,7 +567,7 @@ export default function GamingStore() {
 //         <View className="flex-row items-center bg-white border border-gray-300 rounded-full shadow-lg">
 //           <TextInput placeholder="Search" className="flex-1 text-gray-700 text-sm" value={search} onChangeText={setSearch} />
 //         </View>
-        
+
 //         <View className="mt-6">
 //           <Text className="text-black font-bold text-lg mb-3">Popular in Used Gaming PC Parts</Text>
 //           <Swiper style={{ height: 250 }} showsPagination={false} autoplay={false} loop={true}>

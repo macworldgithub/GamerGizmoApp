@@ -1,5 +1,11 @@
 import React from "react";
-import { View, Text, TouchableOpacity, StyleSheet, Platform } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  Platform,
+} from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 
 interface CustomTabBarProps {
@@ -8,13 +14,19 @@ interface CustomTabBarProps {
   navigation: any;
 }
 
-const CustomTabBar = ({ state, descriptors, navigation } : CustomTabBarProps) => {
-  const tabOrder = ["home", "favorite", "placead", "chat", "profile"];
+const CustomTabBar = ({
+  state,
+  descriptors,
+  navigation,
+}: CustomTabBarProps) => {
+  const tabOrder = ["home", "favorite", "placead", "chat", "image"];
 
   return (
     <View style={styles.tabBar}>
       {tabOrder.map((tabName, index) => {
-        const routeIndex = state.routes.findIndex((r : any) => r.name === tabName);
+        const routeIndex = state.routes.findIndex(
+          (r: any) => r.name === tabName
+        );
         const route = state.routes[routeIndex];
         if (!route) return null;
 
@@ -44,22 +56,26 @@ const CustomTabBar = ({ state, descriptors, navigation } : CustomTabBarProps) =>
                 <View style={styles.placeAdButton}>
                   <Ionicons name="add" size={30} color="white" />
                 </View>
-                <Text style={[styles.placeAdLabel, isFocused && styles.activePlaceAd]}>Place an Ad</Text>
+                <Text
+                  style={[
+                    styles.placeAdLabel,
+                    isFocused && styles.activePlaceAd,
+                  ]}
+                >
+                  Place an Ad
+                </Text>
               </View>
             ) : (
-              <View
-                style={[
-                  styles.tabItem,
-                  isFocused && styles.activeTabItem,
-                ]}
-              >
+              <View style={[styles.tabItem, isFocused && styles.activeTabItem]}>
                 <Ionicons
                   name={getIconName(route.name)}
                   size={24}
                   color={isFocused ? "#6345ED" : "#888"}
                   style={isFocused ? styles.iconShadow : undefined}
                 />
-                <Text style={[styles.tabLabel, isFocused && styles.activeLabel]}>
+                <Text
+                  style={[styles.tabLabel, isFocused && styles.activeLabel]}
+                >
                   {options?.title}
                 </Text>
               </View>

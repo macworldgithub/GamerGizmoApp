@@ -4,7 +4,7 @@ export default function ProfileScreen() {
   const router = useRouter();
   return (
     <View className="flex-1 bg-white">
-      {/* Header */}
+   
       <View className="flex-row items-center p-4 border-b border-gray-200 mt-3">
         <TouchableOpacity>
           <Image source={require("../../assets/images/arrow.png")} />
@@ -12,7 +12,7 @@ export default function ProfileScreen() {
         <Text className="text-lg font-semibold ml-32">Profile</Text>
       </View>
 
-      {/* Category List */}
+     
       <View className="mt-2">
         <TouchableOpacity
         onPress={() => router.push('/myprofile')}
