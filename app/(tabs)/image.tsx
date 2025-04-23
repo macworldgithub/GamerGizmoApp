@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, ScrollView, Image } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import { Ionicons } from "@expo/vector-icons";
 
-const Image = () => {
+const Images = () => {
   const [price, setPrice] = useState("");
   const [quantity, setQuantity] = useState("");
 
@@ -54,4 +54,4 @@ const Image = () => {
   );
 };
 
-export default Image;
+export default Images;
