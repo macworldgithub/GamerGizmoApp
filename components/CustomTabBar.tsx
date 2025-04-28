@@ -1,10 +1,10 @@
 import React from "react";
 import {
-  View,
+  Platform,
+  StyleSheet,
   Text,
   TouchableOpacity,
-  StyleSheet,
-  Platform,
+  View,
 } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 
@@ -14,75 +14,74 @@ interface CustomTabBarProps {
   navigation: any;
 }
 
-const CustomTabBar = ({
-  state,
-  descriptors,
-  navigation,
-}: CustomTabBarProps) => {
-  const tabOrder = ["home", "favorite", "placead", "chat", "profile"];
+const CustomTabBar = ({ state, descriptors, navigation }: CustomTabBarProps) => {
+  const leftTabs = ["home", "favorite"];
+  const rightTabs = ["chat", "profile"];
+
+  const renderTab = (tabName: string) => {
+    const routeIndex = state.routes.findIndex((r: any) => r.name === tabName);
+    const route = state.routes[routeIndex];
+    if (!route) return null;
+
+    const { options } = descriptors[route?.key] || {};
+    const isFocused = state.index === routeIndex;
+
+    const onPress = () => {
+      const event = navigation.emit({
+        type: "tabPress",
+        target: route?.key,
+      });
+      if (!isFocused && !event.defaultPrevented) {
+        navigation.navigate(route.name);
+      }
+    };
+
+    return (
+      <TouchableOpacity
+        key={route.key}
+        onPress={onPress}
+        style={styles.tabButton}
+        activeOpacity={0.8}
+      >
+        <View style={[styles.tabItem, isFocused && styles.activeTabItem]}>
+          <Ionicons
+            name={getIconName(route.name)}
+            size={24}
+            color={isFocused ? "#6345ED" : "#888"}
+            style={isFocused ? styles.iconShadow : undefined}
+          />
+          <Text style={[styles.tabLabel, isFocused && styles.activeLabel]}>
+            {options?.title}
+          </Text>
+        </View>
+      </TouchableOpacity>
+    );
+  };
 
   return (
     <View style={styles.tabBar}>
-      {tabOrder.map((tabName, index) => {
-        const routeIndex = state.routes.findIndex(
-          (r: any) => r.name === tabName
-        );
-        const route = state.routes[routeIndex];
-        if (!route) return null;
+      {/* Left Tabs */}
+      <View style={styles.sideTabs}>
+        {leftTabs.map(renderTab)}
+      </View>
 
-        const { options } = descriptors[route?.key] || {};
-        const isFocused = state.index === routeIndex;
-        const isPlaceAd = tabName === "placead";
+      {/* Center Button */}
+      <View style={styles.centerTab}>
+        <TouchableOpacity
+          onPress={() => navigation.navigate("placead")}
+          activeOpacity={0.8}
+        >
+          <View style={styles.placeAdButton}>
+            <Ionicons name="add" size={30} color="white" />
+          </View>
+          <Text style={styles.placeAdLabel}>Place an Ad</Text>
+        </TouchableOpacity>
+      </View>
 
-        const onPress = () => {
-          const event = navigation.emit({
-            type: "tabPress",
-            target: route?.key,
-          });
-          if (!isFocused && !event.defaultPrevented) {
-            navigation.navigate(route.name);
-          }
-        };
-
-        return (
-          <TouchableOpacity
-            key={route.key}
-            onPress={onPress}
-            style={isPlaceAd ? styles.placeAdButtonContainer : styles.tabButton}
-            activeOpacity={0.8}
-          >
-            {isPlaceAd ? (
-              <View style={styles.placeAdWrapper}>
-                <View style={styles.placeAdButton}>
-                  <Ionicons name="add" size={30} color="white" />
-                </View>
-                <Text
-                  style={[
-                    styles.placeAdLabel,
-                    isFocused && styles.activePlaceAd,
-                  ]}
-                >
-                  Place an Ad
-                </Text>
-              </View>
-            ) : (
-              <View style={[styles.tabItem, isFocused && styles.activeTabItem]}>
-                <Ionicons
-                  name={getIconName(route.name)}
-                  size={24}
-                  color={isFocused ? "#6345ED" : "#888"}
-                  style={isFocused ? styles.iconShadow : undefined}
-                />
-                <Text
-                  style={[styles.tabLabel, isFocused && styles.activeLabel]}
-                >
-                  {options?.title}
-                </Text>
-              </View>
-            )}
-          </TouchableOpacity>
-        );
-      })}
+      {/* Right Tabs */}
+      <View style={styles.sideTabs}>
+        {rightTabs.map(renderTab)}
+      </View>
     </View>
   );
 };
@@ -105,16 +104,24 @@ const getIconName = (routeName: string) => {
 const styles = StyleSheet.create({
   tabBar: {
     flexDirection: "row",
-    alignItems: "flex-end",
+    alignItems: "center",
     justifyContent: "space-between",
     height: 80,
     backgroundColor: "#fff",
-    paddingHorizontal: 3,
+    paddingHorizontal: 10,
     paddingBottom: Platform.OS === "ios" ? 20 : 10,
   },
-  tabButton: {
+  sideTabs: {
+    flexDirection: "row",
     flex: 1,
-    marginHorizontal: 5,
+    justifyContent: "space-evenly",
+  },
+  centerTab: {
+    alignItems: "center",
+    justifyContent: "center",
+    width: 80,
+  },
+  tabButton: {
     alignItems: "center",
     justifyContent: "center",
   },
@@ -138,24 +145,14 @@ const styles = StyleSheet.create({
     color: "#6345ED",
     fontWeight: "bold",
   },
-  placeAdButtonContainer: {
-    position: "absolute",
-    bottom: 30,
-    left: "50%",
-    transform: [{ translateX: -40 }],
-    zIndex: 10,
-    alignItems: "center",
-  },
-  placeAdWrapper: {
-    alignItems: "center",
-  },
   placeAdButton: {
-    width: 50,
-    height: 50,
-    borderRadius: 35,
+    width: 60,
+    height: 60,
+    borderRadius: 30,
     backgroundColor: "#6345ED",
     alignItems: "center",
     justifyContent: "center",
+    marginBottom: 4,
     shadowColor: "#6345ED",
     shadowOffset: { width: 0, height: 5 },
     shadowOpacity: 0.4,
@@ -163,14 +160,10 @@ const styles = StyleSheet.create({
     elevation: 8,
   },
   placeAdLabel: {
-    marginTop: 6,
     fontSize: 12,
     color: "#888",
     fontWeight: "bold",
-  },
-  activePlaceAd: {
-    color: "#6345ED",
-    fontWeight: "bold",
+    textAlign: "center",
   },
 });
 
