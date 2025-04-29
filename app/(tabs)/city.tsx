@@ -8,7 +8,7 @@ import {
   Image,
 } from "react-native";
 
-const City = () => {
+const City = () =>{
   return (
     <SafeAreaView className="flex-1 bg-white">
       <View className="border-b border-gray-200 pb-4">
