@@ -1,5 +1,11 @@
 import React from "react";
-import { Platform, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  Platform,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 
 interface CustomTabBarProps {
@@ -8,13 +14,19 @@ interface CustomTabBarProps {
   navigation: any;
 }
 
-const CustomTabBar = ({ state, descriptors, navigation }: CustomTabBarProps) => {
-  const tabOrder = ["home", "favorite", "placead", "chat", "profile"];
+const CustomTabBar = ({
+  state,
+  descriptors,
+  navigation,
+}: CustomTabBarProps) => {
+  const tabOrder = ["home", "favorite", "placead", "chat", "tell"];
 
   return (
     <View style={styles.tabBar}>
       {tabOrder.map((tabName, index) => {
-        const routeIndex = state.routes.findIndex((r: any) => r.name === tabName);
+        const routeIndex = state.routes.findIndex(
+          (r: any) => r.name === tabName
+        );
         const route = state.routes[routeIndex];
         if (!route) return null;
 
