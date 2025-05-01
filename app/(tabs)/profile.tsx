@@ -1,24 +1,45 @@
-import axios from 'axios';
-import { Alert } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import React from "react";
+import axios from "axios";
+import { Alert } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import React, { useEffect, useState } from "react";
 import { View, Text, Image, TouchableOpacity, ScrollView } from "react-native";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
-import { useRouter } from 'expo-router'
+import { useRouter } from "expo-router";
+
 const Profile = () => {
   const router = useRouter();
+  const [user, setUser] = useState<{ name: string; createdAt?: string } | null>(
+    null
+  );
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const userData = await AsyncStorage.getItem("user");
+        if (userData) {
+          const parsed = JSON.parse(userData);
+          setUser(parsed);
+        }
+      } catch (error) {
+        console.log("Error fetching user:", error);
+      }
+    };
+
+    fetchUser();
+  }, []);
+
   return (
     <ScrollView className="bg-white">
-     
       <View className="bg-white p-4  rounded-2xl mx-4 mt-6 border border-gray-200 ">
         <View className="flex-row items-center space-x-4 gap-4">
           <Image
-            source={require("../../assets/images/profile.png")} 
+            source={require("../../assets/images/profile.png")}
             className="w-14 h-14 rounded-full"
           />
-
           <View>
-            <Text className="text-lg font-bold text-black">Michel Smith</Text>
+            <Text className="text-lg font-bold text-black">
+              {user?.name || "Michel Smith"}
+            </Text>
             <View className="flex-row items-center space-x-2 mt-1 border border-gray-300 ">
               <Text className="text-xs text-gray-600  px-2 py-1 ml-2">
                 Get Verified
@@ -26,13 +47,12 @@ const Profile = () => {
               <FontAwesome name="check-circle" size={14} color="purple" />
             </View>
             <Text className="text-xs text-gray-500 mt-3">
-              Joined on January 2025
+              Joined on {user?.createdAt?.slice(0, 10) || "January 2025"}
             </Text>
           </View>
         </View>
       </View>
 
- 
       <View className="flex-row justify-center space-x-4 mt-6 mx-4">
         <TouchableOpacity className="border border-gray-200 px-6 py-3 rounded-xl w-40 flex-column items-center justify-center mr-7 ">
           <FontAwesome name="th-list" size={18} color="purple" />
@@ -44,12 +64,11 @@ const Profile = () => {
         </TouchableOpacity>
       </View>
 
-     
       <View className="mt-6 px-6 gap-3">
-      
         <TouchableOpacity
-        onPress={() => router.push('/file')}
-        className="flex-row items-center justify-between py-4 ">
+          onPress={() => router.push("/file")}
+          className="flex-row items-center justify-between py-4 "
+        >
           <View className="flex-row items-center space-x-3">
             <Image source={require("../../assets/images/profile1.png")} />
             <Text className="text-black ml-3">Profile</Text>
@@ -60,7 +79,6 @@ const Profile = () => {
           />
         </TouchableOpacity>
 
-       
         <TouchableOpacity className="flex-row items-center justify-between py-4">
           <View className="flex-row items-center space-x-3">
             <Image
@@ -75,7 +93,6 @@ const Profile = () => {
           />
         </TouchableOpacity>
 
-       
         <TouchableOpacity className="flex-row items-center justify-between py-4">
           <View className="flex-row items-center space-x-3">
             <Image
@@ -90,7 +107,6 @@ const Profile = () => {
           />
         </TouchableOpacity>
 
-      
         <TouchableOpacity className="flex-row items-center justify-between py-4 border-b border-gray-200">
           <View className="flex-row items-center space-x-3">
             <Image
@@ -104,8 +120,6 @@ const Profile = () => {
             className="w-4 h-4"
           />
         </TouchableOpacity>
-
-      
 
         <TouchableOpacity className="flex-row items-center justify-between py-4 ">
           <View className="flex-row items-center space-x-3">
@@ -136,8 +150,6 @@ const Profile = () => {
             className="w-4 h-4"
           />
         </TouchableOpacity>
-
-     
 
         <TouchableOpacity className="flex-row items-center justify-between py-4  ">
           <View className="flex-row items-center space-x-3">
@@ -193,37 +205,38 @@ const Profile = () => {
             className="w-4 h-4"
           />
         </TouchableOpacity>
-        
-<TouchableOpacity
+
+        <TouchableOpacity
   className="flex-row items-center justify-between py-4"
   onPress={async () => {
     try {
-      // Get token from AsyncStorage (or however you're storing it)
-      const token = await AsyncStorage.getItem('token');
+      const token = await AsyncStorage.getItem("token");
 
-      if (!token) {
-        Alert.alert("Error", "No token found. Please log in again.");
+      console.log("Stored token value:", token); 
+
+      if (!token || typeof token !== "string") {
+        Alert.alert("Error", "Invalid token. Please log in again.");
         return;
       }
 
       const response = await axios.post(
-        'https://backend.gamergizmo.com/auth/logoutUser',
-        {},
+        "https://backend.gamergizmo.com/auth/logoutUser",
+        { token: token.trim() }, // Send token in body
         {
           headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
+            "Content-Type": "application/json",
           },
         }
       );
-
+      
       if (response.status === 200) {
         Alert.alert("Success", "You have been logged out.");
-        await AsyncStorage.removeItem('token'); // Clear token from storage
-        router.replace("/login");
+        await AsyncStorage.removeItem("token");
+        await AsyncStorage.removeItem("user");
+        router.replace("/");
       } else {
-        Alert.alert("Logout Failed", "Unexpected server response.");
         console.warn("Logout non-200 response:", response.status, response.data);
+        Alert.alert("Logout Failed", "Unexpected server response.");
       }
     } catch (error: any) {
       console.error("Logout error", error.response?.data || error.message);
@@ -243,8 +256,6 @@ const Profile = () => {
     className="w-4 h-4"
   />
 </TouchableOpacity>
-
-
 
       </View>
     </ScrollView>

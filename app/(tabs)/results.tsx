@@ -110,6 +110,7 @@ import { FontAwesome, FontAwesome5, MaterialIcons } from "@expo/vector-icons";
 import Add from "../(tabs)/add";
 import { useRouter } from "expo-router";
 
+
 const RatingStars = ({ rating }) => {
   const totalStars = 5;
 

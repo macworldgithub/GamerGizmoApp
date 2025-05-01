@@ -4,6 +4,7 @@ import axios from "axios";
 import { useDispatch } from "react-redux";
 import { InitializeUserData } from "../../store/slice/loginSlice"; 
 import { useRouter } from "expo-router";
+import AsyncStorage from "@react-native-async-storage/async-storage"; // ✅ imported
 
 const LoginScreen = () => {
   const [email, setEmail] = useState("");
@@ -25,7 +26,15 @@ const LoginScreen = () => {
       });
 
       if (response.status === 200 || response.status === 201) {
-        dispatch(InitializeUserData(response.data));
+        // ✅ Save user and token to AsyncStorage
+        const user = response.data;
+        await AsyncStorage.setItem("user", JSON.stringify({
+          name: user?.name || email,
+          createdAt: user?.createdAt,
+        }));
+        await AsyncStorage.setItem("token", user?.token || "");
+
+        dispatch(InitializeUserData(user));
         alert("Login successful!");
         router.replace("/(tabs)/home"); 
         
