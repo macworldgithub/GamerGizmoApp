@@ -27,7 +27,8 @@ const LoginScreen = () => {
       if (response.status === 200 || response.status === 201) {
         dispatch(InitializeUserData(response.data));
         alert("Login successful!");
-        router.replace("/(tabs)/home"); // ✅ Navigate to home in (tabs) layout
+        router.replace("/(tabs)/home"); 
+        
       } else {
         alert(response.data.message || "Login failed");
       }
