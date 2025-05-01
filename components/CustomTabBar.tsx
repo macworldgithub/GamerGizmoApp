@@ -9,7 +9,7 @@ interface CustomTabBarProps {
 }
 
 const CustomTabBar = ({ state, descriptors, navigation }: CustomTabBarProps) => {
-  const tabOrder = ["home", "favorite", "placead", "chat", "blog"];
+  const tabOrder = ["home", "favorite", "placead", "chat", "my_public_profile"];
 
   return (
     <View style={styles.tabBar}>
