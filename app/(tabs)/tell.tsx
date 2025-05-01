@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 
-// Define brand and model types
+// Define brand, model, condition, and location types
 type Brand = {
   id: number;
   name: string;
@@ -25,6 +25,16 @@ type Model = {
   status: boolean;
 };
 
+type Condition = {
+  id: number;
+  name: string;
+};
+
+type Location = {
+  id: number;
+  name: string;
+};
+
 const Tell = () => {
   const [brand, setBrand] = useState("");
   const [brandId, setBrandId] = useState<number | null>(null);
@@ -33,6 +43,8 @@ const Tell = () => {
   const [location, setLocation] = useState("");
   const [brands, setBrands] = useState<Brand[]>([]);
   const [models, setModels] = useState<Model[]>([]);
+  const [conditions, setConditions] = useState<Condition[]>([]);
+  const [locations, setLocations] = useState<Location[]>([]);
 
   // Fetch brands on mount
   useEffect(() => {
@@ -49,6 +61,40 @@ const Tell = () => {
     };
 
     fetchBrands();
+  }, []);
+
+  // Fetch conditions on mount
+  useEffect(() => {
+    const fetchConditions = async () => {
+      try {
+        const response = await fetch(
+          "https://backend.gamergizmo.com/conditions/getAll"
+        );
+        const data = await response.json();
+        setConditions(data?.data || []);
+      } catch (error) {
+        console.error("Failed to fetch conditions:", error);
+      }
+    };
+
+    fetchConditions();
+  }, []);
+
+  // Fetch locations on mount
+  useEffect(() => {
+    const fetchLocations = async () => {
+      try {
+        const response = await fetch(
+          "https://backend.gamergizmo.com/location/getAll"
+        );
+        const data = await response.json();
+        setLocations(data?.data || []);
+      } catch (error) {
+        console.error("Failed to fetch locations:", error);
+      }
+    };
+
+    fetchLocations();
   }, []);
 
   // Fetch models when brandId changes
@@ -99,7 +145,7 @@ const Tell = () => {
         <Picker
           selectedValue={brand}
           onValueChange={(itemValue, itemIndex) => {
-            const selected = brands[itemIndex - 1]; // account for placeholder
+            const selected = brands[itemIndex - 1]; 
             handleBrandChange(itemValue, selected?.id || 0);
           }}
         >
@@ -124,28 +170,29 @@ const Tell = () => {
         </Picker>
       </View>
 
+      {/* Condition Picker */}
       <View className="border border-gray-200 mb-4">
         <Picker
           selectedValue={condition}
           onValueChange={(itemValue) => setCondition(itemValue)}
         >
           <Picker.Item label="Condition" value="" />
-          <Picker.Item label="New" value="new" />
-          <Picker.Item label="Used - Like New" value="like_new" />
-          <Picker.Item label="Used - Good" value="good" />
-          <Picker.Item label="Used - Fair" value="fair" />
+          {conditions.map((item) => (
+            <Picker.Item key={item.id} label={item.name} value={item.name} />
+          ))}
         </Picker>
       </View>
 
+      {/* Location Picker */}
       <View className="border border-gray-200 mb-4">
         <Picker
           selectedValue={location}
           onValueChange={(itemValue) => setLocation(itemValue)}
         >
           <Picker.Item label="Location" value="" />
-          <Picker.Item label="Karachi" value="karachi" />
-          <Picker.Item label="Lahore" value="lahore" />
-          <Picker.Item label="Islamabad" value="islamabad" />
+          {locations.map((item) => (
+            <Picker.Item key={item.id} label={item.name} value={item.name} />
+          ))}
         </Picker>
       </View>
 

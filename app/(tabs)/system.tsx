@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -10,15 +10,68 @@ import {
 import { Picker } from "@react-native-picker/picker";
 import { Ionicons } from "@expo/vector-icons";
 
+type ProcessorVariant = {
+  id: number;
+  name: string;
+};
+
+type Processor = {
+  id: number;
+  name: string;
+};
+
 const System = () => {
   const [processorVariant, setProcessorVariant] = useState("");
+  const [processorVariantId, setProcessorVariantId] = useState<number | null>(null);
+  const [processorVariants, setProcessorVariants] = useState<ProcessorVariant[]>([]);
+
   const [processor, setProcessor] = useState("");
+  const [processors, setProcessors] = useState<Processor[]>([]);
+
   const [ram, setRam] = useState("");
   const [storageType, setStorageType] = useState("");
   const [storage, setStorage] = useState("");
   const [gpu, setGpu] = useState("");
   const [graphics, setGraphics] = useState("");
   const [ports, setPorts] = useState("");
+
+  useEffect(() => {
+    const fetchProcessorVariants = async () => {
+      try {
+        const response = await fetch("https://backend.gamergizmo.com/processor/getProcessorVariant");
+        const data = await response.json();
+        setProcessorVariants(data?.data || []);
+      } catch (error) {
+        console.error("Failed to fetch processor variants:", error);
+      }
+    };
+
+    fetchProcessorVariants();
+  }, []);
+
+  useEffect(() => {
+    if (processorVariantId !== null) {
+      const fetchProcessors = async () => {
+        try {
+          const response = await fetch(`https://backend.gamergizmo.com/processor/getProcessor?variant=${processorVariantId}`);
+          const data = await response.json();
+          setProcessors(data?.data || []);
+        } catch (error) {
+          console.error("Failed to fetch processors:", error);
+        }
+      };
+
+      fetchProcessors();
+    } else {
+      setProcessors([]);
+    }
+  }, [processorVariantId]);
+
+  const handleProcessorVariantChange = (val: string, id: number) => {
+    setProcessorVariant(val);
+    setProcessorVariantId(id);
+    setProcessor(""); // reset processor when variant changes
+  };
 
   return (
     <ScrollView className="flex-1 bg-white px-4 py-6 pb-24">
@@ -34,12 +87,15 @@ const System = () => {
       <View className="border border-gray-200 mb-4 mt-7">
         <Picker
           selectedValue={processorVariant}
-          onValueChange={(val) => setProcessorVariant(val)}
+          onValueChange={(val, index) => {
+            const selected = processorVariants.find((v) => v.name === val);
+            handleProcessorVariantChange(val, selected?.id ?? 0);
+          }}
         >
           <Picker.Item label="Processor Variant" value="" />
-          <Picker.Item label="i3" value="i3" />
-          <Picker.Item label="i5" value="i5" />
-          <Picker.Item label="i7" value="i7" />
+          {processorVariants.map((item) => (
+            <Picker.Item key={item.id} label={item.name} value={item.name} />
+          ))}
         </Picker>
       </View>
 
@@ -49,8 +105,9 @@ const System = () => {
           onValueChange={(val) => setProcessor(val)}
         >
           <Picker.Item label="Processor" value="" />
-          <Picker.Item label="Intel" value="intel" />
-          <Picker.Item label="AMD" value="amd" />
+          {processors.map((item) => (
+            <Picker.Item key={item.id} label={item.name} value={item.name} />
+          ))}
         </Picker>
       </View>
 

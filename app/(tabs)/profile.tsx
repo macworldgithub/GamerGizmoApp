@@ -1,3 +1,6 @@
+import axios from 'axios';
+import { Alert } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import React from "react";
 import { View, Text, Image, TouchableOpacity, ScrollView } from "react-native";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
@@ -64,7 +67,7 @@ const Profile = () => {
               source={require("../../assets/images/account.png")}
               className="w-6 h-6"
             />
-            <Text className="text-black ml-3">Account Setting</Text>
+            <Text className="text-black ml-3">Settings</Text>
           </View>
           <Image
             source={require("../../assets/images/next.png")}
@@ -190,19 +193,59 @@ const Profile = () => {
             className="w-4 h-4"
           />
         </TouchableOpacity>
-        <TouchableOpacity className="flex-row items-center justify-between py-4 ">
-          <View className="flex-row items-center space-x-3">
-            <Image
-              source={require("../../assets/images/logout.png")}
-              className="w-6 h-6"
-            />
-            <Text className="text-black ml-3">Logout</Text>
-          </View>
-          <Image
-            source={require("../../assets/images/next.png")}
-            className="w-4 h-4"
-          />
-        </TouchableOpacity>
+        
+<TouchableOpacity
+  className="flex-row items-center justify-between py-4"
+  onPress={async () => {
+    try {
+      // Get token from AsyncStorage (or however you're storing it)
+      const token = await AsyncStorage.getItem('token');
+
+      if (!token) {
+        Alert.alert("Error", "No token found. Please log in again.");
+        return;
+      }
+
+      const response = await axios.post(
+        'https://backend.gamergizmo.com/auth/logoutUser',
+        {},
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        Alert.alert("Success", "You have been logged out.");
+        await AsyncStorage.removeItem('token'); // Clear token from storage
+        router.replace("/login");
+      } else {
+        Alert.alert("Logout Failed", "Unexpected server response.");
+        console.warn("Logout non-200 response:", response.status, response.data);
+      }
+    } catch (error: any) {
+      console.error("Logout error", error.response?.data || error.message);
+      Alert.alert("Error", "Failed to log out. Please try again.");
+    }
+  }}
+>
+  <View className="flex-row items-center space-x-3">
+    <Image
+      source={require("../../assets/images/logout.png")}
+      className="w-6 h-6"
+    />
+    <Text className="text-black ml-3">Logout</Text>
+  </View>
+  <Image
+    source={require("../../assets/images/next.png")}
+    className="w-4 h-4"
+  />
+</TouchableOpacity>
+
+
+
       </View>
     </ScrollView>
   );
