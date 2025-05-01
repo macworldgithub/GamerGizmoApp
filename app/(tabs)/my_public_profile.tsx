@@ -39,10 +39,10 @@ const PublicProfileScreen = () => {
                     </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                    className={`flex-1 items-center py-2 ${activeTab === 'ratings' ? 'border-b-2 border-red-500' : ''}`}
+                    className={`flex-1 items-center py-2 ${activeTab === 'ratings' ? 'border-b-2 border-purple-600' : ''}`}
                     onPress={() => setActiveTab('ratings')}
                 >
-                    <Text className={`text-sm ${activeTab === 'ratings' ? 'text-red-500 font-semibold' : 'text-gray-400'}`}>
+                    <Text className={`text-sm ${activeTab === 'ratings' ? 'text-purple-600 font-semibold' : 'text-gray-400'}`}>
                         Ratings
                     </Text>
                 </TouchableOpacity>
