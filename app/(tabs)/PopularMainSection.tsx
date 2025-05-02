@@ -1,31 +1,29 @@
-import React, { useEffect, useState } from 'react'
-import { View } from 'react-native'
-import Productcarrd from './Productcarrd'
-import { useSelector } from 'react-redux'
-import type { RootState } from '@/store/store'
-import axios from 'axios'
-import { API_BASE_URL } from '@/utils/config'
-import Add from './add'
+import React, { useEffect, useState } from "react";
+import { View } from "react-native";
+import Productcarrd from "./Productcarrd";
+import { useSelector } from "react-redux";
+import type { RootState } from "@/store/store";
+import axios from "axios";
+import { API_BASE_URL } from "@/utils/config";
+import Add from "./add";
 
 const PopularMainSection = () => {
-  const [LaptopUsedData, setLaptopUsedData] = useState(
-    [
-      {
-        id: 1,
-        name: "Radeon RX 580 OC...",
-        description: "Powerful graphics card for gaming...",
-        price: "AED 551.00",
-        images: [
-          {
-            id: 1,
-            product_id: 1,
-            image_url: "../../assets/images/default.png",
-            created_at: "",
-          },
-        ],
-      },
-    ]
-  );
+  const [LaptopUsedData, setLaptopUsedData] = useState([
+    {
+      id: 1,
+      name: "Radeon RX 580 OC...",
+      description: "Powerful graphics card for gaming...",
+      price: "AED 551.00",
+      images: [
+        {
+          id: 1,
+          product_id: 1,
+          image_url: "../../assets/images/default.png",
+          created_at: "",
+        },
+      ],
+    },
+  ]);
   const [LaptopNewData, setLaptopNewData] = useState([
     {
       id: 1,
@@ -105,7 +103,6 @@ const PopularMainSection = () => {
   const fetchNewDesktops = async () => {
     try {
       const response = await axios.get(
-
         `${API_BASE_URL}/products/getAll?category_id=2&condition=1`,
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -232,18 +229,17 @@ const PopularMainSection = () => {
     fetchNewDesktops();
     fetchUsedComponents();
     fetchNewComponents();
-
   }, [fetcher]);
   return (
     <View>
       <View className="mt-6">
         <Productcarrd
-           title="Popular in Used Gaming PCs"
-           productList={desktopUsedData}
-           seReftech={seReftech}
-           refetch={fetcher}
-           explorePath={`/desktop?condition=2`}
-           onExplore={() => console.log("Explore Gaming PC Parts")}
+          title="Popular in Used Gaming PCs"
+          productList={desktopUsedData}
+          seReftech={seReftech}
+          refetch={fetcher}
+          explorePath={`/desktop?condition=2`}
+          onExplore={() => console.log("Explore Gaming PC Parts")}
         />
       </View>
       <View className="mt-6">
@@ -256,15 +252,15 @@ const PopularMainSection = () => {
           onExplore={() => console.log("Explore Used Consoles")}
         />
       </View>
-      <View className='mt-4'>
-      <Add/>
-      </View>      
+      <View className="mt-4">
+        <Add />
+      </View>
       <View className="mt-6">
         <Productcarrd
           title="Popular in Used Laptops"
           productList={LaptopUsedData}
           seReftech={seReftech}
-           refetch={fetcher}
+          refetch={fetcher}
           explorePath={`/laptops?condition=2`}
           onExplore={() => console.log("Explore Gaming PC Parts")}
         />
@@ -278,55 +274,55 @@ const PopularMainSection = () => {
           refetch={fetcher}
           onExplore={() => console.log("Explore Used Consoles")}
         />
-    </View>
-    <View className='mt-4'>
-      <Add/>
       </View>
-    <View className="mt-6">
-      <Productcarrd
-        title="Popular in Used Consoles"
-        productList={consolesUsedData}
-        seReftech={seReftech}
-        refetch={fetcher}
-        explorePath={`/console?condition=2`}
-        onExplore={() => console.log("Explore Used Consoles")}
-      />
-    </View>
-    <View className="mt-6">
-      <Productcarrd
-        title="Popular in New Consoles"
-        productList={consolesNewData}
-        seReftech={seReftech}
-        refetch={fetcher}
-        explorePath={`/console?condition=1`}
-        onExplore={() => console.log("Explore Used Consoles")}
-      />
-    </View>
-    <View className='mt-4'>
-      <Add/>
+      <View className="mt-4">
+        <Add />
       </View>
-    <View className="mt-6">
-      <Productcarrd
-        title="Popular in Used Components and Accessories"
-        productList={componentsUsedData}
-        seReftech={seReftech}
-        refetch={fetcher}
-        explorePath={`/components?condition=2`}
-        onExplore={() => console.log("Explore Used Consoles")}
-      />
+      <View className="mt-6">
+        <Productcarrd
+          title="Popular in Used Consoles"
+          productList={consolesUsedData}
+          seReftech={seReftech}
+          refetch={fetcher}
+          explorePath={`/console?condition=2`}
+          onExplore={() => console.log("Explore Used Consoles")}
+        />
+      </View>
+      <View className="mt-6">
+        <Productcarrd
+          title="Popular in New Consoles"
+          productList={consolesNewData}
+          seReftech={seReftech}
+          refetch={fetcher}
+          explorePath={`/console?condition=1`}
+          onExplore={() => console.log("Explore Used Consoles")}
+        />
+      </View>
+      <View className="mt-4">
+        <Add />
+      </View>
+      <View className="mt-6">
+        <Productcarrd
+          title="Popular in Used Components and Accessories"
+          productList={componentsUsedData}
+          seReftech={seReftech}
+          refetch={fetcher}
+          explorePath={`/components?condition=2`}
+          onExplore={() => console.log("Explore Used Consoles")}
+        />
+      </View>
+      <View className="mt-6">
+        <Productcarrd
+          title="Popular in New Components and Accessories"
+          productList={componentsNewData}
+          seReftech={seReftech}
+          refetch={fetcher}
+          explorePath={`/components?condition=1`}
+          onExplore={() => console.log("Explore New Components")}
+        />
+      </View>
     </View>
-    <View className="mt-6">
-      <Productcarrd
-        title="Popular in New Components and Accessories"
-        productList={componentsNewData}
-        seReftech={seReftech}
-        refetch={fetcher}
-        explorePath={`/components?condition=1`}
-        onExplore={() => console.log("Explore New Components")}
-      />
-    </View>
-    </View>
-  )
-}
+  );
+};
 
-export default PopularMainSection
+export default PopularMainSection;

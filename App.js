@@ -21,7 +21,7 @@
 //         <Stack.Screen name="GetStart" component={GetStart} />
 //         <Stack.Screen name="Login" component={Login} />
 //         {/* <Stack.Screen name="MainApp" component={MainApp} /> */}
-//       </Stack.Navigator>
+//       </.Navigator>
 //     </NavigationContainer>
 //   );
 // }
