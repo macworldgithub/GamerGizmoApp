@@ -54,11 +54,13 @@ import {
 import axios from "axios";
 import { useFocusEffect } from "@react-navigation/native";
 import { API_BASE_URL } from "@/utils/config";
+import { useRouter } from "expo-router";
 
 const Category = ({ navigation }: any) => {
   const [visible, setVisible] = useState(false);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
   useFocusEffect(
     useCallback(() => {
@@ -99,6 +101,11 @@ const Category = ({ navigation }: any) => {
   const handleCategorySelect = (category: any) => {
     console.log("Selected category:", category);
     setVisible(false);
+
+    router.push({
+      pathname: "/tell",
+      params: { category },
+    });
   };
 
   return (

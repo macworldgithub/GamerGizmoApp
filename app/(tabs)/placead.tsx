@@ -13,13 +13,13 @@ import {
 import { useFocusEffect } from "@react-navigation/native";
 import { API_BASE_URL } from "@/utils/config";
 import axios from "axios";
-import { useRouter } from "expo-router"; // ✅ useRouter instead of navigation
+import { useRouter } from "expo-router";
 
 const Placead = () => {
   const [visible, setVisible] = useState(false);
   const [cities, setCities] = useState([]);
   const [loading, setLoading] = useState(true);
-  const router = useRouter(); // ✅
+  const router = useRouter();
 
   useFocusEffect(
     useCallback(() => {
@@ -48,7 +48,6 @@ const Placead = () => {
     console.log("Selected city:", city);
     setVisible(false);
 
-   
     router.push({
       pathname: "/category",
       params: { city },
@@ -58,10 +57,11 @@ const Placead = () => {
   return (
     <Modal visible={visible} animationType="slide" transparent={false}>
       <SafeAreaView className="flex-1 bg-white">
-       
         <View className="border-b border-gray-200 pb-4">
           <View className="px-4 mt-4 py-4 flex-row items-center">
-            <TouchableOpacity onPress={() => setVisible(false)}>
+            <TouchableOpacity onPress={() => setVisible(false)}
+              
+              >
               <Image
                 source={require("../../assets/images/cross.png")}
                 className="w-5 h-5"
