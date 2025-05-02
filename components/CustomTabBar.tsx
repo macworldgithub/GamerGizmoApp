@@ -19,7 +19,7 @@ const CustomTabBar = ({
   descriptors,
   navigation,
 }: CustomTabBarProps) => {
-  const tabOrder = ["home", "favorite", "placead", "profile", "tell"];
+  const tabOrder = ["home", "favorite", "processor", "profile", "results"];
 
   return (
     <View style={styles.tabBar}>
