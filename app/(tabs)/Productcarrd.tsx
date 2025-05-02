@@ -2,8 +2,6 @@ import { API_BASE_URL } from "@/utils/config";
 import React from "react";
 import { Image, Text, TouchableOpacity, View } from "react-native";
 import Swiper from "react-native-swiper";
-import { useNavigation } from "@react-navigation/native"; // ✅ Import navigation
-import Processor from "./processor";
 
 type ProductImage = {
   id: number;
@@ -20,25 +18,15 @@ type Product = {
   images: ProductImage[];
 };
 
-type ProductcarrdProps = {
-  productList: Product[];
-  title: string;
-  explorePath?: string;
-  onExplore?: () => void;
-  onProductClick?: (id: number) => void;
-};
-
 const Productcarrd = ({
   productList = [],
   title,
-  explorePath,
-  onExplore,
-  onProductClick,
-}: ProductcarrdProps) => {
-  const navigation = useNavigation(); // ✅ Initialize navigation
-
+}: {
+  productList: Product[];
+  title: string;
+}) => {
   const getImageUrl = (image_url: string) => {
-    return image_url?.startsWith("http")
+    return image_url?.startsWith("https")
       ? image_url
       : `${API_BASE_URL}/${image_url}`;
   };
@@ -46,24 +34,22 @@ const Productcarrd = ({
   return (
     <>
       <View className="flex-row items-center justify-between">
-        <TouchableOpacity onPress={() => navigation.navigate("processor")}>
-          <Text className="text-black font-bold text-lg mb-3">{title}</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={onExplore}>
+        <Text className="text-black font-bold text-lg mb-3">{title}</Text>
+        <TouchableOpacity>
           <Image source={require("../../assets/images/right.png")} />
         </TouchableOpacity>
       </View>
 
       <View>
-        <Swiper
-          style={{ height: 250 }}
-          showsPagination={false}
-          autoplay={false}
-          autoplayTimeout={3}
-          loop={true}
-        >
-          {productList.length > 0 &&
-            productList
+        {productList.length > 0 ? (
+          <Swiper
+            style={{ height: 250 }}
+            showsPagination={false}
+            autoplay={false}
+            autoplayTimeout={3}
+            loop={true}
+          >
+            {productList
               .reduce((acc: any[], _, i: number) => {
                 if (i % 2 === 0) acc.push(productList.slice(i, i + 2));
                 return acc;
@@ -75,12 +61,12 @@ const Productcarrd = ({
                     const imageUrl = productImage
                       ? getImageUrl(productImage)
                       : null;
+                    console.log("Final URL", getImageUrl(productImage));
 
                     return (
-                      <TouchableOpacity
+                      <View
                         key={item.id}
                         className="bg-white p-3 rounded-lg shadow-md border border-gray-200 w-44"
-                        onPress={() => onProductClick?.(item.id)} // ✅ Navigate on card press
                       >
                         {imageUrl ? (
                           <Image
@@ -104,12 +90,17 @@ const Productcarrd = ({
                         <Text className="text-gray-600 text-sm mt-1">
                           {item.description}
                         </Text>
-                      </TouchableOpacity>
+                      </View>
                     );
                   })}
                 </View>
               ))}
-        </Swiper>
+          </Swiper>
+        ) : (
+          <Text className="text-red-600 text-center my-4">
+            No Product To display
+          </Text>
+        )}
       </View>
     </>
   );
