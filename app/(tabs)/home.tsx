@@ -1,15 +1,15 @@
 import { useNavigation } from "@react-navigation/native";
+import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
-  View,
+  Image,
+  ScrollView,
   Text,
   TextInput,
-  Image,
   TouchableOpacity,
-  ScrollView,
+  View,
 } from "react-native";
 import Add from "../(tabs)/add";
-import { useRouter } from "expo-router";
 import PopularMainSection from "./PopularMainSection";
 
 const categories = [
@@ -43,7 +43,6 @@ const categories = [
 ];
 
 export default function GamingStore() {
-  const navigation = useNavigation();
   const [search, setSearch] = useState("");
   const router = useRouter();
   return (
@@ -64,6 +63,7 @@ export default function GamingStore() {
           <View className="mt-6 flex flex-wrap flex-row justify-between">
             {categories.map((item, index) => (
               <TouchableOpacity
+              onPress={()=>router.push('/part')}
                 key={index}
                 className="bg-white w-[30%] m-1 p-3 rounded-lg shadow-lg shadow-purple-500 items-center"
               >

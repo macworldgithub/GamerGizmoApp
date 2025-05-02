@@ -64,7 +64,7 @@ const PopularMainSection = () => {
       }, [fetcher]);
   return (
     <View>
-         <View className="mt-6">         
+       <View className="mt-6">
         <Productcarrd
             title="Popular in Used Laptops"
             productList ={LaptopUsedData}
