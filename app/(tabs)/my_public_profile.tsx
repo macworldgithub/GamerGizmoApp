@@ -1,17 +1,18 @@
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import { useRouter } from 'expo-router';   
 import { ArrowLeftIcon } from 'lucide-react-native';
 import React, { useState } from 'react';
 import { Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 
 const PublicProfileScreen = () => {
-    const navigation = useNavigation();
+    const router = useRouter();
     const [activeTab, setActiveTab] = useState<'ads' | 'ratings'>('ads');
 
     return (
         <View className="flex-1 bg-white">
             {/* Header */}
             <View className="flex-row items-center justify-between px-4 py-3 border-b border-gray-200">
-                <TouchableOpacity onPress={() => navigation.goBack()}>
+                <TouchableOpacity onPress={() =>router.push('/file')}>
                     <ArrowLeftIcon size={20} color="black" />
                 </TouchableOpacity>
                 <Text className="text-base font-semibold">My Public Profile</Text>

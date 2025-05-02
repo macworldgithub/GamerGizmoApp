@@ -2,9 +2,10 @@ import React, { useState } from "react";
 import { View, Text, Image, TouchableOpacity, Modal } from "react-native";
 import CreateAccount from "./auth/create";
 import {useRouter} from "expo-router";
-import RegisterScreen from "./auth/create";
+import Login from "./auth/login";
+
 export default function LoginScreen() {
-  const [showRegisterModal, setShowRegisterModal] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
   const router = useRouter();
 
   return (
@@ -48,9 +49,7 @@ export default function LoginScreen() {
       />
     </TouchableOpacity>
 
-    <TouchableOpacity className="w-4/5 mb-3"
-    onPress={() => router.push("./auth/login")}
-    >
+    <TouchableOpacity className="w-4/5 mb-3">
       <Image
         source={require("../assets/images/email.png")}
         className="w-full h-10"
@@ -67,9 +66,9 @@ export default function LoginScreen() {
     </TouchableOpacity>
 
     <Text className="text-[#6345ED] text-xl mt-3 font-semibold">
-      Don’t have an account?{" "}
-      <TouchableOpacity onPress={() => setShowRegisterModal(true)}>
-        <Text className="text-[#6345ED] font-semibold mt-2">Create one</Text>
+      Already have an account?{" "}
+      <TouchableOpacity onPress={() => setShowLoginModal(true)}>
+        <Text className="text-[#6345ED] font-semibold mt-2">  Login</Text>
       </TouchableOpacity>
     </Text>
 
@@ -83,11 +82,11 @@ export default function LoginScreen() {
     </Text>
 
     <Modal
-        visible={showRegisterModal}
+        visible={showLoginModal}
         animationType="slide"
         transparent={false}
       >
-        <RegisterScreen onClose={() => setShowRegisterModal(false)} />
+        <Login onClose={() => setShowLoginModal(false)} />
       </Modal>
   </View>
   );
