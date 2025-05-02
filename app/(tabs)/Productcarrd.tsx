@@ -1,4 +1,3 @@
-
 import { API_BASE_URL } from '@/utils/config';
 import React from 'react';
 import { Image, Text, TouchableOpacity, View } from 'react-native';
@@ -21,7 +20,7 @@ type Product = {
 
 const Productcarrd = ({ productList = [], title }: { productList: Product[]; title: string }) => {
     const getImageUrl = (image_url: string) => {
-        return image_url?.startsWith('http')
+        return image_url?.startsWith('https')
             ? image_url
             : `${API_BASE_URL}/${image_url}`;
     };
@@ -38,15 +37,15 @@ const Productcarrd = ({ productList = [], title }: { productList: Product[]; tit
             </View>
 
             <View>
-                <Swiper
-                    style={{ height: 250 }}
-                    showsPagination={false}
-                    autoplay={false}
-                    autoplayTimeout={3}
-                    loop={true}
-                >
-                    {productList.length > 0 &&
-                        productList
+                {productList.length > 0 ? (
+                    <Swiper
+                        style={{ height: 250 }}
+                        showsPagination={false}
+                        autoplay={false}
+                        autoplayTimeout={3}
+                        loop={true}
+                    >
+                        {productList
                             .reduce((acc: any[], _, i: number) => {
                                 if (i % 2 === 0) acc.push(productList.slice(i, i + 2));
                                 return acc;
@@ -86,12 +85,13 @@ const Productcarrd = ({ productList = [], title }: { productList: Product[]; tit
                                     })}
                                 </View>
                             ))}
-                </Swiper>
-
+                    </Swiper>
+                ) : (
+                    <Text className="text-red-600 text-center my-4">No Product To display</Text>
+                )}
             </View>
         </>
     );
 };
-
 
 export default Productcarrd;
