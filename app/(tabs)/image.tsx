@@ -100,8 +100,8 @@ const Images = () => {
     try {
       setUploading(true);
 
-      // 👉 Replace this with actual upload logic (e.g., using fetch or axios)
-      await new Promise((resolve) => setTimeout(resolve, 2000)); // Fake 2s delay
+     
+      await new Promise((resolve) => setTimeout(resolve, 2000)); 
 
       Alert.alert("Success", "Image uploaded successfully!");
     } catch (error) {

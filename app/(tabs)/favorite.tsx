@@ -1,6 +1,3 @@
-
-
-
 import React from "react";
 import { View, Text, Image, TouchableOpacity, ScrollView } from "react-native";
 
@@ -8,8 +5,17 @@ const Favorite = () => {
   return (
     <ScrollView>
       <View className="bg-white w-full h-full">
+        <View className="border-b border-gray-200 pb-4">
+          <View className="px-4  py-4 flex-row items-center">
+            <TouchableOpacity>
+              <Image source={require("../../assets/images/left.png")} />
+            </TouchableOpacity>
+            <View className="flex-1 items-center -ml-48">
+              <Text className="text-black font-semibold text-lg">Favorite</Text>
+            </View>
+          </View>
+        </View>
         <View className="items-center justify-center p-6">
-    
           <View className="flex-row items-center justify-between w-full mb-6">
             <Text className="text-xl font-bold text-black">All Favorite</Text>
             <Image
@@ -18,12 +24,8 @@ const Favorite = () => {
             />
           </View>
 
-        
-          <Image
-            source={require("../../assets/images/favorite.png")}
-          />
+          <Image source={require("../../assets/images/favorite.png")} />
 
-        
           <Text className="text-lg font-bold text-black text-center mt-12">
             You have no favorites saved on this list
           </Text>
@@ -47,7 +49,7 @@ const Favorite = () => {
                 Invite friends to view or collaborate on your list
               </Text>
               <TouchableOpacity className=" mt-4 ml-16">
-               <Image source={require("../../assets/images/list.png")}/>
+                <Image source={require("../../assets/images/list.png")} />
                 {/* <Text className="text-center text-white font-medium">
                   Make A List
                 </Text> */}
