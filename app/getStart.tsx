@@ -26,6 +26,7 @@ const slides = [
   },
 ];
 
+
 const uae = () => {
   const router = useRouter();
   return (
