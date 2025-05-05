@@ -2,7 +2,7 @@ import { API_BASE_URL } from "@/utils/config";
 import React from "react";
 import { Image, Text, TouchableOpacity, View } from "react-native";
 import Swiper from "react-native-swiper";
-
+import { useRouter } from "expo-router";
 type ProductImage = {
   id: number;
   product_id: number;
@@ -16,15 +16,20 @@ type Product = {
   price: number;
   description: string;
   images: ProductImage[];
+  explorePath: string;
 };
 
-const Productcarrd = ({
-  productList = [],
-  title,
-}: {
-  productList: Product[];
-  title: string;
-}) => {
+const Productcarrd = ({ productList = [], title, explorePath, }: { productList: Product[]; title: string; explorePath: string; }) => {
+
+  const router = useRouter();
+  const handleExplore = () => {
+    router.push({
+      pathname: explorePath,
+      params: {
+        productList: JSON.stringify(productList), // Must stringify
+      },
+    });
+  };
   const getImageUrl = (image_url: string) => {
     return image_url?.startsWith("https")
       ? image_url
@@ -32,10 +37,13 @@ const Productcarrd = ({
   };
 
   return (
+    
     <>
       <View className="flex-row items-center justify-between">
         <Text className="text-black font-bold text-lg mb-3">{title}</Text>
-        <TouchableOpacity>
+        <TouchableOpacity
+          onPress={handleExplore}
+        >
           <Image source={require("../../assets/images/right.png")} />
         </TouchableOpacity>
       </View>
@@ -55,17 +63,17 @@ const Productcarrd = ({
                 return acc;
               }, [])
               .map((group: Product[], index: number) => (
-                <View key={index} className="flex-row justify-between px-1">
-                  {group.map((item) => {
+                <View key={`${title}-${index}`} className="flex-row justify-between px-1">
+                  {group.map((item, itemIndex) => {
                     const productImage = item.images?.[0]?.image_url;
                     const imageUrl = productImage
                       ? getImageUrl(productImage)
                       : null;
-                    console.log("Final URL", getImageUrl(productImage));
+                    // console.log("Final URL", getImageUrl(productImage));
 
                     return (
                       <View
-                        key={item.id}
+                        key={`${item.id}-${itemIndex}`}
                         className="bg-white p-3 rounded-lg shadow-md border border-gray-200 w-44"
                       >
                         {imageUrl ? (

@@ -129,7 +129,6 @@ const PopularMainSection = () => {
       const responses = await Promise.all(promises);
       const allData = responses.flatMap((res) => res?.data?.data || []);
       setConsolesUsedData(allData);
-      console.log("used consoles data", allData);
     } catch (err) {
       console.error("Failed to fetch used consoles.");
     }
@@ -164,7 +163,6 @@ const PopularMainSection = () => {
       const responses = await Promise.all(promises);
       const allData = responses.flatMap((res) => res?.data?.data || []);
       setLaptopUsedData(allData);
-      console.log("Used Laptops Data:", allData);
     } catch (err) {
       console.error("Failed to fetch used laptops.");
     }
@@ -238,8 +236,9 @@ const PopularMainSection = () => {
           productList={desktopUsedData}
           seReftech={seReftech}
           refetch={fetcher}
-          explorePath={`/desktop?condition=2`}
-          onExplore={() => console.log("Explore Gaming PC Parts")}
+          explorePath={`/ExploreScreen?category=desktop&condition=2`}
+          // explorePath={`/desktop?condition=2`}
+
         />
       </View>
       <View className="mt-6">
@@ -248,8 +247,7 @@ const PopularMainSection = () => {
           productList={desktopNewData}
           seReftech={seReftech}
           refetch={fetcher}
-          explorePath={`/desktop?condition=1`}
-          onExplore={() => console.log("Explore Used Consoles")}
+          explorePath={`/ExploreScreen?category=desktop&condition=1`}
         />
       </View>
       <View className="mt-4">
@@ -261,8 +259,8 @@ const PopularMainSection = () => {
           productList={LaptopUsedData}
           seReftech={seReftech}
           refetch={fetcher}
-          explorePath={`/laptops?condition=2`}
-          onExplore={() => console.log("Explore Gaming PC Parts")}
+          explorePath={`/ExploreScreen?category=laptops&condition=2`}
+
         />
       </View>
       <View className="mt-6">
@@ -270,9 +268,8 @@ const PopularMainSection = () => {
           title="Popular in New Laptops"
           productList={LaptopNewData}
           seReftech={seReftech}
-          explorePath={`/laptops?condition=1`}
+          explorePath={`/ExploreScreen?category=laptops&condition=1`}
           refetch={fetcher}
-          onExplore={() => console.log("Explore Used Consoles")}
         />
       </View>
       <View className="mt-4">
@@ -284,18 +281,16 @@ const PopularMainSection = () => {
           productList={consolesUsedData}
           seReftech={seReftech}
           refetch={fetcher}
-          explorePath={`/console?condition=2`}
-          onExplore={() => console.log("Explore Used Consoles")}
+          explorePath={`/ExploreScreen?category=console&condition=2`}
         />
       </View>
       <View className="mt-6">
         <Productcarrd
           title="Popular in New Consoles"
           productList={consolesNewData}
-          seReftech={seReftech}
-          refetch={fetcher}
-          explorePath={`/console?condition=1`}
-          onExplore={() => console.log("Explore Used Consoles")}
+          // seReftech={seReftech}
+          // refetch={fetcher}
+          explorePath={`/ExploreScreen?category=console&condition=1`}
         />
       </View>
       <View className="mt-4">
@@ -305,20 +300,18 @@ const PopularMainSection = () => {
         <Productcarrd
           title="Popular in Used Components and Accessories"
           productList={componentsUsedData}
-          seReftech={seReftech}
-          refetch={fetcher}
-          explorePath={`/components?condition=2`}
-          onExplore={() => console.log("Explore Used Consoles")}
+          // seReftech={seReftech}
+          // refetch={fetcher}
+          explorePath={`/ExploreScreen?category=components&condition=2`}
         />
       </View>
       <View className="mt-6">
         <Productcarrd
           title="Popular in New Components and Accessories"
           productList={componentsNewData}
-          seReftech={seReftech}
-          refetch={fetcher}
-          explorePath={`/components?condition=1`}
-          onExplore={() => console.log("Explore New Components")}
+          // seReftech={seReftech}
+          // refetch={fetcher}
+          explorePath={`/ExploreScreen?category=components&condition=1`}
         />
       </View>
     </View>
