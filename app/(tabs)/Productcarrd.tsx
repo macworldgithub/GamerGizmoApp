@@ -37,7 +37,7 @@ const Productcarrd = ({ productList = [], title, explorePath, }: { productList: 
   };
 
   return (
-    
+
     <>
       <View className="flex-row items-center justify-between">
         <Text className="text-black font-bold text-lg mb-3">{title}</Text>
@@ -92,10 +92,17 @@ const Productcarrd = ({ productList = [], title, explorePath, }: { productList: 
                         <Text className="text-purple-600 font-bold text-lg mt-2">
                           AED {item.price}
                         </Text>
-                        <Text className="text-black font-bold mt-1">
+                        <Text className="text-black font-bold mt-1"
+                          numberOfLines={1}
+                          ellipsizeMode="tail"
+                        >
                           {item.name}
                         </Text>
-                        <Text className="text-gray-600 text-sm mt-1">
+                        <Text className="text-gray-600 text-sm mt-1"
+                          numberOfLines={1}
+                          ellipsizeMode="tail"
+                        >
+
                           {item.description}
                         </Text>
                       </View>
