@@ -13,7 +13,6 @@ import Swiper from "react-native-swiper";
 import { API_BASE_URL } from "@/utils/config";
 import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import { MessageCircleHeart } from "lucide-react-native";
 
 type ProductImage = {
   id: number;
@@ -96,8 +95,7 @@ const ExploreScreen = () => {
       </View>
     );
   }
-  const [isFavorite, setIsFavorite] = useState(false);
-
+  
   if (noResults) {
     return (
       <View className="flex-1 justify-center items-center">
@@ -146,7 +144,7 @@ const ExploreScreen = () => {
               key={index}
               className="bg-white p-3 mb-4 rounded-lg shadow-md border border-gray-200"
             >
-              <View className="relative">
+             
               {item.images && item.images.length > 0 ? (
                 <Swiper
                   style={{ height: 200 }}
@@ -175,12 +173,8 @@ const ExploreScreen = () => {
                   resizeMode="cover"
                 />
               )}
-              <TouchableOpacity className="absolute top-2 right-2 bg-white p-1 rounded-full"
-                onPress={() => setIsFavorite(!isFavorite)}
-              >
-                <MessageCircleHeart color={isFavorite ? "red" : "black"} fill={isFavorite ? "red" : "none"} size={20} />
-              </TouchableOpacity>
-              </View>
+              
+             
 
               <Text className="text-purple-600 font-bold text-lg mt-2">
                 AED {item.price}
