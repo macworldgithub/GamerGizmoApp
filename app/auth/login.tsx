@@ -32,10 +32,12 @@ const LoginScreen = () => {
           name: user?.name || email,
           createdAt: user?.createdAt,
         }));
-        await AsyncStorage.setItem("token", user?.token || "");
+        
 
         dispatch(InitializeUserData(user));
         alert("Login successful!");
+        console.log(response.data.token , "123456jhlkdkddnwejdewoemididbdbudbwie")
+        await AsyncStorage.setItem("token", user?.token);
         router.replace("/(tabs)/home"); 
         
       } else {
