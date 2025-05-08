@@ -1,69 +1,4 @@
-// import React, { useState } from "react";
-// import { View, Text, TouchableOpacity, ScrollView, Image } from "react-native";
-// import { Picker } from "@react-native-picker/picker";
-// import { Ionicons } from "@expo/vector-icons";
-// import { Link } from "expo-router";
-
-// const Set = () => {
-//   const [price, setPrice] = useState("");
-//   const [quantity, setQuantity] = useState("");
-
-//   return (
-//     <ScrollView className="flex-1 bg-white px-4 py-6 pb-24">
-//       <View className="flex-row items-center border-b border-gray-200 pb-4 mb-6">
-//         <TouchableOpacity>
-//           <Ionicons name="arrow-back" size={24} color="black" />
-//         </TouchableOpacity>
-//         <Text className="text-black text-base font-semibold flex-1 text-center -ml-6">
-//           Set Price
-//         </Text>
-//       </View>
-
-//       <View className="border border-gray-200 rounded-md mb-4">
-//         <Picker
-//           selectedValue={price}
-//           onValueChange={(val) => {
-//             setPrice(val);
-//             console.log("Selected price:", val);
-//           }}
-//         >
-//           <Picker.Item label="Price (AED)" value="" />
-//           <Picker.Item label="100 AED" value="100" />
-//           <Picker.Item label="200 AED" value="200" />
-//           <Picker.Item label="300 AED" value="300" />
-//         </Picker>
-//       </View>
-
-//       <View className="border border-gray-200 rounded-md mb-10">
-//         <Picker
-//           selectedValue={quantity}
-//           onValueChange={(val) => {
-//             setQuantity(val);
-//             console.log("Selected quantity:", val);
-//           }}
-//         >
-//           <Picker.Item label="Quantity" value="" />
-//           <Picker.Item label="1" value="1" />
-//           <Picker.Item label="2" value="2" />
-//           <Picker.Item label="3" value="3" />
-//         </Picker>
-//       </View>
-
-//       <Link href="/image" asChild>
-//         <TouchableOpacity>
-//           <Image
-//             source={require("../../assets/images/next1.png")}
-//             className="ml-20"
-//           />
-//         </TouchableOpacity>
-//       </Link>
-//     </ScrollView>
-//   );
-// };
-
-// export default Set;
-
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -75,12 +10,27 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { Link } from "expo-router";
 
+// ✅ Redux
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../../store/store"; // adjust if your store path is different
+import { setPrice } from "../../store/slice/adSlice"; // adjust the path as needed
+
 const Set = () => {
-  const [price, setPrice] = useState(0);
-  const [quantity, setQuantity] = useState(1);
+  const dispatch = useDispatch();
+
+  // ✅ Get initial price from Redux if needed
+  const storedPrice = useSelector((state: RootState) => state.ad.price);
+  const [price, setPriceLocal] = useState(Number(storedPrice) || 0);
+  const [quantity, setQuantity] = useState(1); // Not used in Redux, adjust if needed
+
+  // ✅ Save price to Redux on change
+  useEffect(() => {
+    dispatch(setPrice(price.toString()));
+  }, [price]);
 
   const increment = (setter: (val: number) => void, value: number) =>
     setter(value + 1);
+
   const decrement = (setter: (val: number) => void, value: number) =>
     setter(value > 0 ? value - 1 : 0);
 
@@ -98,16 +48,19 @@ const Set = () => {
       {/* Price Input with +/- */}
       <View className="border border-gray-200 rounded-md mb-4 p-3 flex-row items-center justify-between">
         <Text className="text-base text-black mr-2">Price (AED):</Text>
-        <TouchableOpacity onPress={() => decrement(setPrice, price)}>
+        <TouchableOpacity onPress={() => decrement(setPriceLocal, price)}>
           <Ionicons name="remove-circle-outline" size={24} color="gray" />
         </TouchableOpacity>
         <TextInput
           value={price.toString()}
-          onChangeText={(text) => setPrice(Number(text))}
+          onChangeText={(text) => {
+            const numeric = Number(text);
+            if (!isNaN(numeric)) setPriceLocal(numeric);
+          }}
           keyboardType="numeric"
           className="text-base text-black text-center w-16 mx-2"
         />
-        <TouchableOpacity onPress={() => increment(setPrice, price)}>
+        <TouchableOpacity onPress={() => increment(setPriceLocal, price)}>
           <Ionicons name="add-circle-outline" size={24} color="gray" />
         </TouchableOpacity>
       </View>
@@ -120,7 +73,10 @@ const Set = () => {
         </TouchableOpacity>
         <TextInput
           value={quantity.toString()}
-          onChangeText={(text) => setQuantity(Number(text))}
+          onChangeText={(text) => {
+            const numeric = Number(text);
+            if (!isNaN(numeric)) setQuantity(numeric);
+          }}
           keyboardType="numeric"
           className="text-base text-black text-center w-16 mx-2"
         />

@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "gamer-gizmo-app",
-    "slug": "gamer-gizmo-app",
+    "slug": "gamergizmoapp",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -43,8 +43,9 @@
         "origin": false
       },
       "eas": {
-        "projectId": "6c2a52ba-a710-4c2d-914f-5fb06baa7c7b"
+        "projectId": "ab9788ab-c6ca-42ac-860a-634a68dd549d"
       }
-    }
+    },
+    "owner": "shweetajadwani"
   }
 }

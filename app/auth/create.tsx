@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import {
   View,
@@ -14,8 +13,9 @@ import { Picker } from "@react-native-picker/picker";
 import OtpModal from "./otp";
 
 type Props = {
-  onClose: () => void
-}
+  onClose: () => void;
+};
+
 export default function RegisterScreen({ onClose }: Props) {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -55,6 +55,21 @@ export default function RegisterScreen({ onClose }: Props) {
       return;
     }
 
+    const userData = {
+      firstName,
+      lastName,
+      phone,
+      username: username.substring(0, 20),
+      gender,
+      dob: dob.toISOString().split("T")[0],
+      email,
+      password,
+      confirmPassword,
+    };
+
+    // 🔍 Log user data to console
+    console.log("Registering user with data:", userData);
+
     try {
       setLoading(true);
 
@@ -63,17 +78,7 @@ export default function RegisterScreen({ onClose }: Props) {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          firstName,
-          lastName,
-          phone,
-          username: username.substring(0, 20),
-          gender,
-          dob: dob.toISOString().split("T")[0],
-          email,
-          password,
-          confirmPassword,
-        }),
+        body: JSON.stringify(userData),
       });
 
       const data = await response.json();
@@ -96,11 +101,12 @@ export default function RegisterScreen({ onClose }: Props) {
   };
 
   return (
-    <View className="flex-1 gap-6  bg-white px-5 py-6">
+    <View className="flex-1 gap-6 bg-white px-5 py-6">
       <TouchableOpacity onPress={onClose} className="self-start mb-4">
-        <Text className="text-2xl ">✕</Text>
+        <Text className="text-2xl">✕</Text>
       </TouchableOpacity>
       <Text className="text-2xl font-bold mb-4 text-center">Create an account</Text>
+
       <View className="flex-row gap-4">
         <TextInput
           className="flex-1 bg-violet-100 p-3 rounded-lg mb-3"
@@ -213,6 +219,7 @@ export default function RegisterScreen({ onClose }: Props) {
           {loading ? "Signing Up..." : "Sign Up"}
         </Text>
       </TouchableOpacity>
+
       <OtpModal
         visible={showOtpModal}
         onClose={() => setShowOtpModal(false)}
