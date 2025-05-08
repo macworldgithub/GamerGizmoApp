@@ -41,7 +41,7 @@ const categories = [
   {
     name: "New Gaming PC ",
     img: require("../../assets/images/pc1.png"),
-    category: "components",
+    category: "desktop",
     condition: 1,
   },
   {
@@ -92,7 +92,7 @@ export default function GamingStore() {
       <View className="flex-row items-center bg-white border border-gray-300 rounded-full shadow-lg">
         <TextInput
           placeholder="Search"
-          className="flex-1 text-gray-700 text-sm"
+          className="flex-1 py-4 text-gray-700 text-md placeholder:px-4"
           value={search}
           onChangeText={setSearch}
         />

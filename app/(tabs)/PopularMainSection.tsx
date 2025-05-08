@@ -8,67 +8,12 @@ import { API_BASE_URL } from "@/utils/config";
 import Add from "./add";
 
 const PopularMainSection = () => {
-  const [LaptopUsedData, setLaptopUsedData] = useState([
-    {
-      id: 1,
-      name: "Radeon RX 580 OC...",
-      description: "Powerful graphics card for gaming...",
-      price: "AED 551.00",
-      images: [
-        {
-          id: 1,
-          product_id: 1,
-          image_url: "../../assets/images/default.png",
-          created_at: "",
-        },
-      ],
-    },
-  ]);
-  const [LaptopNewData, setLaptopNewData] = useState([
-    {
-      id: 1,
-      name: "Radeon RX 580 OC...",
-      description: "Powerful graphics card for gaming...",
-      price: "AED 551.00",
-      // images: ["/images/gpu.png"],
-    },
-  ]);
-  const [consolesNewData, setConsolesNewData] = useState([
-    {
-      id: 1,
-      name: "Radeon RX 580 OC...",
-      description: "Powerful graphics card for gaming...",
-      price: "AED 551.00",
-      // images: ["/images/gpu.png"],
-    },
-  ]);
-  const [consolesUsedData, setConsolesUsedData] = useState([
-    {
-      id: 1,
-      name: "Radeon RX 580 OC...",
-      description: "Powerful graphics card for gaming...",
-      price: "AED 551.00",
-      // images: ["/images/gpu.png"],
-    },
-  ]);
-  const [desktopNewData, setDesktopNewData] = useState([
-    {
-      id: 1,
-      name: "Radeon RX 580 OC...",
-      description: "Powerful graphics card for gaming...",
-      price: "AED 551.00",
-      // images: ["/images/gpu.png"],
-    },
-  ]);
-  const [desktopUsedData, setDesktopUsedData] = useState([
-    {
-      id: 1,
-      name: "Radeon RX 580 OC...",
-      description: "Powerful graphics card for gaming...",
-      price: "AED 551.00",
-      // images: ["/images/gpu.png"],
-    },
-  ]);
+  const [LaptopUsedData, setLaptopUsedData] = useState([]);
+  const [LaptopNewData, setLaptopNewData] = useState([]);
+  const [consolesNewData, setConsolesNewData] = useState([]);
+  const [consolesUsedData, setConsolesUsedData] = useState([]);
+  const [desktopNewData, setDesktopNewData] = useState([]);
+  const [desktopUsedData, setDesktopUsedData] = useState([]);
 
   const ConsoleCategory = "Gaming Consoles";
   const consoleCondition = 2;
@@ -82,21 +27,16 @@ const PopularMainSection = () => {
 
   const fetchUsedDesktops = async () => {
     try {
-      const conditions = [2, 3, 4];
-      const promises = conditions.map((cond) =>
-        axios.get(
-          `${API_BASE_URL}/products/getAll?category_id=2&condition=${cond}`,
+      const response = await axios.get(
+          `${API_BASE_URL}/products/getAll?category_id=2&condition=2`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }
-        )
       );
 
-      const responses = await Promise.all(promises);
-      const allData = responses.flatMap((res) => res?.data?.data || []);
-      setDesktopUsedData(allData);
+      setDesktopUsedData(response?.data?.data || []);
     } catch (err) {
-      console.error("Failed to fetch used desktops.");
+      console.error("Failed to fetch desktops.");
     }
   };
 
@@ -111,26 +51,21 @@ const PopularMainSection = () => {
 
       setDesktopNewData(response?.data?.data || []);
     } catch (err) {
-      console.error("Failed to fetch models.");
+      console.error("Failed to fetch  desktops");
     }
   };
   const fetchUsedConsoles = async () => {
     try {
-      const conditions = [2, 3, 4];
-      const promises = conditions.map((cond) =>
-        axios.get(
-          `${API_BASE_URL}/products/getAll?category_id=4&condition=${cond}`,
+      const response = await axios.get(
+          `${API_BASE_URL}/products/getAll?category_id=4&condition=2`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }
-        )
       );
 
-      const responses = await Promise.all(promises);
-      const allData = responses.flatMap((res) => res?.data?.data || []);
-      setConsolesUsedData(allData);
+      setConsolesUsedData(response?.data?.data || []);
     } catch (err) {
-      console.error("Failed to fetch used consoles.");
+      console.error("Failed to fetch models.");
     }
   };
 
@@ -150,23 +85,20 @@ const PopularMainSection = () => {
   };
   const fetchUsedLaptops = async () => {
     try {
-      const conditions = [2, 3, 4]; // all conditions considered as "used"
-      const promises = conditions.map((cond) =>
-        axios.get(
-          `${API_BASE_URL}/products/getAll?category_id=1&condition=${cond}`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        )
+      const response = await axios.get(
+        `${API_BASE_URL}/products/getAll?category_id=1&condition=2`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
       );
 
-      const responses = await Promise.all(promises);
-      const allData = responses.flatMap((res) => res?.data?.data || []);
-      setLaptopUsedData(allData);
+      setLaptopUsedData(response?.data?.data || []);
     } catch (err) {
       console.error("Failed to fetch used laptops.");
     }
   };
+
+
   const fetchNewLaptops = async () => {
     try {
       const response = await axios.get(
@@ -184,20 +116,14 @@ const PopularMainSection = () => {
 
   const fetchUsedComponents = async () => {
     try {
-      const conditions = [2, 3, 4];
-      const promises = conditions.map((cond) =>
-        axios.get(
-          `${API_BASE_URL}/products/getAll?category_id=3&condition=${cond}`,
+      const response =await axios.get(
+          `${API_BASE_URL}/products/getAll?category_id=3&condition=2`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }
-        )
       );
 
-      const responses = await Promise.all(promises);
-      const allData = responses.flatMap((res) => res?.data?.data || []);
-      //@ts-ignore
-      setComponentsUsedData(allData);
+      setComponentsUsedData(response?.data?.data || []);
     } catch (err) {
       console.error("Failed to fetch used components.");
     }
@@ -214,7 +140,7 @@ const PopularMainSection = () => {
 
       setComponentsNewData(response?.data?.data || []);
     } catch (err) {
-      console.error("Failed to fetch models.");
+      console.error("Failed to fetch components.");
     }
   };
 
@@ -288,8 +214,8 @@ const PopularMainSection = () => {
         <Productcarrd
           title="Popular in New Consoles"
           productList={consolesNewData}
-          // seReftech={seReftech}
-          // refetch={fetcher}
+          seReftech={seReftech}
+          refetch={fetcher}
           explorePath={`/ExploreScreen?category=console&condition=1`}
         />
       </View>
@@ -300,8 +226,8 @@ const PopularMainSection = () => {
         <Productcarrd
           title="Popular in Used Components and Accessories"
           productList={componentsUsedData}
-          // seReftech={seReftech}
-          // refetch={fetcher}
+          seReftech={seReftech}
+          refetch={fetcher}
           explorePath={`/ExploreScreen?category=components&condition=2`}
         />
       </View>
@@ -309,8 +235,8 @@ const PopularMainSection = () => {
         <Productcarrd
           title="Popular in New Components and Accessories"
           productList={componentsNewData}
-          // seReftech={seReftech}
-          // refetch={fetcher}
+          seReftech={seReftech}
+          refetch={fetcher}
           explorePath={`/ExploreScreen?category=components&condition=1`}
         />
       </View>
