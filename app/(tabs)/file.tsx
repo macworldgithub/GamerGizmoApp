@@ -24,7 +24,9 @@ export default function ProfileScreen() {
           </Text>
         </TouchableOpacity>
 
-        <TouchableOpacity className="p-4 border-b border-gray-200">
+        <TouchableOpacity
+        onPress={() => router.push('/my_public_profile')}
+        className="p-4 border-b border-gray-200">
           <Text className="text-sm text-black ml-4 font-semibold">
             My Public Profile
           </Text>

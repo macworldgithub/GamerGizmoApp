@@ -98,7 +98,7 @@ export default function RegisterScreen({ onClose }: Props) {
   return (
     <View className="flex-1 gap-6  bg-white px-5 py-6">
       <TouchableOpacity onPress={onClose} className="self-start mb-4">
-        <Text className="text-2xl">✕</Text>
+        <Text className="text-2xl ">✕</Text>
       </TouchableOpacity>
       <Text className="text-2xl font-bold mb-4 text-center">Create an account</Text>
       <View className="flex-row gap-4">
@@ -149,7 +149,7 @@ export default function RegisterScreen({ onClose }: Props) {
           onPress={() => setDatePickerVisibility(true)}
         >
           <Text className={dob ? "text-black" : "text-gray-500"}>
-          {dob ? dob.toLocaleDateString() : "mm/dd/yyyy"}
+            {dob ? dob.toLocaleDateString() : "mm/dd/yyyy"}
           </Text>
         </TouchableOpacity>
       </View>

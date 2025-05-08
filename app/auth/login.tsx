@@ -1,17 +1,22 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator, Modal } from "react-native";
 import axios from "axios";
 import { useDispatch } from "react-redux";
-import { InitializeUserData } from "../../store/slice/loginSlice"; 
+import { InitializeUserData } from "../../store/slice/loginSlice";
 import { useRouter } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage"; // ✅ imported
 
-const LoginScreen = () => {
+import RegisterScreen from "./create";
+type Props = {
+  onClose: () => void
+}
+const Login = ({ onClose }: Props) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const router = useRouter();
+  const [showRegisterModal, setShowRegisterModal] = useState(false);
 
   const handleLogin = async () => {
     if (!email || !password) return alert("Please fill in all fields");
@@ -36,8 +41,8 @@ const LoginScreen = () => {
 
         dispatch(InitializeUserData(user));
         alert("Login successful!");
-        router.replace("/(tabs)/home"); 
-        
+        router.replace("/(tabs)/home");
+
       } else {
         alert(response.data.message || "Login failed");
       }
@@ -51,7 +56,10 @@ const LoginScreen = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.heading}>Login</Text>
+      <TouchableOpacity onPress={onClose} className="self-start mb-4">
+              <Text className="text-2xl ">✕</Text>
+            </TouchableOpacity>
+      <Text style={styles.heading} className="text-center">Login</Text>
 
       <TextInput
         style={styles.input}
@@ -73,16 +81,20 @@ const LoginScreen = () => {
         {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.buttonText}>Login</Text>}
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={() => router.push("/auth/create")}>
+      <TouchableOpacity onPress={() => setShowRegisterModal (true)}>
         <Text style={styles.link}>Don't have an account? Sign up</Text>
       </TouchableOpacity>
+      <Modal visible={showRegisterModal} onDismiss={() => setShowRegisterModal(false)} animationType="slide" transparent={false}>
+        <RegisterScreen onClose={() => setShowRegisterModal(false)} />
+      </Modal>
+      
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 20, justifyContent: "center", backgroundColor: "#fff" },
-  heading: { fontSize: 24, fontWeight: "bold", marginBottom: 20 },
+  heading: { fontSize: 24, fontWeight: "bold", marginBottom: 20, textAlign: "center" },
   input: {
     borderWidth: 1,
     borderColor: "#ccc",
@@ -101,4 +113,4 @@ const styles = StyleSheet.create({
   link: { color: "#DC39FC", textAlign: "center" },
 });
 
-export default LoginScreen;
+export default Login;

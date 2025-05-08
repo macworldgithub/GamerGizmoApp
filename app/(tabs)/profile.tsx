@@ -208,32 +208,70 @@ const Profile = () => {
 
         <TouchableOpacity
   className="flex-row items-center justify-between py-4"
+  // onPress={async () => {
+  //   try {
+  //     const token = await AsyncStorage.getItem("token");
+
+  //     console.log("Stored token value:", token); 
+
+  //     if (!token || typeof token !== "string") {
+  //       Alert.alert("Error", "Invalid token. Please log in again.");
+  //       return;
+  //     }
+
+  //     const response = await axios.post(
+  //       "https://backend.gamergizmo.com/auth/logoutUser",
+  //       { token: token.trim() }, // Send token in body
+  //       {
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //         },
+  //       }
+  //     );
+      
+  //     if (response.status === 200) {
+  //       Alert.alert("Success", "You have been logged out.");
+  //       await AsyncStorage.removeItem("token");
+  //       await AsyncStorage.removeItem("user");
+  //       router.replace("/");
+  //     } else {
+  //       console.warn("Logout non-200 response:", response.status, response.data);
+  //       Alert.alert("Logout Failed", "Unexpected server response.");
+  //     }
+  //   } catch (error: any) {
+  //     console.error("Logout error", error.response?.data || error.message);
+  //     Alert.alert("Error", "Failed to log out. Please try again.");
+  //   }
+  // }}
+
   onPress={async () => {
     try {
       const token = await AsyncStorage.getItem("token");
-
-      console.log("Stored token value:", token); 
-
+  
+      console.log("Stored token value:", token);
+  
       if (!token || typeof token !== "string") {
         Alert.alert("Error", "Invalid token. Please log in again.");
         return;
       }
-
+  
       const response = await axios.post(
         "https://backend.gamergizmo.com/auth/logoutUser",
-        { token: token.trim() }, // Send token in body
+        JSON.stringify({ token: token.trim() }), // ✅ send as object
         {
           headers: {
             "Content-Type": "application/json",
+            Accept: "*/*",
           },
         }
       );
-      
-      if (response.status === 200) {
+  
+      if (response.status === 200 || response.status === 201) {
+
         Alert.alert("Success", "You have been logged out.");
         await AsyncStorage.removeItem("token");
         await AsyncStorage.removeItem("user");
-        router.replace("/");
+        router.replace("/auth/login"); // Redirect to login page
       } else {
         console.warn("Logout non-200 response:", response.status, response.data);
         Alert.alert("Logout Failed", "Unexpected server response.");
@@ -243,6 +281,8 @@ const Profile = () => {
       Alert.alert("Error", "Failed to log out. Please try again.");
     }
   }}
+  
+  
 >
   <View className="flex-row items-center space-x-3">
     <Image
