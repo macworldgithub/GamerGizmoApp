@@ -13,7 +13,6 @@ import Swiper from "react-native-swiper";
 import { API_BASE_URL } from "@/utils/config";
 import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-
 type ProductImage = {
   id: number;
   product_id: number;
