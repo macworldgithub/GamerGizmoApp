@@ -11,6 +11,7 @@ interface AdDetails {
   brand: string;
   brandId: number | null;
   model: string;
+  modelId: number | null;
   condition: string;
   location: string;
 }
@@ -32,8 +33,10 @@ const initialState: AdState = {
     brand: '',
     brandId: null,
     model: '',
+    modelId: null,
     condition: '',
     location: '',
+   
   },
   price: null,
   imageUri: null,

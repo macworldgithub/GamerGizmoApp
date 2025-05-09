@@ -50,7 +50,7 @@ const Login = ({ onClose }: Props) => {
         }
 
         await AsyncStorage.setItem("user", JSON.stringify(user));
-        //await AsyncStorage.setItem("token", user?.token || "user.token");
+        await AsyncStorage.setItem("token", user?.token || "user.token");
 
         dispatch(InitializeUserData(user));
         alert("Login successful!");
@@ -58,7 +58,7 @@ const Login = ({ onClose }: Props) => {
           response.data.token,
           "12345zwswswswswswswswswswswswswswswswswswswswswswswswswswswswswswswswswswswswswswswswswswswswswswswswswswswswswswswswswsws"
         );
-        await AsyncStorage.setItem("token", user?.token);
+        //await AsyncStorage.setItem("token", user?.token);
 
         router.replace("/(tabs)/home");
       } else {
