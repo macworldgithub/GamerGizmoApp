@@ -44,6 +44,7 @@ const Login = ({ onClose }: Props) => {
       if (response.status === 200 || response.status === 201) {
         // ✅ Save user and token to AsyncStorage
         const user = response.data;
+
         await AsyncStorage.setItem(
           "user",
           JSON.stringify({
@@ -51,8 +52,11 @@ const Login = ({ onClose }: Props) => {
             createdAt: user?.createdAt,
           })
         );
+
         await AsyncStorage.setItem("token", user?.token || "");
-        console.log(user?.id,"123");
+        await AsyncStorage.setItem("userId", String(user?.id));
+
+        console.log(user?.id, "123");
 
         dispatch(InitializeUserData(user));
         alert("Login successful!");

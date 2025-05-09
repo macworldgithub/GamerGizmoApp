@@ -19,8 +19,15 @@ type Product = {
   images: ProductImage[];
   explorePath: string;
 };
-const Productcarrd = ({ productList = [], title, explorePath, }: { productList: Product[]; title: string; explorePath: string; }) => {
-
+const Productcarrd = ({
+  productList = [],
+  title,
+  explorePath,
+}: {
+  productList: Product[];
+  title: string;
+  explorePath: string;
+}) => {
   const router = useRouter();
   const handleExplore = () => {
     const url = new URLSearchParams(explorePath.split("?")[1]);
@@ -36,16 +43,12 @@ const Productcarrd = ({ productList = [], title, explorePath, }: { productList: 
   const getImageUrl = (image_url: string) => {
     return image_url?.startsWith("https") ? image_url : image_url;
   };
-  const [isFavorite, setIsFavorite] = useState(false);
 
   return (
-
     <>
       <View className="flex-row items-center justify-between">
         <Text className="text-black font-bold text-lg mb-3">{title}</Text>
-        <TouchableOpacity
-          onPress={handleExplore}
-        >
+        <TouchableOpacity onPress={handleExplore}>
           <Image source={require("../../assets/images/right.png")} />
         </TouchableOpacity>
       </View>
@@ -65,7 +68,10 @@ const Productcarrd = ({ productList = [], title, explorePath, }: { productList: 
                 return acc;
               }, [])
               .map((group: Product[], index: number) => (
-                <View key={`${title}-${index}`} className="flex-row justify-between px-1">
+                <View
+                  key={`${title}-${index}`}
+                  className="flex-row justify-between px-1"
+                >
                   {group.map((item, itemIndex) => {
                     const productImage = item.images?.[0]?.image_url;
                     const imageUrl = productImage
@@ -74,12 +80,10 @@ const Productcarrd = ({ productList = [], title, explorePath, }: { productList: 
                     // console.log("Final URL", getImageUrl(productImage));
 
                     return (
-
                       <View
                         key={`${item.id}-${itemIndex}`}
                         className="bg-white p-3 rounded-lg shadow-md border border-gray-200 w-44"
                       >
-                          <View className="relative">
                         {imageUrl ? (
                           <Image
                             source={{ uri: imageUrl }}
@@ -93,37 +97,34 @@ const Productcarrd = ({ productList = [], title, explorePath, }: { productList: 
                             resizeMode="cover"
                           />
                         )}
-                        <TouchableOpacity className="absolute top-2 right-2 bg-white p-1 rounded-full"
-                         onPress={() => setIsFavorite(!isFavorite)}
+
+                        <TouchableOpacity
+                          onPress={() =>
+                            router.push({
+                              pathname: "/product/[id]",
+                              params: { id: item.id.toString() },
+                            })
+                          }
                         >
-                        <MessageCircleHeart color={isFavorite ? "red" : "black"} fill={isFavorite ? "red" : "none"} size={20} />
-                        </TouchableOpacity>
-                        </View>
-                        <TouchableOpacity onPress={() =>
-                          router.push({
-                            pathname: "/product/[id]",
-                            params: { id: item.id.toString() },
-                          })
-                        }>
                           <Text className="text-purple-600 font-bold text-lg mt-2">
                             AED {item.price}
                           </Text>
-                          <Text className="text-black font-bold mt-1"
+                          <Text
+                            className="text-black font-bold mt-1"
                             numberOfLines={1}
                             ellipsizeMode="tail"
                           >
                             {item.name}
                           </Text>
-                          <Text className="text-gray-600 text-sm mt-1"
+                          <Text
+                            className="text-gray-600 text-sm mt-1"
                             numberOfLines={1}
                             ellipsizeMode="tail"
                           >
-
                             {item.description}
                           </Text>
                         </TouchableOpacity>
                       </View>
-
                     );
                   })}
                 </View>
@@ -140,5 +141,3 @@ const Productcarrd = ({ productList = [], title, explorePath, }: { productList: 
 };
 
 export default Productcarrd;
-
-
