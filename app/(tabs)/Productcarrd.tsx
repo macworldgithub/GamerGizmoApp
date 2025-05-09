@@ -36,8 +36,6 @@ const Productcarrd = ({ productList = [], title, explorePath, }: { productList: 
   const getImageUrl = (image_url: string) => {
     return image_url?.startsWith("https") ? image_url : image_url;
   };
-  const [isFavorite, setIsFavorite] = useState(false);
-
   return (
 
     <>
@@ -79,7 +77,7 @@ const Productcarrd = ({ productList = [], title, explorePath, }: { productList: 
                         key={`${item.id}-${itemIndex}`}
                         className="bg-white p-3 rounded-lg shadow-md border border-gray-200 w-44"
                       >
-                          <View className="relative">
+                          
                         {imageUrl ? (
                           <Image
                             source={{ uri: imageUrl }}
@@ -93,12 +91,7 @@ const Productcarrd = ({ productList = [], title, explorePath, }: { productList: 
                             resizeMode="cover"
                           />
                         )}
-                        <TouchableOpacity className="absolute top-2 right-2 bg-white p-1 rounded-full"
-                         onPress={() => setIsFavorite(!isFavorite)}
-                        >
-                        <MessageCircleHeart color={isFavorite ? "red" : "black"} fill={isFavorite ? "red" : "none"} size={20} />
-                        </TouchableOpacity>
-                        </View>
+                       
                         <TouchableOpacity onPress={() =>
                           router.push({
                             pathname: "/product/[id]",
