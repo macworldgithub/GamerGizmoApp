@@ -243,6 +243,7 @@ import { Picker } from "@react-native-picker/picker";
 import axios from "axios";
 import { API_BASE_URL } from "@/utils/config";
 import { useRouter } from "expo-router";
+import { Link } from "expo-router";
 
 // Define types
 type Brand = {
@@ -348,7 +349,11 @@ const Tell = () => {
   return (
     <ScrollView className="flex-1 bg-white px-4 py-6">
       <View>
-        <Image source={require("../../assets/images/left.png")} />
+        <Link href="/category" asChild>
+          <TouchableOpacity>
+            <Image source={require("../../assets/images/left.png")} />
+          </TouchableOpacity>
+        </Link>
         <View className="items-center -mt-6">
           <Text className="text-black font-semibold text-lg">
             Tell us about your PC
