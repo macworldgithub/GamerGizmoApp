@@ -61,7 +61,7 @@ const Productcarrd = ({
                     const imageUrl = productImage
                       ? getImageUrl(productImage)
                       : null;
-                    console.log("Final URL", getImageUrl(productImage));
+                    // console.log("Final URL", getImageUrl(productImage));
 
                     return (
                       <View

@@ -13,6 +13,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../store/store";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { API_BASE_URL } from "@/utils/config";
 
 interface City {
   id: number;
@@ -30,7 +31,7 @@ interface AdDetails {
   brand: string;
   brandId: number | null;
   model: string;
-  modelId:  number | null;
+  modelId: number | null;
   condition: string;
   location: string;
 }
@@ -41,7 +42,6 @@ interface AdState {
   details: AdDetails;
   price: string | null;
   imageUri: string | null;
-
 }
 
 const ViewDetails: React.FC = ({ navigation }: any) => {
@@ -68,88 +68,54 @@ const ViewDetails: React.FC = ({ navigation }: any) => {
   }, []);
 
   const handlePostAd = async () => {
-    if (!userData || !userData.id || !userData.username) {
-      Alert.alert("Error", "User is not logged in.");
-      return;
-    }
-
-    if (!adData.category?.id) {
-      Alert.alert("Error", "Category is missing.");
-      return;
-    }
-
-    if (!adData.imageUri) {
-      Alert.alert("Error", "upload an image before posting.");
-      return;
-    }
-
+    setLoading(true);
     const formData = new FormData();
-    formData.append("title", adData.details.title);
+
+    formData.append("name", "heelo");
+    formData.append("user_id", "164");
     formData.append("description", adData.details.description);
-    //formData.append("brand", adData.details.brand || "Unknown");
-    formData.append("brand_id", String(adData.details.brandId ?? ""));
-    formData.append("model_id", String(adData.details.modelId ?? ""));
-    //formData.append("condition", adData.details.condition);
-    formData.append("location", adData.details.location);
-    //formData.append("city", adData.city?.name || "Unknown");
-   // formData.append("category", adData.category?.name || "Uncategorized");
-    formData.append("price", adData.price || "0");
+    formData.append("price", adData.price ?? "0");
     formData.append("stock", "1");
-    formData.append("user_id", String(userData.id));
-    formData.append("name", userData.username || "Anonymous");
-    formData.append("category_id", String(adData.category?.id || ""));
-
-
-    console.log({
-  title: adData.details.title,
-  description: adData.details.description,
-  brandId: adData.details.brandId,
-  model_id: adData.details.model,
-  location: adData.details.location,
-  price: adData.price,
-  category_id: adData.category?.id,
-  user_id: userData.id,
-  name: userData.username,
-  //stock:"1",
-  image: adData.imageUri,
-});
+    formData.append("brand_id", String(adData.details.brandId ?? 0));
+    formData.append("otherBrandName", adData.details.brand || "");
+    formData.append("model_id", String(adData.details.modelId || 0));
+    formData.append("category_id", String(adData.category?.id || 0));
+    formData.append("condition", "Used");
+    formData.append("location", "Ajman");
+    // formData.append("condition", adData.details.condition || "1");
+    // formData.append("location", adData.details.location || "1");
+    formData.append("is_published", "true");
+    formData.append("component_type", "33");
+    formData.append("is_store_product", "false");
 
     if (adData.imageUri) {
-    formData.append("file", {
-      uri: adData.imageUri,
-      type: "image/jpeg",
-      name: "photo.jpg",
-    } as any);
-  }
-    try {
-      setLoading(true);
-      const token = await AsyncStorage.getItem("token");
+      const imageName = adData.imageUri.split("/").pop() || "photo.jpg";
+      const file = {
+        uri: adData.imageUri,
+        name: imageName,
+        type: "image/jpeg",
+      };
 
+      // 👇 Important: must match field expected by backend exactly
+      formData.append("images", file as any);
+    }
+
+    try {
       const response = await axios.post(
-        "https://backend.gamergizmo.com/products/createProduct",
+        `${API_BASE_URL}/products/createProduct`,
         formData,
         {
           headers: {
             "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${token}`,
           },
         }
       );
 
-      if (response.status === 200 || response.status === 201) {
-        Alert.alert("Success", "Ad posted successfully!");
-        
-      } else {
-        Alert.alert("Error", "Failed to post ad. Please try again.");
-      }
+      console.log("Response:", response.data);
+      Alert.alert("Success", "Your ad has been posted successfully.");
     } catch (error: any) {
-      console.log("Error Response:", JSON.stringify(error.response?.data, null, 2));
-
-      if (error.response?.data?.message) {
-        Alert.alert("Error", `Failed: ${error.response.data.message}`);
-      } else {
-        Alert.alert("Error", "Something went wrong while posting the ad.");
-      }
+      console.log("Error Response:", error.response?.data || error.message);
+      Alert.alert("Error", "There was a problem posting your ad.");
     } finally {
       setLoading(false);
     }
@@ -161,47 +127,84 @@ const ViewDetails: React.FC = ({ navigation }: any) => {
 
       <View style={styles.section}>
         <Text style={styles.label}>City:</Text>
-        <TextInput style={styles.input} value={adData.city?.name ?? "City not selected"} editable={false} />
+        <TextInput
+          style={styles.input}
+          value={adData.city?.name ?? "City not selected"}
+          editable={false}
+        />
       </View>
 
       <View style={styles.section}>
         <Text style={styles.label}>Category:</Text>
-        <TextInput style={styles.input} value={adData.category?.name ?? "Category not selected"} editable={false} />
+        <TextInput
+          style={styles.input}
+          value={adData.category?.name ?? "Category not selected"}
+          editable={false}
+        />
       </View>
 
       <View style={styles.section}>
         <Text style={styles.label}>Title:</Text>
-        <TextInput style={styles.input} value={adData.details.title} editable={false} />
+        <TextInput
+          style={styles.input}
+          value={adData.details.title}
+          editable={false}
+        />
       </View>
 
       <View style={styles.section}>
         <Text style={styles.label}>Description:</Text>
-        <TextInput style={styles.input} value={adData.details.description} editable={false} multiline />
+        <TextInput
+          style={styles.input}
+          value={adData.details.description}
+          editable={false}
+          multiline
+        />
       </View>
 
       <View style={styles.section}>
         <Text style={styles.label}>Brand:</Text>
-        <TextInput style={styles.input} value={adData.details.brand || ""} editable={false} />
+        <TextInput
+          style={styles.input}
+          value={adData.details.brand || ""}
+          editable={false}
+        />
       </View>
 
       <View style={styles.section}>
         <Text style={styles.label}>Model:</Text>
-        <TextInput style={styles.input} value={adData.details.model} editable={false} />
+        <TextInput
+          style={styles.input}
+          value={adData.details.model}
+          editable={false}
+        />
       </View>
 
       <View style={styles.section}>
         <Text style={styles.label}>Condition:</Text>
-        <TextInput style={styles.input} value={adData.details.condition} editable={false} />
+        <TextInput
+          style={styles.input}
+          value={adData.details.condition || "Condition not specified"}
+          editable={false}
+        />
       </View>
 
       <View style={styles.section}>
         <Text style={styles.label}>Location:</Text>
-        <TextInput style={styles.input} value={adData.details.location} editable={false} />
+        <TextInput
+          style={styles.input}
+          value={adData.details.location || "Location not specified"}
+          editable={false}
+        />
       </View>
 
       <View style={styles.section}>
         <Text style={styles.label}>Price:</Text>
-        <TextInput style={styles.input} value={adData.price || "0"} editable={false} />
+        <TextInput
+          style={styles.input}
+          value={adData.price || "0"}
+          editable={false}
+        />
       </View>
 
       {adData.imageUri && (
