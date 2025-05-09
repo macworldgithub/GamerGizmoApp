@@ -12,7 +12,10 @@ dayjs.extend(relativeTime);
 
 
 interface ProductImage {
+  id: number;
   image_url: string;
+  product_id: number;
+  created_at?: string;
 }
 
 interface Brand {
@@ -43,8 +46,9 @@ interface Product {
   created_at: string;
   description?: string;
   location?: string;
-  images?: ProductImage[];
+  product_images: ProductImage[];
   seller?: Seller;
+
 }
 
 const ProductDetail = () => {
@@ -77,17 +81,10 @@ const ProductDetail = () => {
 
   return (
     <ScrollView className="p-4 bg-white">
-      {/* Image Swiper */}
 
-      <View className="mt-2 mb-4 px-4 flex-row items-center justify-between">
-        <TouchableOpacity onPress={() => router.push("/home")}>
-          <FontAwesome name="arrow-left" size={20} color="black" />
-        </TouchableOpacity>
 
-      </View>
-
-      <View className="h-60 rounded-lg overflow-hidden">
-        {product.images && product.images.length > 0 ? (
+      <View className="h-60 rounded-lg overflow-hidden relative">
+        {product.product_images && product.product_images.length > 0 ? (
           <Swiper
             style={{ height: 200 }}
             dotStyle={{ backgroundColor: "#ccc", width: 6, height: 6 }}
@@ -99,14 +96,17 @@ const ProductDetail = () => {
             loop
             showsPagination
           >
-            {product.images.map((img, i) => (
-              <Image
-                key={i}
-                source={{ uri: img.image_url }}
-                className="w-full h-48 rounded-lg"
-                resizeMode="cover"
-              />
-            ))}
+            {product.product_images.map((img, i) => {
+              const imageUrl = getImageUrl(img.image_url);
+              return (
+                <Image
+                  key={i}
+                  source={{ uri: imageUrl }}
+                  className="w-full h-48 rounded-lg"
+                  resizeMode="cover"
+                />
+              );
+            })}
           </Swiper>
         ) : (
           <Image
@@ -115,17 +115,30 @@ const ProductDetail = () => {
             resizeMode="cover"
           />
         )}
-      </View>
 
+        {/* Back Arrow - Top Left */}
+        <TouchableOpacity
+          onPress={() => router.push("/home")}
+          className="absolute top-2 left-2 bg-white/70 p-2 rounded-full"
+        >
+          <FontAwesome name="arrow-left" size={20} color="black" />
+        </TouchableOpacity>
 
-
-
-      {/* Price + Name */}
+        {/* Heart and Share Icons - Bottom Right */}
+        <View className="absolute bottom-2 right-2 flex-row space-x-2">
+          <TouchableOpacity className="bg-white/70 p-2 rounded-full">
+            <FontAwesome name="heart-o" size={20} color="black" />
+          </TouchableOpacity>
+          <TouchableOpacity className="bg-white/70 p-2 rounded-full">
+            <FontAwesome name="share-alt" size={20} color="black" />
+          </TouchableOpacity>
+        </View>
+      </View> 
       <Text className="text-purple-600 text-2xl font-bold mt-4">AED {product.price}</Text>
       <Text className="text-lg font-semibold text-gray-800 mt-1">{product.name}</Text>
       <View className="border-b border-gray-200 my-2" />
 
-      {/* Details Section */}
+
       <Text className="text-lg font-bold text-gray-800 mt-4 mb-2">Details</Text>
       <View className="border-t border-b border-gray-200">
         <View className="flex-row justify-between items-center py-3 border-b border-gray-200 px-4">
@@ -150,12 +163,12 @@ const ProductDetail = () => {
         </View>
       </View>
 
-      {/* Offer Button */}
+
       <TouchableOpacity className="mt-6 border border-purple-600 rounded-md py-2 items-center">
         <Text className="text-purple-600 font-semibold">Make an offer</Text>
       </TouchableOpacity>
 
-      {/* Description */}
+
       <View className="mt-6">
         <Text className="text-lg font-semibold text-gray-800 mb-2">Description</Text>
         <View className="flex-row">
@@ -191,7 +204,7 @@ const ProductDetail = () => {
 
       {/* Report */}
       <TouchableOpacity className="mt-6 mb-10 flex-row items-center justify-center">
-        <Ionicons name="flag-outline" size={16} color="red" />
+        <Ionicons name="flag-outline" size={16} color="black" />
         <Text className="text-sm ml-2">Report an ad</Text>
       </TouchableOpacity>
     </ScrollView>
