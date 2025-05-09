@@ -257,7 +257,7 @@ const Profile = () => {
   
       const response = await axios.post(
         "https://backend.gamergizmo.com/auth/logoutUser",
-        JSON.stringify({ token: token.trim() }), // ✅ send as object
+        JSON.stringify({ token: token.trim() }), 
         {
           headers: {
             "Content-Type": "application/json",
@@ -271,7 +271,7 @@ const Profile = () => {
         Alert.alert("Success", "You have been logged out.");
         await AsyncStorage.removeItem("token");
         await AsyncStorage.removeItem("user");
-        router.replace("/auth/login"); // Redirect to login page
+        router.replace("/auth/login"); 
       } else {
         console.warn("Logout non-200 response:", response.status, response.data);
         Alert.alert("Logout Failed", "Unexpected server response.");
