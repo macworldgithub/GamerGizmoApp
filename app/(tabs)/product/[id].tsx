@@ -308,7 +308,7 @@ const ProductDetail = () => {
           `${API_BASE_URL}/products/getProductById?id=${id}`
         );
         setProduct(response.data.data);
-        console.log("product detail:", response.data.data);
+        // console.log("product detail:", response.data.data);
       } catch (err) {
         console.error("Error fetching product", err);
       } finally {

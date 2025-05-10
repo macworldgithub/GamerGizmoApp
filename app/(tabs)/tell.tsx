@@ -38,9 +38,13 @@ const Tell = () => {
   const [brand, setBrand] = useState("");
   const [brandId, setBrandId] = useState<number | null>(null);
   const [model, setModel] = useState("");
-   const [modelId, setModelId] = useState<number | null>(null);
+  const [modelId, setModelId] = useState<number | null>(null);
   const [condition, setCondition] = useState("");
+  const [conditionId, setConditionId] = useState<number | null>(null);
+
   const [location, setLocation] = useState("");
+  const [locationId, setLocationId] = useState<number | null>(null);
+
   const [brands, setBrands] = useState<Brand[]>([]);
   const [models, setModels] = useState<Model[]>([]);
   const [conditions, setConditions] = useState<Condition[]>([]);
@@ -132,7 +136,9 @@ const Tell = () => {
         model,
         modelId,
         condition,
+        conditionId,
         location,
+        locationId,
         description,
       })
     );
@@ -182,7 +188,11 @@ const Tell = () => {
       <View className="border border-gray-200 mb-4">
         <Picker
           selectedValue={model}
-          onValueChange={(itemValue) => setModel(itemValue)}
+          onValueChange={(itemValue, itemIndex) => {
+            const selectedModel = models[itemIndex - 1];
+            setModel(itemValue);
+            setModelId(selectedModel?.id ?? null);
+          }}
           enabled={models.length > 0}
         >
           <Picker.Item label="Model" value="" />
@@ -195,19 +205,28 @@ const Tell = () => {
       <View className="border border-gray-200 mb-4">
         <Picker
           selectedValue={condition}
-          onValueChange={(itemValue) => setCondition(itemValue)}
+          onValueChange={(itemValue, itemIndex) => {
+            const selected = conditions[itemIndex - 1]; // -1 to skip the placeholder
+            setCondition(itemValue);
+            setConditionId(selected?.id ?? null);
+          }}
         >
           <Picker.Item label="Condition" value="" />
           {conditions.map((item) => (
             <Picker.Item key={item.id} label={item.name} value={item.name} />
           ))}
         </Picker>
+
       </View>
 
       <View className="border border-gray-200 mb-4">
         <Picker
           selectedValue={location}
-          onValueChange={(itemValue) => setLocation(itemValue)}
+          onValueChange={(itemValue, itemIndex) => {
+            const selected = locations[itemIndex - 1]; // Skip the placeholder
+            setLocation(itemValue);
+            setLocationId(selected?.id ?? null);
+          }}
         >
           <Picker.Item label="Location" value="" />
           {locations.map((item) => (

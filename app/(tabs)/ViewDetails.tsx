@@ -3,7 +3,6 @@ import {
   View,
   Text,
   Image,
-  StyleSheet,
   ScrollView,
   TextInput,
   TouchableOpacity,
@@ -33,8 +32,11 @@ interface AdDetails {
   model: string;
   modelId: number | null;
   condition: string;
+  conditionId?: number | null; 
   location: string;
+  locationId?: number | null;  
 }
+
 
 interface AdState {
   city: City | null;
@@ -57,7 +59,7 @@ const ViewDetails: React.FC = ({ navigation }: any) => {
 
         if (user && token) {
           const parsedUser = JSON.parse(user);
-          setUserData({ ...parsedUser, token });
+          setUserData({ ...parsedUser, id: await AsyncStorage.getItem("userId"), token });
         }
       } catch (error) {
         console.error("Error fetching user data:", error);
@@ -68,159 +70,188 @@ const ViewDetails: React.FC = ({ navigation }: any) => {
   }, []);
 
   const handlePostAd = async () => {
-    setLoading(true);
-    const formData = new FormData();
+  setLoading(true);
 
-    formData.append("name", "heelo");
-    formData.append("user_id", "164");
-    formData.append("description", adData.details.description);
-    formData.append("price", adData.price ?? "0");
-    formData.append("stock", "1");
-    formData.append("brand_id", String(adData.details.brandId ?? 0));
-    formData.append("otherBrandName", adData.details.brand || "");
-    formData.append("model_id", String(adData.details.modelId || 0));
-    formData.append("category_id", String(adData.category?.id || 0));
-    formData.append("condition", "Used");
-    formData.append("location", "Ajman");
-    // formData.append("condition", adData.details.condition || "1");
-    // formData.append("location", adData.details.location || "1");
-    formData.append("is_published", "true");
-    formData.append("component_type", "33");
-    formData.append("is_store_product", "false");
+  const formData = new FormData();
 
-    if (adData.imageUri) {
-      const imageName = adData.imageUri.split("/").pop() || "photo.jpg";
-      const file = {
-        uri: adData.imageUri,
-        name: imageName,
-        type: "image/jpeg",
-      };
+  const categoryName = adData.category?.name;
 
-      // 👇 Important: must match field expected by backend exactly
-      formData.append("images", file as any);
+  formData.append("name", adData.details.title || "");
+  formData.append("user_id", userData?.id?.toString() || "");
+  formData.append("description", adData.details.description || "");
+  formData.append("price", adData.price?.toString() || "");
+  formData.append("stock", "1");
+  formData.append("brand_id", adData.details.brandId?.toString() || "");
+  formData.append("otherBrandName", "");
+  formData.append("model_id", adData.details.modelId?.toString() || "");
+  formData.append("category_id", adData.category?.id?.toString() || "");
+  formData.append("condition", adData.details.conditionId?.toString() || "");
+  formData.append("location", adData.details.locationId?.toString() || "");
+  formData.append("is_published", "true");
+
+  if (categoryName === "Components and Accessories") {
+    formData.append("component_type", "");
+    formData.append("text", "");
+  } else if (categoryName === "Gaming Consoles") {
+    formData.append("accessories", "");
+    formData.append("connectivity", "");
+    formData.append("warranty_status", "");
+    formData.append("battery_life", "");
+    formData.append("color", "");
+  } else {
+    // Default for Laptops, Desktops, etc.
+    formData.append("ram", "");
+    formData.append("storage", "");
+    formData.append("storageType", "");
+    formData.append("graphics", "");
+    formData.append("gpu", "");
+    formData.append("ports", "");
+    formData.append("battery_life", "");
+    formData.append("warranty_status", "");
+    formData.append("connectivity", "");
+    formData.append("accessories", "");
+    formData.append("screen_size", "");
+    formData.append("weight", "");
+    formData.append("screen_resolution", "");
+    formData.append("color", "");
+  }
+
+  if (adData.imageUri) {
+    formData.append("images", {
+      uri: adData.imageUri,
+      name: "photo.jpeg",
+      type: "image/jpeg",
+    } as any);
+  }
+
+  try {
+    for (let pair of formData.entries()) {
+      console.log(pair[0] + ":", pair[1]);
     }
 
-    try {
-      const response = await axios.post(
-        `${API_BASE_URL}/products/createProduct`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
+    const response = await axios.post(
+      `${API_BASE_URL}/products/createProduct`,
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
 
-      console.log("Response:", response.data);
-      Alert.alert("Success", "Your ad has been posted successfully.");
-    } catch (error: any) {
-      console.log("Error Response:", error.response?.data || error.message);
-      Alert.alert("Error", "There was a problem posting your ad.");
-    } finally {
-      setLoading(false);
-    }
-  };
+    console.log(" Success:", response.data);
+    Alert.alert("Success", "Ad posted successfully.");
+  } catch (error: any) {
+    console.error(" Error:", error.response?.data || error.message);
+    Alert.alert("Error", "Failed to post ad.");
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
-    <ScrollView style={styles.container}>
-      <Text style={styles.header}>View Details</Text>
+    <ScrollView className="flex-1 px-5">
+      <Text className="text-2xl font-bold mb-5">View Details</Text>
 
-      <View style={styles.section}>
-        <Text style={styles.label}>City:</Text>
+      <View className="mb-4">
+        <Text className="font-semibold">City:</Text>
         <TextInput
-          style={styles.input}
+          className="border border-gray-300 rounded-md p-3 mt-1 bg-gray-100"
           value={adData.city?.name ?? "City not selected"}
           editable={false}
         />
       </View>
 
-      <View style={styles.section}>
-        <Text style={styles.label}>Category:</Text>
+      <View className="mb-4">
+        <Text className="font-semibold">Category:</Text>
         <TextInput
-          style={styles.input}
+          className="border border-gray-300 rounded-md p-3 mt-1 bg-gray-100"
           value={adData.category?.name ?? "Category not selected"}
           editable={false}
         />
       </View>
 
-      <View style={styles.section}>
-        <Text style={styles.label}>Title:</Text>
+      <View className="mb-4">
+        <Text className="font-semibold">Title:</Text>
         <TextInput
-          style={styles.input}
+          className="border border-gray-300 rounded-md p-3 mt-1 bg-gray-100"
           value={adData.details.title}
           editable={false}
         />
       </View>
 
-      <View style={styles.section}>
-        <Text style={styles.label}>Description:</Text>
+      <View className="mb-4">
+        <Text className="font-semibold">Description:</Text>
         <TextInput
-          style={styles.input}
+          className="border border-gray-300 rounded-md p-3 mt-1 bg-gray-100"
           value={adData.details.description}
           editable={false}
           multiline
         />
       </View>
 
-      <View style={styles.section}>
-        <Text style={styles.label}>Brand:</Text>
+      <View className="mb-4">
+        <Text className="font-semibold">Brand:</Text>
         <TextInput
-          style={styles.input}
+          className="border border-gray-300 rounded-md p-3 mt-1 bg-gray-100"
           value={adData.details.brand || ""}
           editable={false}
         />
       </View>
 
-      <View style={styles.section}>
-        <Text style={styles.label}>Model:</Text>
+      <View className="mb-4">
+        <Text className="font-semibold">Model:</Text>
         <TextInput
-          style={styles.input}
+          className="border border-gray-300 rounded-md p-3 mt-1 bg-gray-100"
           value={adData.details.model}
           editable={false}
         />
       </View>
 
-      <View style={styles.section}>
-        <Text style={styles.label}>Condition:</Text>
+      <View className="mb-4">
+        <Text className="font-semibold">Condition:</Text>
         <TextInput
-          style={styles.input}
+          className="border border-gray-300 rounded-md p-3 mt-1 bg-gray-100"
           value={adData.details.condition || "Condition not specified"}
           editable={false}
         />
       </View>
 
-      <View style={styles.section}>
-        <Text style={styles.label}>Location:</Text>
+      <View className="mb-4">
+        <Text className="font-semibold">Location:</Text>
         <TextInput
-          style={styles.input}
+          className="border border-gray-300 rounded-md p-3 mt-1 bg-gray-100"
           value={adData.details.location || "Location not specified"}
           editable={false}
         />
       </View>
 
-      <View style={styles.section}>
-        <Text style={styles.label}>Price:</Text>
+      <View className="mb-4">
+        <Text className="font-semibold">Price:</Text>
         <TextInput
-          style={styles.input}
+          className="border border-gray-300 rounded-md p-3 mt-1 bg-gray-100"
           value={adData.price || "0"}
           editable={false}
         />
       </View>
 
       {adData.imageUri && (
-        <View style={styles.section}>
-          <Text style={styles.label}>Image:</Text>
-          <Image source={{ uri: adData.imageUri }} style={styles.image} />
+        <View className="mb-4">
+          <Text className="font-semibold">Image:</Text>
+          <Image
+            source={{ uri: adData.imageUri }}
+            className="w-48 h-48 rounded-lg mt-2"
+          />
         </View>
       )}
 
-      <View style={styles.buttonContainer}>
+      <View className="mt-6 mb-10 items-center">
         <TouchableOpacity
-          style={styles.postAdButton}
+          className="bg-blue-600 py-3 px-10 rounded-md"
           onPress={handlePostAd}
           disabled={loading}
         >
-          <Text style={styles.buttonText}>
+          <Text className="text-white font-bold text-base">
             {loading ? "Posting..." : "Post an Ad"}
           </Text>
         </TouchableOpacity>
@@ -228,53 +259,5 @@ const ViewDetails: React.FC = ({ navigation }: any) => {
     </ScrollView>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-  },
-  header: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 20,
-  },
-  section: {
-    marginBottom: 15,
-  },
-  label: {
-    fontWeight: "bold",
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 6,
-    padding: 10,
-    marginTop: 5,
-    backgroundColor: "#f5f5f5",
-  },
-  image: {
-    width: 200,
-    height: 200,
-    borderRadius: 10,
-    marginTop: 10,
-  },
-  buttonContainer: {
-    marginTop: 20,
-    alignItems: "center",
-    marginBottom: 30,
-  },
-  postAdButton: {
-    backgroundColor: "#007BFF",
-    paddingVertical: 12,
-    paddingHorizontal: 40,
-    borderRadius: 6,
-  },
-  buttonText: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-});
 
 export default ViewDetails;

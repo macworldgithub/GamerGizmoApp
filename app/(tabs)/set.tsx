@@ -9,7 +9,6 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { Link } from "expo-router";
-
 // ✅ Redux
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store/store"; // adjust if your store path is different
@@ -18,12 +17,12 @@ import { setPrice } from "../../store/slice/adSlice"; // adjust the path as need
 const Set = () => {
   const dispatch = useDispatch();
 
-  // ✅ Get initial price from Redux if needed
+ 
   const storedPrice = useSelector((state: RootState) => state.ad.price);
   const [price, setPriceLocal] = useState(Number(storedPrice) || 0);
   const [quantity, setQuantity] = useState(1); // Not used in Redux, adjust if needed
 
-  // ✅ Save price to Redux on change
+ 
   useEffect(() => {
     dispatch(setPrice(price.toString()));
   }, [price]);
@@ -100,3 +99,4 @@ const Set = () => {
 };
 
 export default Set;
+
