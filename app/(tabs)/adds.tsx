@@ -6,7 +6,8 @@ import { useNavigation } from "@react-navigation/native";
 import Toast from "react-native-toast-message";
 import NoAds from "./NoAds";
 import Adlist from "./Adlist";
-import CustomLoader from "./CustomLoader"
+import CustomLoader from "./CustomLoader";
+import { router } from "expo-router";
 
 export default function Adds() {
   const [currentPage, setCurrentPage] = useState(1);
@@ -22,13 +23,17 @@ export default function Adds() {
       const token = await AsyncStorage.getItem("token");
       const userId = await AsyncStorage.getItem("userId");
 
+      // if (!token || !userId) {
+      //   navigation.navigate("Login" as never); // Adjust route name accordingly
+      //   return;
+      // }
       if (!token || !userId) {
-        navigation.navigate("Login" as never); // Adjust route name accordingly
+        router.replace("/login"); // use replace() instead of navigate for auth redirects
         return;
       }
 
       const response = await axios.get(
-        `${process.env.EXPO_PUBLIC_API_BASE_URL}/products/getUserProducts?userId=${userId}&pageNo=${currentPage}`,
+        `https://backend.gamergizmo.com/products/getUserProducts?userId=${userId}&pageNo=${currentPage}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -56,10 +61,10 @@ export default function Adds() {
     <ScrollView style={styles.container}>
       <Text style={styles.header}>My Ads</Text>
       {ads.length === 0 ? (
-       <NoAds/>
+        <NoAds />
       ) : (
         <Adlist
-        //@ts-ignore
+          //@ts-ignore
           total={total}
           setFetch={setFetch}
           fetcher={fetcher}

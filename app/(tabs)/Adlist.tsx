@@ -23,7 +23,7 @@ export default function AdList() {
   const [loading, setLoading] = useState(false);
   const [total, setTotal] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
-const [selectedAd, setSelectedAd] = useState<AdType | null>(null);
+  const [selectedAd, setSelectedAd] = useState<AdType | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const router = useRouter();
   const itemsPerPage = 8;
@@ -35,7 +35,8 @@ const [selectedAd, setSelectedAd] = useState<AdType | null>(null);
     try {
       setLoading(true);
       const response = await axios.get(
-        `${process.env.EXPO_PUBLIC_API_BASE_URL}/products/getUserProducts?userId=${userId}&pageNo=${currentPage}`,
+        `https://backend.gamergizmo.com/products/getUserProducts?userId=${userId}&pageNo=${currentPage}`,
+
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -62,7 +63,7 @@ const [selectedAd, setSelectedAd] = useState<AdType | null>(null);
     try {
       setLoading(true);
       await axios.delete(
-        `${process.env.EXPO_PUBLIC_API_BASE_URL}/products/deleteProductById?product_id=${id}&user_id=${userId}`,
+        `https://backend.gamergizmo.com/products/deleteProductById?product_id=${id}&user_id=${userId}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -79,61 +80,61 @@ const [selectedAd, setSelectedAd] = useState<AdType | null>(null);
       Alert.alert("Error", "Failed to delete the ad");
     }
   };
-const updateStatus = async () => {
-  if (!selectedAd) return;
+  const updateStatus = async () => {
+    if (!selectedAd) return;
 
-  const token = await AsyncStorage.getItem("token");
-  const userId = await AsyncStorage.getItem("userId");
+    const token = await AsyncStorage.getItem("token");
+    const userId = await AsyncStorage.getItem("userId");
 
-  if (!userId) {
-    // Use react-native-toast-message for error
-    Toast.show({
-      type: 'error', // 'error' type for error messages
-      text1: 'User not found!',
-      text2: 'Please log in again.',
-      visibilityTime: 3000, // Duration the toast will be visible
-      autoHide: true,
-    });
-    return;
-  }
+    if (!userId) {
+      // Use react-native-toast-message for error
+      Toast.show({
+        type: "error", // 'error' type for error messages
+        text1: "User not found!",
+        text2: "Please log in again.",
+        visibilityTime: 3000, // Duration the toast will be visible
+        autoHide: true,
+      });
+      return;
+    }
 
-  try {
-    setLoading(true);
-    //@ts-ignore
-    const newStatus = !selectedAd.active;
-    await axios.put(
-      `${process.env.NEXT_PUBLIC_API_BASE_URL}/products/invertStatus`,
-      {
-        product_id: selectedAd.id.toString(),
-        user_id: userId.toString(),
-      },
-      {
-        headers: { Authorization: `Bearer ${token}` },
-      }
-    );
-    setLoading(false);
-    // Success message using react-native-toast-message
-    Toast.show({
-      type: 'success',
-      text1: 'Status updated successfully!',
-      text2: `Status changed to ${newStatus ? 'Active' : 'Draft'}`,
-      visibilityTime: 3000,
-      autoHide: true,
-    });
-    // setFetch(!fetcher);
-    setModalOpen(false);
-  } catch (err) {
-    setLoading(false);
-    // Show error toast if the request fails
-    Toast.show({
-      type: 'error',
-      text1: 'Failed to update status',
-      text2: 'There was an issue updating the ad status.',
-      visibilityTime: 3000,
-      autoHide: true,
-    });
-  }
-};
+    try {
+      setLoading(true);
+      //@ts-ignore
+      const newStatus = !selectedAd.active;
+      await axios.put(
+        `https://backend.gamergizmo.com/products/invertStatus`,
+        {
+          product_id: selectedAd.id.toString(),
+          user_id: userId.toString(),
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      setLoading(false);
+      // Success message using react-native-toast-message
+      Toast.show({
+        type: "success",
+        text1: "Status updated successfully!",
+        text2: `Status changed to ${newStatus ? "Active" : "Draft"}`,
+        visibilityTime: 3000,
+        autoHide: true,
+      });
+      // setFetch(!fetcher);
+      setModalOpen(false);
+    } catch (err) {
+      setLoading(false);
+      // Show error toast if the request fails
+      Toast.show({
+        type: "error",
+        text1: "Failed to update status",
+        text2: "There was an issue updating the ad status.",
+        visibilityTime: 3000,
+        autoHide: true,
+      });
+    }
+  };
 
   const totalPages = Math.ceil(total / itemsPerPage);
 
@@ -146,7 +147,9 @@ const updateStatus = async () => {
       />
       <Text className="text-purple-700 font-bold">{ad.category}</Text>
       <Text className="text-lg font-bold text-black">{ad.name}</Text>
-      <Text className="text-sm text-gray-700">{ad.description?.slice(0, 120)}...</Text>
+      <Text className="text-sm text-gray-700">
+        {ad.description?.slice(0, 120)}...
+      </Text>
 
       <Text className="text-purple-600 mt-2 font-bold">
         AED <Text className="text-2xl">{ad.price}</Text>
