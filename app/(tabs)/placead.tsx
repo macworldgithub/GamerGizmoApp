@@ -55,6 +55,7 @@ const Placead = () => {
 
     // ✅ Dispatch selected city to Redux store
     dispatch(setCity({ id: city.id, name: city.name }));
+    
     setVisible(false);
     router.push({
       pathname: "/category",

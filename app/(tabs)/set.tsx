@@ -9,7 +9,6 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { Link } from "expo-router";
-
 // ✅ Redux
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store/store"; // adjust if your store path is different
@@ -18,12 +17,12 @@ import { setPrice } from "../../store/slice/adSlice"; // adjust the path as need
 const Set = () => {
   const dispatch = useDispatch();
 
-  // ✅ Get initial price from Redux if needed
+ 
   const storedPrice = useSelector((state: RootState) => state.ad.price);
   const [price, setPriceLocal] = useState(Number(storedPrice) || 0);
   const [quantity, setQuantity] = useState(1); // Not used in Redux, adjust if needed
 
-  // ✅ Save price to Redux on change
+ 
   useEffect(() => {
     dispatch(setPrice(price.toString()));
   }, [price]);
@@ -37,9 +36,11 @@ const Set = () => {
   return (
     <ScrollView className="flex-1 bg-white px-4 py-6 pb-24">
       <View className="flex-row items-center border-b border-gray-200 pb-4 mb-6">
-        <TouchableOpacity>
-          <Ionicons name="arrow-back" size={24} color="black" />
-        </TouchableOpacity>
+        <Link href="/tell" asChild>
+          <TouchableOpacity>
+            <Image source={require("../../assets/images/left.png")} />
+          </TouchableOpacity>
+        </Link>
         <Text className="text-black text-base font-semibold flex-1 text-center -ml-6">
           Set Price
         </Text>
@@ -98,3 +99,4 @@ const Set = () => {
 };
 
 export default Set;
+

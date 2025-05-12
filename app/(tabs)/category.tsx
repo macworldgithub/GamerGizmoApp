@@ -39,16 +39,17 @@ const Category = ({ navigation }: any) => {
         const response = await axios.get(`${API_BASE_URL}/categories/getAll`);
 
         if (response.data?.data) {
+          
+          const nameMapping: { [key: string]: { name: string; id: number } } = {
+            Desktops: { name: "Gaming PCs", id: 2 },
+            Components: { name: "Laptops", id: 1 },
+            Laptops: { name: "Gaming Consoles", id: 4 },
+            "Gaming Consoles": { name: "Components and Accessories", id: 3 },
+          };
+
           const updatedCategories = response.data.data.map((item: any) => {
-            let newName = item.name;
-
-            if (item.name === "Desktops") newName = "Gaming PCs";
-            else if (item.name === "Components") newName = "Laptops";
-            else if (item.name === "Laptops") newName = "Gaming Consoles";
-            else if (item.name === "Gaming Consoles")
-              newName = "Components and Accessories";
-
-            return { ...item, name: newName };
+            const mapped = nameMapping[item.name];
+            return mapped ? { ...item, ...mapped } : item;
           });
 
           setCategories(updatedCategories);

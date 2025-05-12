@@ -1,8 +1,9 @@
 import { API_BASE_URL } from "@/utils/config";
-import React from "react";
-import { Image, Text, TouchableOpacity, View } from "react-native";
+import React, { useState } from "react";
+import { Image, Text, Touchable, TouchableOpacity, View } from "react-native";
 import Swiper from "react-native-swiper";
-
+import { useRouter } from "expo-router";
+import { MessageCircleHeart } from "lucide-react-native";
 type ProductImage = {
   id: number;
   product_id: number;
@@ -16,26 +17,37 @@ type Product = {
   price: number;
   description: string;
   images: ProductImage[];
+  explorePath: string;
 };
-
 const Productcarrd = ({
   productList = [],
   title,
+  explorePath,
 }: {
   productList: Product[];
   title: string;
+  explorePath: string;
 }) => {
-  const getImageUrl = (image_url: string) => {
-    return image_url?.startsWith("https")
-      ? image_url
-      : `${API_BASE_URL}/${image_url}`;
-  };
+  const router = useRouter();
+  const handleExplore = () => {
+    const url = new URLSearchParams(explorePath.split("?")[1]);
 
+    router.push({
+      pathname: "/ExploreScreen",
+      params: {
+        category: url.get("category") || "",
+        condition: url.get("condition") || "",
+      },
+    });
+  };
+  const getImageUrl = (image_url: string) => {
+    return image_url?.startsWith("https") ? image_url : image_url;
+  };
   return (
     <>
       <View className="flex-row items-center justify-between">
         <Text className="text-black font-bold text-lg mb-3">{title}</Text>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={handleExplore}>
           <Image source={require("../../assets/images/right.png")} />
         </TouchableOpacity>
       </View>
@@ -55,17 +67,20 @@ const Productcarrd = ({
                 return acc;
               }, [])
               .map((group: Product[], index: number) => (
-                <View key={index} className="flex-row justify-between px-1">
-                  {group.map((item) => {
+                <View
+                  key={`${title}-${index}`}
+                  className="flex-row justify-between px-1"
+                >
+                  {group.map((item, itemIndex) => {
                     const productImage = item.images?.[0]?.image_url;
                     const imageUrl = productImage
                       ? getImageUrl(productImage)
                       : null;
-                    console.log("Final URL", getImageUrl(productImage));
+                    // console.log("Final URL", getImageUrl(productImage));
 
                     return (
                       <View
-                        key={item.id}
+                        key={`${item.id}-${itemIndex}`}
                         className="bg-white p-3 rounded-lg shadow-md border border-gray-200 w-44"
                       >
                         {imageUrl ? (
@@ -81,15 +96,33 @@ const Productcarrd = ({
                             resizeMode="cover"
                           />
                         )}
-                        <Text className="text-purple-600 font-bold text-lg mt-2">
-                          AED {item.price}
-                        </Text>
-                        <Text className="text-black font-bold mt-1">
-                          {item.name}
-                        </Text>
-                        <Text className="text-gray-600 text-sm mt-1">
-                          {item.description}
-                        </Text>
+
+                        <TouchableOpacity
+                          onPress={() =>
+                            router.push({
+                              pathname: "/product/[id]",
+                              params: { id: item.id.toString() },
+                            })
+                          }
+                        >
+                          <Text className="text-purple-600 font-bold text-lg mt-2">
+                            AED {item.price}
+                          </Text>
+                          <Text
+                            className="text-black font-bold mt-1"
+                            numberOfLines={1}
+                            ellipsizeMode="tail"
+                          >
+                            {item.name}
+                          </Text>
+                          <Text
+                            className="text-gray-600 text-sm mt-1"
+                            numberOfLines={1}
+                            ellipsizeMode="tail"
+                          >
+                            {item.description}
+                          </Text>
+                        </TouchableOpacity>
                       </View>
                     );
                   })}

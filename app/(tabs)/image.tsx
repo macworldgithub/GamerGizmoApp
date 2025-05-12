@@ -12,6 +12,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useDispatch } from "react-redux";
 import { setImageUri } from "../../store/slice/adSlice";
 import { useRouter } from "expo-router";
+import { Link } from "expo-router";
 
 const Images = () => {
   const dispatch = useDispatch();
@@ -86,9 +87,11 @@ const Images = () => {
   return (
     <ScrollView className="flex-1 bg-white px-4 py-6">
       <View className="flex-row items-center border-b border-gray-200 pb-4 mb-6">
-        <TouchableOpacity>
-          <Ionicons name="arrow-back" size={24} color="black" />
-        </TouchableOpacity>
+        <Link href="/set" asChild>
+          <TouchableOpacity>
+            <Image source={require("../../assets/images/left.png")} />
+          </TouchableOpacity>
+        </Link>
         <Text className="text-black text-base font-semibold flex-1 text-center -ml-6">
           Upload Image
         </Text>

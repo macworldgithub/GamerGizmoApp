@@ -3,7 +3,6 @@ import {
   View,
   Text,
   Image,
-  StyleSheet,
   ScrollView,
   TextInput,
   TouchableOpacity,
@@ -13,6 +12,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../store/store";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { API_BASE_URL } from "@/utils/config";
 
 interface City {
   id: number;
@@ -30,10 +30,13 @@ interface AdDetails {
   brand: string;
   brandId: number | null;
   model: string;
-  modelId:  number | null;
+  modelId: number | null;
   condition: string;
+  conditionId?: number | null; 
   location: string;
+  locationId?: number | null;  
 }
+
 
 interface AdState {
   city: City | null;
@@ -57,7 +60,7 @@ const ViewDetails: React.FC = ({ navigation }: any) => {
 
         if (user && token) {
           const parsedUser = JSON.parse(user);
-          setUserData({ ...parsedUser, token });
+          setUserData({ ...parsedUser, id: await AsyncStorage.getItem("userId"), token });
         }
       } catch (error) {
         console.error("Error fetching user data:", error);
@@ -68,156 +71,188 @@ const ViewDetails: React.FC = ({ navigation }: any) => {
   }, []);
 
   const handlePostAd = async () => {
-    if (!userData || !userData.id || !userData.username) {
-      Alert.alert("Error", "User is not logged in.");
-      return;
-    }
+  setLoading(true);
 
-    if (!adData.category?.id) {
-      Alert.alert("Error", "Category is missing.");
-      return;
-    }
+  const formData = new FormData();
 
-    if (!adData.imageUri) {
-      Alert.alert("Error", "upload an image before posting.");
-      return;
-    }
+  const categoryName = adData.category?.name;
 
-    const formData = new FormData();
-    formData.append("title", adData.details.title);
-    formData.append("description", adData.details.description);
-    //formData.append("brand", adData.details.brand || "Unknown");
-    formData.append("brand_id", String(adData.details.brandId ?? ""));
-    formData.append("model_id", String(adData.details.modelId ?? ""));
-    //formData.append("condition", adData.details.condition);
-    formData.append("location", adData.details.location);
-    //formData.append("city", adData.city?.name || "Unknown");
-   // formData.append("category", adData.category?.name || "Uncategorized");
-    formData.append("price", adData.price || "0");
-    formData.append("stock", "1");
-    formData.append("user_id", String(userData.id));
-    formData.append("name", userData.username || "Anonymous");
-    formData.append("category_id", String(adData.category?.id || ""));
+  formData.append("name", adData.details.title || "");
+  formData.append("user_id", userData?.id?.toString() || "");
+  formData.append("description", adData.details.description || "");
+  formData.append("price", adData.price?.toString() || "");
+  formData.append("stock", "1");
+  formData.append("brand_id", adData.details.brandId?.toString() || "");
+  formData.append("otherBrandName", "");
+  formData.append("model_id", adData.details.modelId?.toString() || "");
+  formData.append("category_id", adData.category?.id?.toString() || "");
+  formData.append("condition", adData.details.conditionId?.toString() || "");
+  formData.append("location", adData.details.locationId?.toString() || "");
+  formData.append("is_published", "true");
 
+  if (categoryName === "Components and Accessories") {
+    formData.append("component_type", "");
+    formData.append("text", "");
+  } else if (categoryName === "Gaming Consoles") {
+    formData.append("accessories", "");
+    formData.append("connectivity", "");
+    formData.append("warranty_status", "");
+    formData.append("battery_life", "");
+    formData.append("color", "");
+  } else {
+    // Default for Laptops, Desktops, etc.
+    formData.append("ram", "");
+    formData.append("storage", "");
+    formData.append("storageType", "");
+    formData.append("graphics", "");
+    formData.append("gpu", "");
+    formData.append("ports", "");
+    formData.append("battery_life", "");
+    formData.append("warranty_status", "");
+    formData.append("connectivity", "");
+    formData.append("accessories", "");
+    formData.append("screen_size", "");
+    formData.append("weight", "");
+    formData.append("screen_resolution", "");
+    formData.append("color", "");
+  }
 
-    console.log({
-  title: adData.details.title,
-  description: adData.details.description,
-  brandId: adData.details.brandId,
-  model_id: adData.details.model,
-  location: adData.details.location,
-  price: adData.price,
-  category_id: adData.category?.id,
-  user_id: userData.id,
-  name: userData.username,
-  //stock:"1",
-  image: adData.imageUri,
-});
-
-    if (adData.imageUri) {
-    formData.append("file", {
+  if (adData.imageUri) {
+    formData.append("images", {
       uri: adData.imageUri,
+      name: "photo.jpeg",
       type: "image/jpeg",
-      name: "photo.jpg",
     } as any);
   }
-    try {
-      setLoading(true);
-      const token = await AsyncStorage.getItem("token");
 
-      const response = await axios.post(
-        "https://backend.gamergizmo.com/products/createProduct",
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      if (response.status === 200 || response.status === 201) {
-        Alert.alert("Success", "Ad posted successfully!");
-        
-      } else {
-        Alert.alert("Error", "Failed to post ad. Please try again.");
-      }
-    } catch (error: any) {
-      console.log("Error Response:", JSON.stringify(error.response?.data, null, 2));
-
-      if (error.response?.data?.message) {
-        Alert.alert("Error", `Failed: ${error.response.data.message}`);
-      } else {
-        Alert.alert("Error", "Something went wrong while posting the ad.");
-      }
-    } finally {
-      setLoading(false);
+  try {
+    for (let pair of formData.entries()) {
+      console.log(pair[0] + ":", pair[1]);
     }
-  };
+
+    const response = await axios.post(
+      `${API_BASE_URL}/products/createProduct`,
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+
+    console.log(" Success:", response.data);
+    Alert.alert("Success", "Ad posted successfully.");
+  } catch (error: any) {
+    console.error(" Error:", error.response?.data || error.message);
+    Alert.alert("Error", "Failed to post ad.");
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
-    <ScrollView style={styles.container}>
-      <Text style={styles.header}>View Details</Text>
+    <ScrollView className="flex-1 px-5">
+      <Text className="text-2xl font-bold mb-5">View Details</Text>
 
-      <View style={styles.section}>
-        <Text style={styles.label}>City:</Text>
-        <TextInput style={styles.input} value={adData.city?.name ?? "City not selected"} editable={false} />
+      <View className="mb-4">
+        <Text className="font-semibold">City:</Text>
+        <TextInput
+          className="border border-gray-300 rounded-md p-3 mt-1 bg-gray-100"
+          value={adData.city?.name ?? "City not selected"}
+          editable={false}
+        />
       </View>
 
-      <View style={styles.section}>
-        <Text style={styles.label}>Category:</Text>
-        <TextInput style={styles.input} value={adData.category?.name ?? "Category not selected"} editable={false} />
+      <View className="mb-4">
+        <Text className="font-semibold">Category:</Text>
+        <TextInput
+          className="border border-gray-300 rounded-md p-3 mt-1 bg-gray-100"
+          value={adData.category?.name ?? "Category not selected"}
+          editable={false}
+        />
       </View>
 
-      <View style={styles.section}>
-        <Text style={styles.label}>Title:</Text>
-        <TextInput style={styles.input} value={adData.details.title} editable={false} />
+      <View className="mb-4">
+        <Text className="font-semibold">Title:</Text>
+        <TextInput
+          className="border border-gray-300 rounded-md p-3 mt-1 bg-gray-100"
+          value={adData.details.title}
+          editable={false}
+        />
       </View>
 
-      <View style={styles.section}>
-        <Text style={styles.label}>Description:</Text>
-        <TextInput style={styles.input} value={adData.details.description} editable={false} multiline />
+      <View className="mb-4">
+        <Text className="font-semibold">Description:</Text>
+        <TextInput
+          className="border border-gray-300 rounded-md p-3 mt-1 bg-gray-100"
+          value={adData.details.description}
+          editable={false}
+          multiline
+        />
       </View>
 
-      <View style={styles.section}>
-        <Text style={styles.label}>Brand:</Text>
-        <TextInput style={styles.input} value={adData.details.brand || ""} editable={false} />
+      <View className="mb-4">
+        <Text className="font-semibold">Brand:</Text>
+        <TextInput
+          className="border border-gray-300 rounded-md p-3 mt-1 bg-gray-100"
+          value={adData.details.brand || ""}
+          editable={false}
+        />
       </View>
 
-      <View style={styles.section}>
-        <Text style={styles.label}>Model:</Text>
-        <TextInput style={styles.input} value={adData.details.model} editable={false} />
+      <View className="mb-4">
+        <Text className="font-semibold">Model:</Text>
+        <TextInput
+          className="border border-gray-300 rounded-md p-3 mt-1 bg-gray-100"
+          value={adData.details.model}
+          editable={false}
+        />
       </View>
 
-      <View style={styles.section}>
-        <Text style={styles.label}>Condition:</Text>
-        <TextInput style={styles.input} value={adData.details.condition} editable={false} />
+      <View className="mb-4">
+        <Text className="font-semibold">Condition:</Text>
+        <TextInput
+          className="border border-gray-300 rounded-md p-3 mt-1 bg-gray-100"
+          value={adData.details.condition || "Condition not specified"}
+          editable={false}
+        />
       </View>
 
-      <View style={styles.section}>
-        <Text style={styles.label}>Location:</Text>
-        <TextInput style={styles.input} value={adData.details.location} editable={false} />
+      <View className="mb-4">
+        <Text className="font-semibold">Location:</Text>
+        <TextInput
+          className="border border-gray-300 rounded-md p-3 mt-1 bg-gray-100"
+          value={adData.details.location || "Location not specified"}
+          editable={false}
+        />
       </View>
 
-      <View style={styles.section}>
-        <Text style={styles.label}>Price:</Text>
-        <TextInput style={styles.input} value={adData.price || "0"} editable={false} />
+      <View className="mb-4">
+        <Text className="font-semibold">Price:</Text>
+        <TextInput
+          className="border border-gray-300 rounded-md p-3 mt-1 bg-gray-100"
+          value={adData.price || "0"}
+          editable={false}
+        />
       </View>
 
       {adData.imageUri && (
-        <View style={styles.section}>
-          <Text style={styles.label}>Image:</Text>
-          <Image source={{ uri: adData.imageUri }} style={styles.image} />
+        <View className="mb-4">
+          <Text className="font-semibold">Image:</Text>
+          <Image
+            source={{ uri: adData.imageUri }}
+            className="w-48 h-48 rounded-lg mt-2"
+          />
         </View>
       )}
 
-      <View style={styles.buttonContainer}>
+      <View className="mt-6 mb-10 items-center">
         <TouchableOpacity
-          style={styles.postAdButton}
+          className="bg-blue-600 py-3 px-10 rounded-md"
           onPress={handlePostAd}
           disabled={loading}
         >
-          <Text style={styles.buttonText}>
+          <Text className="text-white font-bold text-base">
             {loading ? "Posting..." : "Post an Ad"}
           </Text>
         </TouchableOpacity>
@@ -225,53 +260,5 @@ const ViewDetails: React.FC = ({ navigation }: any) => {
     </ScrollView>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-  },
-  header: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 20,
-  },
-  section: {
-    marginBottom: 15,
-  },
-  label: {
-    fontWeight: "bold",
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 6,
-    padding: 10,
-    marginTop: 5,
-    backgroundColor: "#f5f5f5",
-  },
-  image: {
-    width: 200,
-    height: 200,
-    borderRadius: 10,
-    marginTop: 10,
-  },
-  buttonContainer: {
-    marginTop: 20,
-    alignItems: "center",
-    marginBottom: 30,
-  },
-  postAdButton: {
-    backgroundColor: "#007BFF",
-    paddingVertical: 12,
-    paddingHorizontal: 40,
-    borderRadius: 6,
-  },
-  buttonText: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-});
 
 export default ViewDetails;

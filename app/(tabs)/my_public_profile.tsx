@@ -1,5 +1,5 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { useRouter } from 'expo-router';   
+import { useRouter } from 'expo-router';
 import { ArrowLeftIcon } from 'lucide-react-native';
 import React, { useState } from 'react';
 import { Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
@@ -87,3 +87,4 @@ const PublicProfileScreen = () => {
 };
 
 export default PublicProfileScreen;
+
