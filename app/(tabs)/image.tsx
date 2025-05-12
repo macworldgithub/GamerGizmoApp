@@ -16,14 +16,9 @@ import { useRouter } from "expo-router";
 const Images = () => {
   const dispatch = useDispatch();
   const router = useRouter();
-  const [selectedImages, setSelectedImages] = useState<string[]>([]);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   const pickImage = async () => {
-    if (selectedImages.length >= 5) {
-      Alert.alert("Limit Reached", "You can only upload up to 5 images.");
-      return;
-    }
-
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
@@ -33,58 +28,55 @@ const Images = () => {
 
     if (!result.canceled) {
       const newImage = result.assets[0].uri;
-      setSelectedImages([...selectedImages, newImage]);
+      setSelectedImage(newImage);
     }
   };
 
   const handleUpload = async () => {
-    if (selectedImages.length === 0) {
-      Alert.alert("No Images", "Please select at least one image.");
+    if (!selectedImage) {
+      Alert.alert("No Image", "Please select an image.");
       return;
     }
 
-    // Save only the first image to Redux (you can change this as needed)
-    dispatch(setImageUri(selectedImages[0]));
+    // Save the selected image to Redux
+    dispatch(setImageUri(selectedImage));
 
-    for (const image of selectedImages) {
-      const formData = new FormData();
-      formData.append("file", {
-        uri: image,
-        name: "photo.jpg",
-        type: "image/jpeg",
-      } as any);
+    const formData = new FormData();
+    formData.append("file", {
+      uri: selectedImage,
+      name: "photo.jpg",
+      type: "image/jpeg",
+    } as any);
 
-      try {
-        const response = await fetch("https://your-backend.com/upload", {
-          method: "POST",
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-          body: formData,
-        });
+    try {
+      const response = await fetch("https://your-backend.com/upload", {
+        method: "POST",
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+        body: formData,
+      });
 
-        if (!response.ok) {
-          Alert.alert("Upload Failed", "Error uploading one of the images.");
-          return;
-        }
-      } catch (error) {
-        console.error(error);
-        Alert.alert("Error", "Something went wrong during upload.");
+      if (!response.ok) {
+        Alert.alert("Upload Failed", "Error uploading the image.");
         return;
       }
-    }
 
-    Alert.alert("Success", "All images uploaded successfully!");
+      Alert.alert("Success", "Image uploaded successfully!");
+    } catch (error) {
+      console.error(error);
+      Alert.alert("Error", "Something went wrong during upload.");
+    }
   };
 
   const handleReset = () => {
-    setSelectedImages([]);
+    setSelectedImage(null);
     dispatch(setImageUri(null));
   };
 
   const goToViewDetails = () => {
-    if (selectedImages.length < 3) {
-      Alert.alert("Minimum Required", "Please select at least 3 images.");
+    if (!selectedImage) {
+      Alert.alert("Image Required", "Please select an image.");
       return;
     }
 
@@ -110,25 +102,21 @@ const Images = () => {
         <Text className="text-gray-500 mt-2">Upload Image</Text>
       </TouchableOpacity>
 
-      {selectedImages.length > 0 && (
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mb-6">
-          {selectedImages.map((uri, index) => (
-            <Image
-              key={index}
-              source={{ uri }}
-              style={{
-                width: 100,
-                height: 100,
-                borderRadius: 8,
-                marginRight: 10,
-              }}
-              resizeMode="cover"
-            />
-          ))}
-        </ScrollView>
+      {selectedImage && (
+        <View className="mb-6">
+          <Image
+            source={{ uri: selectedImage }}
+            style={{
+              width: "100%",
+              height: 200,
+              borderRadius: 8,
+            }}
+            resizeMode="cover"
+          />
+        </View>
       )}
 
-      {selectedImages.length > 0 && (
+      {selectedImage && (
         <View className="flex-row justify-between mb-10 space-x-4">
           <TouchableOpacity
             onPress={handleUpload}

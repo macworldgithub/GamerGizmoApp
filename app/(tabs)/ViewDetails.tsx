@@ -30,6 +30,7 @@ interface AdDetails {
   brand: string;
   brandId: number | null;
   model: string;
+  modelId:  number | null;
   condition: string;
   location: string;
 }
@@ -40,33 +41,26 @@ interface AdState {
   details: AdDetails;
   price: string | null;
   imageUri: string | null;
+
 }
 
 const ViewDetails: React.FC = ({ navigation }: any) => {
   const adData: AdState = useSelector((state: RootState) => state.ad);
   const [userData, setUserData] = useState<any>(null);
-  const [userToken, setUserToken] = useState<string | null>(null); 
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const getUserData = async () => {
       try {
         const user = await AsyncStorage.getItem("user");
-        const token = await AsyncStorage.getItem("token"); 
-      
+        const token = await AsyncStorage.getItem("token");
 
         if (user && token) {
           const parsedUser = JSON.parse(user);
-          console.log("Fetched user data:", parsedUser);
-          setUserData(parsedUser); 
-          setUserToken(token); 
-        } else {
-        
-       // Alert.alert("Error", "User is not logged in.");
+          setUserData({ ...parsedUser, token });
         }
       } catch (error) {
         console.error("Error fetching user data:", error);
-   
       }
     };
 
@@ -74,7 +68,7 @@ const ViewDetails: React.FC = ({ navigation }: any) => {
   }, []);
 
   const handlePostAd = async () => {
-    if (!userData || !userData.id || !userData.name) {
+    if (!userData || !userData.id || !userData.username) {
       Alert.alert("Error", "User is not logged in.");
       return;
     }
@@ -84,58 +78,77 @@ const ViewDetails: React.FC = ({ navigation }: any) => {
       return;
     }
 
+    if (!adData.imageUri) {
+      Alert.alert("Error", "upload an image before posting.");
+      return;
+    }
+
     const formData = new FormData();
     formData.append("title", adData.details.title);
     formData.append("description", adData.details.description);
-    formData.append("brand", adData.details.brand || "Unknown");
-    formData.append("brandId", String(adData.details.brandId || ""));
-    formData.append("model", adData.details.model);
-    formData.append("condition", adData.details.condition);
+    //formData.append("brand", adData.details.brand || "Unknown");
+    formData.append("brand_id", String(adData.details.brandId ?? ""));
+    formData.append("model_id", String(adData.details.modelId ?? ""));
+    //formData.append("condition", adData.details.condition);
     formData.append("location", adData.details.location);
-    formData.append("city", adData.city?.name || "Unknown");
-    formData.append("category", adData.category?.name || "Uncategorized");
+    //formData.append("city", adData.city?.name || "Unknown");
+   // formData.append("category", adData.category?.name || "Uncategorized");
     formData.append("price", adData.price || "0");
     formData.append("stock", "1");
-    formData.append("user_id", String(userData.id)); 
-    formData.append("username", userData.name);
+    formData.append("user_id", String(userData.id));
+    formData.append("name", userData.username || "Anonymous");
     formData.append("category_id", String(adData.category?.id || ""));
 
-    if (adData.imageUri) {
-      formData.append("image", {
-        uri: adData.imageUri,
-        type: "image/jpeg",
-        name: "photo.jpg",
-      } as any); 
-    }
 
+    console.log({
+  title: adData.details.title,
+  description: adData.details.description,
+  brandId: adData.details.brandId,
+  model_id: adData.details.model,
+  location: adData.details.location,
+  price: adData.price,
+  category_id: adData.category?.id,
+  user_id: userData.id,
+  name: userData.username,
+  //stock:"1",
+  image: adData.imageUri,
+});
+
+    if (adData.imageUri) {
+    formData.append("file", {
+      uri: adData.imageUri,
+      type: "image/jpeg",
+      name: "photo.jpg",
+    } as any);
+  }
     try {
       setLoading(true);
+      const token = await AsyncStorage.getItem("token");
 
-    
       const response = await axios.post(
         "https://backend.gamergizmo.com/products/createProduct",
         formData,
         {
           headers: {
             "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${userToken}`, 
+            Authorization: `Bearer ${token}`,
           },
         }
       );
 
       if (response.status === 200 || response.status === 201) {
         Alert.alert("Success", "Ad posted successfully!");
+        
       } else {
         Alert.alert("Error", "Failed to post ad. Please try again.");
       }
     } catch (error: any) {
-      if (error.response) {
-        Alert.alert(
-          "Error",
-          `Failed to post ad: ${error.response.data.message || "Unknown error"}`
-        );
+      console.log("Error Response:", JSON.stringify(error.response?.data, null, 2));
+
+      if (error.response?.data?.message) {
+        Alert.alert("Error", `Failed: ${error.response.data.message}`);
       } else {
-        Alert.alert("Error", "Failed to post ad. Please try again.");
+        Alert.alert("Error", "Something went wrong while posting the ad.");
       }
     } finally {
       setLoading(false);
@@ -189,11 +202,6 @@ const ViewDetails: React.FC = ({ navigation }: any) => {
       <View style={styles.section}>
         <Text style={styles.label}>Price:</Text>
         <TextInput style={styles.input} value={adData.price || "0"} editable={false} />
-      </View>
-
-      <View style={styles.section}>
-        <Text style={styles.label}>Image URI:</Text>
-        <TextInput style={styles.input} value={adData.imageUri || ""} editable={false} />
       </View>
 
       {adData.imageUri && (

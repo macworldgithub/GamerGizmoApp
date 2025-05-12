@@ -37,6 +37,7 @@ const Tell = () => {
   const [brand, setBrand] = useState("");
   const [brandId, setBrandId] = useState<number | null>(null);
   const [model, setModel] = useState("");
+   const [modelId, setModelId] = useState<number | null>(null);
   const [condition, setCondition] = useState("");
   const [location, setLocation] = useState("");
   const [brands, setBrands] = useState<Brand[]>([]);
@@ -128,6 +129,7 @@ const Tell = () => {
         brand,
         brandId,
         model,
+        modelId,
         condition,
         location,
         description,
