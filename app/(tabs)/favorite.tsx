@@ -47,7 +47,7 @@ const Favorite = () => {
       setLoading(false);
     }
   };
-
+//@ts-ignore
   const removeFavorite = async (productId) => {
     try {
       const userId = await AsyncStorage.getItem("userId");
@@ -76,7 +76,7 @@ const Favorite = () => {
       fetchFavorites();
     }, [])
   );
-
+//@ts-ignore
   const getImageUrl = (image_url) => {
     return image_url?.startsWith("https")
       ? image_url
@@ -123,6 +123,7 @@ const Favorite = () => {
               </Text>
               <TouchableOpacity
                 className="bg-white border border-gray-400 px-6 py-3 rounded-md mt-6"
+                //@ts-ignore
                 onPress={() => navigation.navigate("Home")}
               >
                 <Text className="text-black font-semibold">
@@ -134,9 +135,11 @@ const Favorite = () => {
             <FlatList
               horizontal
               data={favorites}
+              //@ts-ignore
               keyExtractor={(item) => item.id.toString()}
               showsHorizontalScrollIndicator={false}
               renderItem={({ item }) => {
+                //@ts-ignore
                 const product = item.product ?? item;
                 const imageUrl =
                   getImageUrl(product.product_images?.[0]?.image_url) ||

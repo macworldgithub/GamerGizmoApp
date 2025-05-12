@@ -28,6 +28,8 @@ const Profile = () => {
     fetchUser();
   }, []);
 
+  // const router = useRouter();
+
   return (
     <ScrollView className="bg-white">
       <View className="bg-white p-4  rounded-2xl mx-4 mt-6 border border-gray-200 ">
@@ -56,7 +58,7 @@ const Profile = () => {
       <View className="flex-row justify-center space-x-4 mt-6 mx-4">
         <TouchableOpacity className="border border-gray-200 px-6 py-3 rounded-xl w-40 flex-column items-center justify-center mr-7 ">
           <FontAwesome name="th-list" size={18} color="purple" />
-          <Text className="text-black font-bold ml-2 mt-3">My Ads</Text>
+          <Text className="text-black font-bold ml-2 mt-3" onPress={()=> router.push('/adds')}>My Ads</Text>
         </TouchableOpacity>
         <TouchableOpacity className="border border-gray-200 px-6 py-3 rounded-xl w-1/2 flex-column items-center justify-center ">
           <FontAwesome name="bookmark" size={18} color="purple" />

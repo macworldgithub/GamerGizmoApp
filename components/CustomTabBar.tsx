@@ -25,6 +25,7 @@ const CustomTabBar = ({
     "placead",
     "chat",
     "profile",
+    "adds",
     
   ];
 
