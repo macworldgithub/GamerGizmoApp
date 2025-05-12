@@ -145,6 +145,7 @@ const LoginScreen = () => {
         visible={showRegisterModal}
         onRequestClose={() => setShowRegisterModal(false)}
         animationType="slide"
+        animationType="slide"
       >
         <RegisterScreen onClose={() => setShowRegisterModal(false)} />
       </Modal>
