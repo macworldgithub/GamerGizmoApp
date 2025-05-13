@@ -18,11 +18,11 @@ export default function NoAds() {
 
       {/* Image & Message */}
       <View className="items-center">
-        {/* <Image
+        <Image
           source={require("../../assets/images/question.png")} // Adjust path
           className="w-52 h-52 mb-4 opacity-50"
           resizeMode="contain"
-        /> */}
+        />
         <Text className="text-lg font-bold mb-4 text-black">
           You haven’t placed any ads yet
         </Text>
