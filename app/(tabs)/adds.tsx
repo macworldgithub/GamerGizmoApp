@@ -154,12 +154,16 @@ export default function Adds() {
   };
 
   // 🔁 Refresh on focus or when refresh param is passed
-  useFocusEffect(
-    useCallback(() => {
-      fetchAds();
-    }, [currentPage, refresh])
-  );
-
+  // useFocusEffect(
+  //   useCallback(() => {
+  //     fetchAds();
+  //   }, [currentPage, refresh])
+  // );
+useFocusEffect(
+  useCallback(() => {
+    fetchAds();
+  }, [currentPage]) // ✅ safe dependency
+);
   return (
     <ScrollView style={styles.container}>
       <Text style={styles.header}>My Ads</Text>
