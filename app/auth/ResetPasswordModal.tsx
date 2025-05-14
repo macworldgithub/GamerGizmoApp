@@ -1,16 +1,16 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   View,
   Text,
   TextInput,
-  StyleSheet,
   TouchableOpacity,
   Modal,
-  ActivityIndicator,
   Alert,
+  ActivityIndicator,
 } from "react-native";
 import axios from "axios";
 import { useRouter } from "expo-router";
+import { API_BASE_URL } from "@/utils/config";
 
 interface ResetPasswordModalProps {
   visible: boolean;
@@ -24,36 +24,59 @@ const ResetPasswordModal: React.FC<ResetPasswordModalProps> = ({
   email,
 }) => {
   const router = useRouter();
-  const [otp, setOtp] = useState("");
+  const [otpDigits, setOtpDigits] = useState<string[]>(new Array(6).fill(""));
   const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [resendDisabled, setResendDisabled] = useState(false);
-  const [countdown, setCountdown] = useState(0);
+
+  const inputRefs = useRef<Array<TextInput | null>>([]);
 
   useEffect(() => {
-    let timer: NodeJS.Timeout;
-    if (resendDisabled && countdown > 0) {
-      timer = setTimeout(() => setCountdown(countdown - 1), 1000);
-    } else if (resendDisabled && countdown === 0) {
-      setResendDisabled(false);
+    // Autofocus first box
+    if (visible) {
+      setTimeout(() => {
+        inputRefs.current[0]?.focus();
+      }, 300);
     }
-    return () => clearTimeout(timer);
-  }, [countdown, resendDisabled]);
+  }, [visible]);
+
+  const handleOtpChange = (text: string, index: number) => {
+    if (/^\d*$/.test(text)) {
+      const newOtp = [...otpDigits];
+      newOtp[index] = text;
+      setOtpDigits(newOtp);
+      if (text && index < otpDigits.length - 1) {
+        inputRefs.current[index + 1]?.focus();
+      }
+    }
+  };
 
   const handleResetPassword = async () => {
-    if (!otp || !newPassword) {
-      Alert.alert("Error", "Please enter OTP and new password.");
+    const otp = otpDigits.join("").trim();
+
+    if (!otp || !newPassword || !confirmPassword) {
+      Alert.alert("Error", "Please fill in all fields.");
+      return;
+    }
+
+    if (newPassword.length < 6) {
+      Alert.alert("Error", "Password must be at least 6 characters long.");
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      Alert.alert("Error", "Passwords do not match.");
       return;
     }
 
     setLoading(true);
     try {
       const response = await axios.post(
-        "https://backend.gamergizmo.com/auth/resetPasswordOtp",
+        `${API_BASE_URL}/auth/resetPasswordOtp`,
         {
           email: email.trim(),
-          otp: otp.trim(),
-          newPassword: newPassword.trim(),
+          otp,
+          password: newPassword.trim(),
         },
         {
           headers: {
@@ -63,12 +86,12 @@ const ResetPasswordModal: React.FC<ResetPasswordModalProps> = ({
       );
 
       if (response.status === 200 || response.status === 201) {
-        Alert.alert("Success", "Password has been reset successfully.", [
+        Alert.alert("Password updated", "Your password has been reset successfully.", [
           {
             text: "OK",
             onPress: () => {
               onClose();
-              router.replace("/login");
+              router.push("/login");
             },
           },
         ]);
@@ -77,138 +100,69 @@ const ResetPasswordModal: React.FC<ResetPasswordModalProps> = ({
       }
     } catch (error: any) {
       console.error("Reset error:", error.response?.data);
-      Alert.alert(
-        "Error",
-        error.response?.data?.message || "Something went wrong."
-      );
+      Alert.alert("Error", error.response?.data?.message || "Something went wrong.");
     } finally {
       setLoading(false);
     }
   };
 
-  const handleResendOtp = async () => {
-    if (resendDisabled) return;
-
-    setResendDisabled(true);
-    setCountdown(10);
-    try {
-      const response = await axios.post(
-        "https://backend.gamergizmo.com/auth/forgotPassword",
-        { email: email.trim() },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      if (response.status === 200 || response.status === 201) {
-        Alert.alert("Success", "OTP resent to your email.");
-      } else {
-        Alert.alert("Error", "Failed to resend OTP.");
-      }
-    } catch (error: any) {
-      console.error("Resend error:", error.response?.data);
-      Alert.alert(
-        "Error",
-        error.response?.data?.message || "Failed to resend OTP."
-      );
-    }
-  };
-
   return (
     <Modal visible={visible} animationType="slide" transparent={false} onRequestClose={onClose}>
-      <View style={styles.container}>
-        <Text style={styles.title}>Reset Password</Text>
+      <View className="flex-1 bg-white justify-center px-5">
+        <Text className="text-xl font-bold text-center text-fuchsia-600 mb-2">
+          Enter OTP & Reset Password
+        </Text>
+        <Text className="text-gray-500 text-center mb-5">
+          Enter the OTP sent to your email and reset your password.
+        </Text>
 
+        <View className="flex-row justify-center space-x-2 mb-6">
+          {otpDigits.map((digit, index) => (
+            <TextInput
+              key={index}
+              ref={(el) => (inputRefs.current[index] = el)}
+              className="border-2 border-fuchsia-400 text-center text-xl rounded-md w-12 h-12"
+              keyboardType="number-pad"
+              maxLength={1}
+              value={digit}
+              onChangeText={(text) => handleOtpChange(text, index)}
+            />
+          ))}
+        </View>
+
+        <Text className="mb-1 text-sm font-medium">New Password</Text>
         <TextInput
-          style={styles.input}
-          placeholder="Enter OTP"
-          keyboardType="number-pad"
-          value={otp}
-          onChangeText={setOtp}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Enter new password"
+          className="border-2 border-fuchsia-400 rounded-md px-4 py-2 mb-4"
           secureTextEntry
+          placeholder="New Password"
           value={newPassword}
           onChangeText={setNewPassword}
         />
 
+        <Text className="mb-1 text-sm font-medium">Confirm Password</Text>
+        <TextInput
+          className="border-2 border-fuchsia-400 rounded-md px-4 py-2 mb-6"
+          secureTextEntry
+          placeholder="Confirm Password"
+          value={confirmPassword}
+          onChangeText={setConfirmPassword}
+        />
+
         {loading ? (
-          <ActivityIndicator size="large" color="#007bff" />
+          <ActivityIndicator size="large" color="#d946ef" />
         ) : (
-          <TouchableOpacity style={styles.button} onPress={handleResetPassword}>
-            <Text style={styles.buttonText}>Submit</Text>
+          <TouchableOpacity
+            className="bg-fuchsia-500 py-4 rounded-xl"
+            onPress={handleResetPassword}
+          >
+            <Text className="text-white text-center font-bold uppercase">
+              Reset Password
+            </Text>
           </TouchableOpacity>
         )}
-
-        <TouchableOpacity onPress={handleResendOtp} disabled={resendDisabled}>
-          <Text
-            style={[
-              styles.resendText,
-              resendDisabled && { opacity: 0.5 },
-            ]}
-          >
-            {resendDisabled ? `Resend in ${countdown}s...` : "Resend OTP"}
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity onPress={onClose} style={styles.cancelBtn}>
-          <Text style={styles.cancelText}>Cancel</Text>
-        </TouchableOpacity>
       </View>
     </Modal>
   );
 };
 
 export default ResetPasswordModal;
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-    justifyContent: "center",
-    backgroundColor: "#fff",
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 30,
-    textAlign: "center",
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 8,
-    padding: 12,
-    marginBottom: 15,
-  },
-  button: {
-    backgroundColor: "#007bff",
-    padding: 15,
-    borderRadius: 8,
-    alignItems: "center",
-    marginTop: 10,
-  },
-  buttonText: {
-    color: "#fff",
-    fontWeight: "bold",
-  },
-  cancelBtn: {
-    marginTop: 20,
-    alignItems: "center",
-  },
-  cancelText: {
-    color: "red",
-    fontSize: 16,
-  },
-  resendText: {
-    color: "#007bff",
-    textAlign: "center",
-    marginTop: 20,
-    textDecorationLine: "underline",
-    fontWeight: "bold",
-  },
-});

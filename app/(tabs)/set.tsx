@@ -6,23 +6,26 @@ import {
   ScrollView,
   Image,
   TextInput,
+  ToastAndroid,
+  Platform,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { Link } from "expo-router";
-// ✅ Redux
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../store/store"; // adjust if your store path is different
-import { setPrice } from "../../store/slice/adSlice"; // adjust the path as needed
+import { RootState } from "../../store/store";
+import { setPrice } from "../../store/slice/adSlice";
 
 const Set = () => {
   const dispatch = useDispatch();
+  const router = useRouter();
+  const params = useLocalSearchParams();
 
- 
+  const from = params.from; // from query param
+
   const storedPrice = useSelector((state: RootState) => state.ad.price);
   const [price, setPriceLocal] = useState(Number(storedPrice) || 0);
-  const [quantity, setQuantity] = useState(1); // Not used in Redux, adjust if needed
+  const [quantity, setQuantity] = useState(0);
 
- 
   useEffect(() => {
     dispatch(setPrice(price.toString()));
   }, [price]);
@@ -33,20 +36,40 @@ const Set = () => {
   const decrement = (setter: (val: number) => void, value: number) =>
     setter(value > 0 ? value - 1 : 0);
 
+  const handleNext = () => {
+    if (price <= 0 || quantity <= 0) {
+      const message = "Price and quantity must be greater than 0.";
+      if (Platform.OS === "android") {
+        ToastAndroid.show(message, ToastAndroid.SHORT);
+      } else {
+        alert(message);
+      }
+      return;
+    }
+
+    router.push("/image");
+  };
+
+  const handleBack = () => {
+    if (from === "chooseType") {
+      router.push("/chooseType");
+    } else {
+      router.push("/tell");
+    }
+  };
+
   return (
     <ScrollView className="flex-1 bg-white px-4 py-6 pb-24">
       <View className="flex-row items-center border-b border-gray-200 pb-4 mb-6">
-        <Link href="/tell" asChild>
-          <TouchableOpacity>
-            <Image source={require("../../assets/images/left.png")} />
-          </TouchableOpacity>
-        </Link>
+        <TouchableOpacity onPress={handleBack}>
+          <Image source={require("../../assets/images/left.png")} />
+        </TouchableOpacity>
         <Text className="text-black text-base font-semibold flex-1 text-center -ml-6">
           Set Price
         </Text>
       </View>
 
-      {/* Price Input with +/- */}
+      {/* Price Input */}
       <View className="border border-gray-200 rounded-md mb-4 p-3 flex-row items-center justify-between">
         <Text className="text-base text-black mr-2">Price (AED):</Text>
         <TouchableOpacity onPress={() => decrement(setPriceLocal, price)}>
@@ -66,7 +89,7 @@ const Set = () => {
         </TouchableOpacity>
       </View>
 
-      {/* Quantity Input with +/- */}
+      {/* Quantity Input */}
       <View className="border border-gray-200 rounded-md mb-10 p-3 flex-row items-center justify-between">
         <Text className="text-base text-black mr-2">Quantity:</Text>
         <TouchableOpacity onPress={() => decrement(setQuantity, quantity)}>
@@ -86,17 +109,15 @@ const Set = () => {
         </TouchableOpacity>
       </View>
 
-      <Link href="/image" asChild>
-        <TouchableOpacity>
-          <Image
-            source={require("../../assets/images/next1.png")}
-            className="ml-20"
-          />
-        </TouchableOpacity>
-      </Link>
+      {/* Next Button */}
+      <TouchableOpacity onPress={handleNext}>
+        <Image
+          source={require("../../assets/images/next1.png")}
+          className="ml-20"
+        />
+      </TouchableOpacity>
     </ScrollView>
   );
 };
 
 export default Set;
-

@@ -8,14 +8,20 @@ interface NamedEntity {
 interface AdDetails {
   title: string;
   description: string;
-  brand: string;
+  stock?: string | number;
+  brand: string | null;
   brandId: number | null;
-  model: string;
+  model: string | null;
   modelId: number | null;
   condition: string;
   conditionId: number | null;
   location: string;
   locationId: number | null;
+
+  itemType?: "components" | "accessories" | ""; 
+  componentType?: string; 
+  componentTypeId?: number;
+  accessoryType?: string; 
 }
 
 interface AdState {
@@ -23,7 +29,7 @@ interface AdState {
   category: NamedEntity | null;
   details: AdDetails;
   price: string | null;
-  imageUri: string | null;
+  imageUris: string[];
 }
 
 const initialState: AdState = {
@@ -40,11 +46,11 @@ const initialState: AdState = {
     conditionId: null,
     location: '',
     locationId: null,
-    
-   
+
+
   },
   price: null,
-  imageUri: null,
+   imageUris: [],
 };
 
 const adSlice = createSlice({
@@ -57,17 +63,20 @@ const adSlice = createSlice({
     setCategory: (state, action: PayloadAction<NamedEntity>) => {
       state.category = action.payload;
     },
-    setDetails: (state, action: PayloadAction<AdDetails>) => {
-      state.details = action.payload;
+    setDetails: (state, action: PayloadAction<Partial<AdDetails>>) => {
+      state.details = {
+        ...state.details,
+        ...action.payload,
+      };
     },
     setPrice: (state, action: PayloadAction<string>) => {
       state.price = action.payload;
     },
-    setImageUri: (state, action: PayloadAction<string>) => {
-      state.imageUri = action.payload;
+    setImageUris: (state, action: PayloadAction<string[]>) => {
+      state.imageUris = action.payload;
     },
   },
 });
 
-export const { setCity, setCategory, setDetails, setPrice, setImageUri } = adSlice.actions;
+export const { setCity, setCategory, setDetails, setPrice, setImageUris, } = adSlice.actions;
 export default adSlice.reducer;

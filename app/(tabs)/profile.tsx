@@ -5,13 +5,12 @@ import React, { useEffect, useState } from "react";
 import { View, Text, Image, TouchableOpacity, ScrollView } from "react-native";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import { useRouter } from "expo-router";
-
+import ContactModal from "../(tabs)/ContactModal";
 const Profile = () => {
   const router = useRouter();
   const [user, setUser] = useState<{ name: string; createdAt?: string } | null>(
     null
-  );
-
+  );  const [contactModalVisible, setContactModalVisible] = useState(false);
   useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -181,19 +180,25 @@ const Profile = () => {
           />
         </TouchableOpacity>
 
-        <TouchableOpacity className="flex-row items-center justify-between py-4 ">
-          <View className="flex-row items-center space-x-3">
-            <Image
-              source={require("../../assets/images/call.png")}
-              className="w-6 h-6"
-            />
-            <Text className="text-black ml-3">Call Us</Text>
-          </View>
-          <Image
-            source={require("../../assets/images/next.png")}
-            className="w-4 h-4"
-          />
-        </TouchableOpacity>
+          <View className="p-4">
+      {/* Your Call Us button */}
+      <TouchableOpacity 
+        className="flex-row items-center space-x-3"
+        onPress={() => setContactModalVisible(true)}
+      >
+        <Image
+          source={require("../../assets/images/call.png")}
+          className="w-6 h-6"
+        />
+        <Text className="text-black ml-3">Call Us</Text>
+      </TouchableOpacity>
+
+      {/* Contact Modal */}
+      <ContactModal
+        visible={contactModalVisible}
+        onClose={() => setContactModalVisible(false)}
+      />
+    </View>
         <TouchableOpacity className="flex-row items-center justify-between py-4 ">
           <View className="flex-row items-center space-x-3">
             <Image
