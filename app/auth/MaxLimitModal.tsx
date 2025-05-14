@@ -2,19 +2,20 @@ import React from "react";
 import { View, Text, TouchableOpacity, Modal, ScrollView } from "react-native";
 
 type Session = {
-location: string;
-platform: string;
-timestamp: string;
+  location: string;
+  platform: string;
+  timestamp: string;
+  token: string;
 };
 
 type Props = {
 visible: boolean;
 onClose: () => void;
 sessions: Session[];
-onLogoutSession: (index: number) => void;
+handleLogoutSession: (index: number) => void;
 };
 
-const MaxLimitModal = ({ visible, onClose, sessions, onLogoutSession }: Props) => {
+const MaxLimitModal = ({ visible, onClose, sessions, handleLogoutSession }: Props) => {
 return (
     <Modal visible={visible} transparent animationType="fade">
     <View className="flex-1 justify-center items-center bg-black/50 px-6">
@@ -35,7 +36,7 @@ return (
                 </Text>
                 <TouchableOpacity
                 className="bg-red-500 px-2 py-1 rounded"
-                onPress={() => onLogoutSession(index)}
+                onPress={() => handleLogoutSession(index)}
                 >
                 <Text className="text-white">Logout</Text>
                 </TouchableOpacity>
