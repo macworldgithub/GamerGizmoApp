@@ -7,9 +7,9 @@ interface ContactModalProps {
 }
 
 const ContactModal = ({ visible, onClose }: ContactModalProps) => {
-  const phoneNumber = "80038249953"; // Without hyphens for calling
-  const displayNumber = "800-38249953";
-  const email = "customersupport@dubizzle.com";
+  const phoneNumber = "+971555795213"; // Without hyphens for calling
+  const displayNumber = "+971555795213";
+  const email = "customersupport@gamergizmo.com";
 
   const handleCall = async () => {
     try {
@@ -47,8 +47,12 @@ const ContactModal = ({ visible, onClose }: ContactModalProps) => {
           {/* Content */}
           <View className="space-y-4">
             <View className="border-b border-gray-200 pb-4">
-              <Text className="font-semibold mb-2">Call us to get in touch</Text>
-              <Text className="text-gray-600">9:00 AM to 6:00 PM, Monday to Friday</Text>
+              <Text className="font-semibold mb-2 ml-20">
+                Call us to get in touch
+              </Text>
+              <Text className="text-gray-600 ml-12">
+                9:00 AM to 6:00 PM, Monday to Friday
+              </Text>
             </View>
 
             {/* Call Button */}
@@ -57,7 +61,7 @@ const ContactModal = ({ visible, onClose }: ContactModalProps) => {
               className="flex-row items-center justify-center py-3 bg-red-600 rounded-md"
             >
               <Ionicons name="call" size={20} color="white" className="mr-2" />
-              <Text className="text-white font-medium">{displayNumber} (dubizzle)</Text>
+              <Text className="text-white font-medium">{displayNumber} </Text>
             </TouchableOpacity>
 
             {/* Email Button */}
@@ -65,8 +69,13 @@ const ContactModal = ({ visible, onClose }: ContactModalProps) => {
               onPress={handleEmail}
               className="flex-row items-center justify-center py-3  rounded-md"
             >
-              <Ionicons name="mail" size={20} color="#6D28D9" className="mr-2" />
-              <Text className="text-purple-600 font-medium">Or email us at {email}</Text>
+              <Ionicons
+                name="mail"
+                size={20}
+                color="#6D28D9"
+                className="mr-2"
+              />
+              <Text className="text-purple-600 font-medium">{email}</Text>
             </TouchableOpacity>
           </View>
         </View>
