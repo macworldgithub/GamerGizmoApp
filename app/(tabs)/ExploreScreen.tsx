@@ -239,12 +239,8 @@ const ExploreScreen = () => {
               })()}
 
               <View className="flex-row justify-between mt-3">
-                <TouchableOpacity className="bg-[#8fff97] flex-1 mx-1 py-2 rounded-full">
-                  <Text className="text-black text-center font-semibold">
-                    WhatsApp
-                  </Text>
-                </TouchableOpacity>
-                <TouchableOpacity className="bg-[#e8e3fc] flex-1 mx-1 py-2 rounded-full">
+               
+                <TouchableOpacity className="bg-[#e8e3fc] w-32 mx-1 py-2 rounded-full">
                   <Text className="text-black text-center font-semibold">
                     Chat
                   </Text>
