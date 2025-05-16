@@ -1,5 +1,5 @@
 import axios from "axios";
-import { Alert } from "react-native";
+import { Alert, Button } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { useEffect, useState } from "react";
 import { View, Text, Image, TouchableOpacity, ScrollView } from "react-native";
@@ -8,12 +8,20 @@ import { useRouter } from "expo-router";
 import ContactModal from "../(tabs)/ContactModal";
 import CitySelectorModal from "../(tabs)/CityModal";
 import LanguageModal from "../(tabs)/LanguageModal";
-import TermsModal from "../(tabs)/TermsModal"; // Adjust path if needed
+import TermsModal from "../(tabs)/TermsModal"; 
+import EditProfilePhotoModal from './EditProfilePhotoModal';
+import { Pencil } from "lucide-react-native";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store/store";
 
 const Profile = () => {
   const router = useRouter();
-  const [user, setUser] = useState<{ name: string; createdAt?: string } | null>(
-    null
+  const user = useSelector((state: RootState) => state.user);
+
+
+  const [modalVisible, setModalVisible] = useState(false);
+  const [profileImage, setProfileImage] = useState(
+    user?.profile ? { uri: user.profile } : null
   );
   const [contactModalVisible, setContactModalVisible] = useState(false);
   const [cityModalVisible, setCityModalVisible] = useState(false);
@@ -22,44 +30,55 @@ const Profile = () => {
   const [selectedLanguage, setSelectedLanguage] = useState("English");
   const [termsModalVisible, setTermsModalVisible] = useState(false);
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const userData = await AsyncStorage.getItem("user");
-        if (userData) {
-          const parsed = JSON.parse(userData);
-          setUser(parsed);
-        }
-      } catch (error) {
-        console.log("Error fetching user:", error);
-      }
-    };
+   React.useEffect(() => {
+    if (user?.profile) {
+      setProfileImage({ uri: user.profile });
+    }
+  }, [user?.profile]);
 
-    fetchUser();
-  }, []);
-
-  // const router = useRouter();
-
+  
   return (
     <ScrollView className="bg-white">
-      <View className="bg-white p-4  rounded-2xl mx-4 mt-6 border border-gray-200 ">
+      <View className="bg-white rounded-2xl mx-4 mt-4 py-4 px-4 border border-gray-200 ">
         <View className="flex-row items-center space-x-4 gap-4">
-          <Image
-            source={require("../../assets/images/profile.png")}
-            className="w-14 h-14 rounded-full"
-          />
+          <View className="items-center ">
+            <TouchableOpacity onPress={() => setModalVisible(true)}>
+              <View className="relative">
+                <Image
+                  source={
+                    profileImage
+                      ? { uri: profileImage.uri }
+                      : require('../../assets/images/profile.png')
+                  }
+                  style={{ width: 70, height: 70, borderRadius: 50 }}
+                />
+                <View className="absolute bottom-0 right-0 bg-white rounded-full p-1 shadow">
+                  <Pencil size={16} color="#000" />
+                </View>
+              </View>
+            </TouchableOpacity>
+
+            <EditProfilePhotoModal
+              visible={modalVisible}
+              onClose={() => setModalVisible(false)}
+              setProfileImage={setProfileImage}
+            />
+          </View>
+
           <View>
-            <Text className="text-lg font-bold text-black">
-              {user?.name || "Michel Smith"}
+          <Text className="text-lg font-bold text-black">
+              {user?.first_name && user?.last_name
+                ? `${user.first_name} ${user.last_name}`
+                : "Not Logged In"}
             </Text>
             <View className="flex-row items-center space-x-2 mt-1 border border-gray-300 ">
-              <Text className="text-xs text-gray-600  px-2 py-1 ml-2">
+              <Text className="text-xs text-gray-600   px-2 py-1 ml-2">
                 Get Verified
               </Text>
               <FontAwesome name="check-circle" size={14} color="purple" />
             </View>
-            <Text className="text-xs text-gray-500 mt-3">
-              Joined on {user?.createdAt?.slice(0, 10) || "January 2025"}
+          <Text className="text-xs text-gray-500 mt-3">
+              Joined on {user?.created_at?.slice(0, 10) || "Unknown"}
             </Text>
           </View>
         </View>
@@ -254,6 +273,8 @@ const Profile = () => {
 
         <TouchableOpacity
           className="flex-row items-center justify-between py-4"
+         
+
           onPress={async () => {
             try {
               const token = await AsyncStorage.getItem("token");
@@ -277,26 +298,22 @@ const Profile = () => {
               );
 
               if (response.status === 200 || response.status === 201) {
+
                 Alert.alert("Success", "You have been logged out.");
                 await AsyncStorage.removeItem("token");
                 await AsyncStorage.removeItem("user");
                 router.replace("/auth/login");
               } else {
-                console.warn(
-                  "Logout non-200 response:",
-                  response.status,
-                  response.data
-                );
+                console.warn("Logout non-200 response:", response.status, response.data);
                 Alert.alert("Logout Failed", "Unexpected server response.");
               }
             } catch (error: any) {
-              console.error(
-                "Logout error",
-                error.response?.data || error.message
-              );
+              console.error("Logout error", error.response?.data || error.message);
               Alert.alert("Error", "Failed to log out. Please try again.");
             }
           }}
+
+
         >
           <View className="flex-row items-center space-x-3">
             <Image
@@ -309,7 +326,8 @@ const Profile = () => {
             source={require("../../assets/images/next.png")}
             className="w-4 h-4"
           />
-        </TouchableOpacity>
+        </TouchableOpacity>             
+
       </View>
     </ScrollView>
   );

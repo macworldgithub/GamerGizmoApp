@@ -11,21 +11,19 @@ interface UserState {
   is_email_verified: boolean | null;
   created_at: string | null;
   phone: string | null;
-  is_admin_verified: false | null;
+  is_admin_verified: boolean | null;
   dob: string | null;
   profile: string | null;
   gender: string | null;
   nic_front_image: string | null;
   nic_back_image: string | null;
   address: string | null;
-  userData: any;
   isLoggedIn: boolean;
 }
 
 const initialState: UserState = {
   token: null,
   id: null,
-  profile: null,
   username: null,
   email: null,
   first_name: null,
@@ -36,28 +34,35 @@ const initialState: UserState = {
   phone: null,
   is_admin_verified: null,
   dob: null,
+  profile: null,
   gender: null,
   nic_front_image: null,
   nic_back_image: null,
   address: null,
-  userData: null,
   isLoggedIn: false,
 };
 
 const loginSlice = createSlice({
-  name: "login",
+  name: "user",
   initialState,
   reducers: {
-    InitializeUserData: (state, action: PayloadAction<any>) => {
-      state.userData = action.payload;
-      state.isLoggedIn = true;
+    InitializeUserData: (state, action: PayloadAction<Partial<UserState>>) => {
+      return {
+        ...state,
+        ...action.payload,
+        isLoggedIn: true,
+      };
     },
-    LogoutUser: (state) => {
-      state.userData = null;
-      state.isLoggedIn = false;
+    UpdateUserField: (
+      state,
+      action: PayloadAction<{ key: keyof UserState; value: any }>
+    ) => {
+      const { key, value } = action.payload;
+      state[key] = value;
     },
+    LogoutUser: () => initialState,
   },
 });
 
-export const { InitializeUserData, LogoutUser } = loginSlice.actions;
+export const { InitializeUserData, UpdateUserField, LogoutUser } = loginSlice.actions;
 export default loginSlice.reducer;
