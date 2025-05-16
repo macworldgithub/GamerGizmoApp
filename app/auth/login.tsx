@@ -56,7 +56,7 @@ const Login = ({ onClose }: Props) => {
         await AsyncStorage.setItem(
           "user",
           JSON.stringify({
-            name: user?.name || email,
+             name: user?.name || email,
             createdAt: user?.createdAt,
           })
         );
@@ -69,7 +69,7 @@ const Login = ({ onClose }: Props) => {
         router.replace("/(tabs)/home");
       } else {
         alert(response.data.message || "Login failed");
-      }
+      }  
     } catch (error: any) {
       const data = error.response?.data;
       console.log(data || error.message);

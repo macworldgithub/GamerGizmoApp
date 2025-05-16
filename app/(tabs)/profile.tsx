@@ -61,7 +61,7 @@ const Profile = () => {
             <EditProfilePhotoModal
               visible={modalVisible}
               onClose={() => setModalVisible(false)}
-              setProfileImage={setProfileImage}
+              setProfileImage={setProfileImage}   
             />
           </View>
 
@@ -82,6 +82,7 @@ const Profile = () => {
             </Text>
           </View>
         </View>
+        
       </View>
 
       <View className="flex-row justify-center space-x-4 mt-6 mx-4">
@@ -273,6 +274,7 @@ const Profile = () => {
 
         <TouchableOpacity
           className="flex-row items-center justify-between py-4"
+         
          
 
           onPress={async () => {
