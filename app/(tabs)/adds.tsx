@@ -153,12 +153,8 @@ export default function Adds() {
     }
   };
 
-  // 🔁 Refresh on focus or when refresh param is passed
-  // useFocusEffect(
-  //   useCallback(() => {
-  //     fetchAds();
-  //   }, [currentPage, refresh])
-  // );
+ 
+ 
 useFocusEffect(
   useCallback(() => {
     fetchAds();
