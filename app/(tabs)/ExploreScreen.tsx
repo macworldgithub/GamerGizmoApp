@@ -82,7 +82,6 @@ const ExploreScreen = () => {
     }
   }, [category, condition]);
 
-
   const getImageUrl = (image_url: string) => {
     return image_url?.startsWith("https") ? image_url : image_url;
   };
@@ -94,11 +93,13 @@ const ExploreScreen = () => {
       </View>
     );
   }
-  
+
   if (noResults) {
     return (
       <View className="flex-1 justify-center items-center">
-        <Text className="text-xl font-bold text-gray-700">No products found</Text>
+        <Text className="text-xl font-bold text-gray-700">
+          No products found
+        </Text>
       </View>
     );
   }
@@ -143,7 +144,6 @@ const ExploreScreen = () => {
               key={index}
               className="bg-white p-3 mb-4 rounded-lg shadow-md border border-gray-200"
             >
-             
               {item.images && item.images.length > 0 ? (
                 <Swiper
                   style={{ height: 200 }}
@@ -172,14 +172,19 @@ const ExploreScreen = () => {
                   resizeMode="cover"
                 />
               )}
-              
-             
+              <TouchableOpacity
+                onPress={() => router.push(`/product/${item.id}`)}
+              >
+                <Text className="text-purple-600 font-bold text-lg mt-2">
+                  AED {item.price}
+                </Text>
+              </TouchableOpacity>
 
-              <Text className="text-purple-600 font-bold text-lg mt-2">
-                AED {item.price}
-              </Text>
-
-              <Text className="text-black font-bold mt-1" numberOfLines={1} ellipsizeMode="tail">
+              <Text
+                className="text-black font-bold mt-1"
+                numberOfLines={1}
+                ellipsizeMode="tail"
+              >
                 {item.name}
               </Text>
 
@@ -192,25 +197,43 @@ const ExploreScreen = () => {
                   return (
                     <View className="flex-row flex-wrap mt-1 gap-2">
                       {lifespan && (
-                        <Text className="text-gray-600 text-sm bg-gray-200 w-fit py-1 px-1 rounded-md">Lifespan: {lifespan}</Text>
+                        <Text className="text-gray-600 text-sm bg-gray-200 w-fit py-1 px-1 rounded-md">
+                          Lifespan: {lifespan}
+                        </Text>
                       )}
                       {lighting && (
-                        <Text className="text-gray-600 text-sm bg-gray-200 w-fit py-1 px-1 rounded-md">Lighting: {lighting}</Text>
+                        <Text className="text-gray-600 text-sm bg-gray-200 w-fit py-1 px-1 rounded-md">
+                          Lighting: {lighting}
+                        </Text>
                       )}
                       {color && (
-                        <Text className="text-gray-600 text-sm bg-gray-200 w-fit py-1 px-1 rounded-md">Color: {color}</Text>
+                        <Text className="text-gray-600 text-sm bg-gray-200 w-fit py-1 px-1 rounded-md">
+                          Color: {color}
+                        </Text>
                       )}
                     </View>
                   );
                 } else {
                   return (
-                    <Text
-                      className="text-gray-600 text-sm mt-1"
-                      numberOfLines={1}
-                      ellipsizeMode="tail"
+                    // <Text
+                    //   className="text-gray-600 text-sm mt-1"
+                    //   numberOfLines={1}
+                    //   ellipsizeMode="tail"
+                    // >
+                    //   {item.description}
+                    // </Text>
+
+                    <TouchableOpacity
+                      onPress={() => router.push(`/product/${item.id}`)}
                     >
-                      {item.description}
-                    </Text>
+                      <Text
+                        className="text-gray-600 text-sm mt-1 underline"
+                        numberOfLines={1}
+                        ellipsizeMode="tail"
+                      >
+                        {item.description}
+                      </Text>
+                    </TouchableOpacity>
                   );
                 }
               })()}
@@ -222,7 +245,9 @@ const ExploreScreen = () => {
                   </Text>
                 </TouchableOpacity>
                 <TouchableOpacity className="bg-[#e8e3fc] flex-1 mx-1 py-2 rounded-full">
-                  <Text className="text-black text-center font-semibold">Chat</Text>
+                  <Text className="text-black text-center font-semibold">
+                    Chat
+                  </Text>
                 </TouchableOpacity>
               </View>
             </View>
