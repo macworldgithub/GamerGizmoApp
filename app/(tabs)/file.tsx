@@ -6,7 +6,7 @@ export default function ProfileScreen() {
     <View className="flex-1 bg-white">
    
       <View className="flex-row items-center p-4 border-b border-gray-200 mt-3">
-        <TouchableOpacity>
+        <TouchableOpacity  onPress={() => router.push('/profile')}>
           <Image source={require("../../assets/images/arrow.png")} />
         </TouchableOpacity>
         <Text className="text-lg font-semibold ml-32">Profile</Text>

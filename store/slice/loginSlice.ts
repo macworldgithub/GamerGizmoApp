@@ -53,9 +53,9 @@ const loginSlice = createSlice({
         isLoggedIn: true,
       };
     },
-    UpdateUserField: (
-      state,
-      action: PayloadAction<{ key: keyof UserState; value: any }>
+    UpdateUserField:<K extends keyof UserState> (
+      state: UserState,
+      action: PayloadAction<{ key: K; value: UserState[K] }>
     ) => {
       const { key, value } = action.payload;
       state[key] = value;

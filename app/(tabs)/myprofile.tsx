@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, ScrollView, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, ScrollView, Alert, Image } from 'react-native';
 import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../store/store';
 import { Picker } from '@react-native-picker/picker';
 import { API_BASE_URL } from '@/utils/config';
 import { InitializeUserData } from '@/store/slice/loginSlice';
-
+import { useRouter } from 'expo-router';
 type GenderType = 'male' | 'female' | 'other';
 
 type FormDataType = {
@@ -31,7 +31,7 @@ const EditProfileScreen = () => {
   });
 
   const [errors, setErrors] = useState<Partial<Record<keyof FormDataType, string>>>({});
-
+  const router = useRouter();
   const handleChange = (name: keyof FormDataType, value: string) => {
     setFormData(prev => ({ ...prev, [name]: value }));
     setErrors(prev => ({ ...prev, [name]: '' }));
@@ -67,7 +67,8 @@ const EditProfileScreen = () => {
   const handleSave = async () => {
     const newErrors: any = {};
     ['first_name', 'last_name', 'phone', 'dob', 'gender'].forEach((key) => {
-      if (!formData[key]) {
+      const field = key as keyof FormDataType;
+      if (!formData[field]) {
         newErrors[key] = `${key.charAt(0).toUpperCase() + key.slice(1)} is required`;
       }
     });
@@ -111,8 +112,12 @@ const EditProfileScreen = () => {
 
   return (
     <ScrollView className="flex-1 bg-white p-5">
-      <Text className="text-xl font-bold mb-4">Edit Profile</Text>
-
+      <View className="flex-row items-center p-4 border-b border-gray-200 mt-1 mb-2">
+        <TouchableOpacity onPress={() => router.push('/file')}>
+          <Image source={require("../../assets/images/arrow.png")} />
+        </TouchableOpacity>
+        <Text className="text-lg font-semibold ml-32">Edit Profile</Text>
+      </View>
       <InputField
         label="First Name"
         value={formData.first_name}
