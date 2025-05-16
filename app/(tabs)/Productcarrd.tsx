@@ -46,7 +46,9 @@ const Productcarrd = ({
   return (
     <>
       <View className="flex-row items-center justify-between">
-        <Text className="text-black font-bold text-lg mb-3">{title}</Text>
+        <TouchableOpacity onPress={handleExplore}>
+          <Text className="text-black font-bold text-lg mb-3">{title}</Text>
+        </TouchableOpacity>
         <TouchableOpacity onPress={handleExplore}>
           <Image source={require("../../assets/images/right.png")} />
         </TouchableOpacity>

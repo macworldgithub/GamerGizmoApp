@@ -5,6 +5,10 @@ import React, { useEffect, useState } from "react";
 import { View, Text, Image, TouchableOpacity, ScrollView } from "react-native";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import { useRouter } from "expo-router";
+import ContactModal from "../(tabs)/ContactModal";
+import CitySelectorModal from "../(tabs)/CityModal";
+import LanguageModal from "../(tabs)/LanguageModal";
+import TermsModal from "../(tabs)/TermsModal"; 
 import EditProfilePhotoModal from './EditProfilePhotoModal';
 import { Pencil } from "lucide-react-native";
 import { useSelector } from "react-redux";
@@ -13,12 +17,18 @@ import { RootState } from "@/store/store";
 const Profile = () => {
   const router = useRouter();
   const user = useSelector((state: RootState) => state.user);
-  // const [user, setUser] = useState<any>(null);
+
 
   const [modalVisible, setModalVisible] = useState(false);
   const [profileImage, setProfileImage] = useState(
     user?.profile ? { uri: user.profile } : null
   );
+  const [contactModalVisible, setContactModalVisible] = useState(false);
+  const [cityModalVisible, setCityModalVisible] = useState(false);
+  const [selectedCity, setSelectedCity] = useState("All UAE");
+  const [languageModalVisible, setLanguageModalVisible] = useState(false);
+  const [selectedLanguage, setSelectedLanguage] = useState("English");
+  const [termsModalVisible, setTermsModalVisible] = useState(false);
 
    React.useEffect(() => {
     if (user?.profile) {
@@ -26,8 +36,7 @@ const Profile = () => {
     }
   }, [user?.profile]);
 
- 
-
+  
   return (
     <ScrollView className="bg-white">
       <View className="bg-white rounded-2xl mx-4 mt-4 py-4 px-4 border border-gray-200 ">
@@ -79,7 +88,12 @@ const Profile = () => {
       <View className="flex-row justify-center space-x-4 mt-6 mx-4">
         <TouchableOpacity className="border border-gray-200 px-6 py-3 rounded-xl w-40 flex-column items-center justify-center mr-7 ">
           <FontAwesome name="th-list" size={18} color="purple" />
-          <Text className="text-black font-bold ml-2 mt-3">My Ads</Text>
+          <Text
+            className="text-black font-bold ml-2 mt-3"
+            onPress={() => router.push("/adds")}
+          >
+            My Ads
+          </Text>
         </TouchableOpacity>
         <TouchableOpacity className="border border-gray-200 px-6 py-3 rounded-xl w-1/2 flex-column items-center justify-center ">
           <FontAwesome name="bookmark" size={18} color="purple" />
@@ -144,22 +158,34 @@ const Profile = () => {
           />
         </TouchableOpacity>
 
-        <TouchableOpacity className="flex-row items-center justify-between py-4 ">
+        <TouchableOpacity
+          className="flex-row items-center justify-between py-4"
+          onPress={() => setCityModalVisible(true)}
+        >
           <View className="flex-row items-center space-x-3">
             <Image
               source={require("../../assets/images/city.png")}
               className="w-6 h-6"
             />
-            <Text className="text-black ml-3 ">City</Text>
+            <Text className="text-black ml-3">City</Text>
           </View>
-          {/* <Text className="text-gray-500  ">All UAE</Text> */}
-          <Image
-            source={require("../../assets/images/next.png")}
-            className="w-4 h-4"
-          />
+          <Text className="text-gray-500">{selectedCity}</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity className="flex-row items-center justify-between py-4 border-b border-gray-200 ">
+        {/* City Selector Modal */}
+        <CitySelectorModal
+          //@ts-ignore
+          visible={cityModalVisible}
+          //@ts-ignore
+          onClose={() => setCityModalVisible(false)}
+          selectedCity={selectedCity}
+          onSelect={(city: any) => setSelectedCity(city)}
+        />
+
+        <TouchableOpacity
+          className="flex-row items-center justify-between py-4 border-b border-gray-200"
+          onPress={() => setLanguageModalVisible(true)}
+        >
           <View className="flex-row items-center space-x-3">
             <Image
               source={require("../../assets/images/lock.png")}
@@ -167,12 +193,15 @@ const Profile = () => {
             />
             <Text className="text-black ml-3">Language</Text>
           </View>
-          {/* <Text className="text-gray-500 ">English</Text> */}
-          <Image
-            source={require("../../assets/images/next.png")}
-            className="w-4 h-4"
-          />
+          <Text className="text-gray-500">{selectedLanguage}</Text>
         </TouchableOpacity>
+
+        <LanguageModal
+          visible={languageModalVisible}
+          selected={selectedLanguage}
+          onClose={() => setLanguageModalVisible(false)}
+          onSelect={(lang: any) => setSelectedLanguage(lang)}
+        />
 
         <TouchableOpacity className="flex-row items-center justify-between py-4  ">
           <View className="flex-row items-center space-x-3">
@@ -202,20 +231,29 @@ const Profile = () => {
           />
         </TouchableOpacity>
 
-        <TouchableOpacity className="flex-row items-center justify-between py-4 ">
-          <View className="flex-row items-center space-x-3">
+        <View className="">
+          {/* Your Call Us button */}
+          <TouchableOpacity
+            className="flex-row items-center space-x-3"
+            onPress={() => setContactModalVisible(true)}
+          >
             <Image
               source={require("../../assets/images/call.png")}
-              className="w-6 h-6"
+              className="w-6 h-6 mr-3"
             />
-            <Text className="text-black ml-3">Call Us</Text>
-          </View>
-          <Image
-            source={require("../../assets/images/next.png")}
-            className="w-4 h-4"
+            <Text className="text-black  ">Call Us</Text>
+          </TouchableOpacity>
+
+          {/* Contact Modal */}
+          <ContactModal
+            visible={contactModalVisible}
+            onClose={() => setContactModalVisible(false)}
           />
-        </TouchableOpacity>
-        <TouchableOpacity className="flex-row items-center justify-between py-4 ">
+        </View>
+        <TouchableOpacity
+          className="flex-row items-center justify-between py-4"
+          onPress={() => setTermsModalVisible(true)}
+        >
           <View className="flex-row items-center space-x-3">
             <Image
               source={require("../../assets/images/term.png")}
@@ -229,8 +267,14 @@ const Profile = () => {
           />
         </TouchableOpacity>
 
+        <TermsModal
+          visible={termsModalVisible}
+          onClose={() => setTermsModalVisible(false)}
+        />
+
         <TouchableOpacity
           className="flex-row items-center justify-between py-4"
+         
          
 
           onPress={async () => {
@@ -284,7 +328,7 @@ const Profile = () => {
             source={require("../../assets/images/next.png")}
             className="w-4 h-4"
           />
-        </TouchableOpacity>
+        </TouchableOpacity>             
 
       </View>
     </ScrollView>

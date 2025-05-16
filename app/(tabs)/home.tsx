@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import {
   View,
@@ -77,13 +76,12 @@ export default function GamingStore() {
   // Handle category click
   const handleCategoryClick = (category: string, condition: string) => {
     router.push({
-  pathname: "/ExploreScreen",
-  params: {
-    category: category,
-    condition: condition,
-  },
-});
-
+      pathname: "/ExploreScreen",
+      params: {
+        category: category,
+        condition: condition,
+      },
+    });
   };
 
   return (
@@ -105,7 +103,10 @@ export default function GamingStore() {
             {categories.map((item, index) => (
               <TouchableOpacity
                 key={index}
-                onPress={() => handleCategoryClick(item.category, item.condition)}
+                onPress={() =>
+                  //@ts-ignore
+                  handleCategoryClick(item.category, item.condition)
+                }
                 className="bg-white w-[30%] m-1 p-3 rounded-lg shadow-lg shadow-purple-500 items-center"
               >
                 <Image source={item.img} />
@@ -118,7 +119,7 @@ export default function GamingStore() {
         </View>
 
         {/* New Projects Section */}
-        <View className="bg-purple-100 p-4 rounded-xl shadow-md mb-4 mt-6">
+        {/* <View className="bg-purple-100 p-4 rounded-xl shadow-md mb-4 mt-6">
           <View className="flex-row justify-between items-center">
             <View className="w-2/3">
               <Text className="text-lg font-semibold text-gray-900">
@@ -128,12 +129,19 @@ export default function GamingStore() {
                 Get access to the latest gaming accessories
               </Text>
             </View>
-            <Image source={require("../../assets/images/check.png")} className="w-20 h-20" />
+            <Image
+              source={require("../../assets/images/check.png")}
+              className="w-20 h-20"
+            />
           </View>
           <TouchableOpacity className="mt-4 self-center w-full">
-            <Image source={require("../../assets/images/explore.png")} className="w-full" resizeMode="contain" />
+            <Image
+              source={require("../../assets/images/explore.png")}
+              className="w-full"
+              resizeMode="contain"
+            />
           </TouchableOpacity>
-        </View>
+        </View> */}
 
         {/* Verified Badge Section */}
         <View className="bg-purple-200 p-4 rounded-xl shadow-md flex-row items-center justify-between mb-4 h-28">
@@ -143,8 +151,12 @@ export default function GamingStore() {
               <Text className="text-sm font-semibold text-gray-900 text-center">
                 Got a verified badge yet?
               </Text>
-              <Text className="text-gray-600 text-xs text-center">Get more visibility</Text>
-              <Text className="text-gray-600 text-xs text-center">Enhance your credibility</Text>
+              <Text className="text-gray-600 text-xs text-center">
+                Get more visibility
+              </Text>
+              <Text className="text-gray-600 text-xs text-center">
+                Enhance your credibility
+              </Text>
             </View>
           </View>
           <Image source={require("../../assets/images/right.png")} />
@@ -160,14 +172,17 @@ export default function GamingStore() {
           <View className="flex-row items-center">
             <Image source={require("../../assets/images/files.png")} />
             <View className="ml-2">
-              <Text className="text-sm font-semibold text-gray-900">You recently looked at</Text>
-              <Text className="text-gray-600 text-xs">Classifieds &gt; Computers & Accessories</Text>
+              <Text className="text-sm font-semibold text-gray-900">
+                You recently looked at
+              </Text>
+              <Text className="text-gray-600 text-xs">
+                Classifieds &gt; Computers & Accessories
+              </Text>
             </View>
           </View>
           <Image source={require("../../assets/images/right.png")} />
         </View>
-        <PopularMainSection
-        />
+        <PopularMainSection />
       </ScrollView>
     </View>
   );

@@ -1,18 +1,18 @@
-import { Ionicons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { ArrowLeftIcon, SearchIcon } from 'lucide-react-native';
-import React, { useState } from 'react';
+import { Ionicons } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { ArrowLeftIcon, SearchIcon } from "lucide-react-native";
+import React, { useState } from "react";
 import {
-    Image,
-    Linking,
-    ScrollView,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
-} from 'react-native';
-import HeaderImage from '../../assets/images/header.png';
+  Image,
+  Linking,
+  ScrollView,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import HeaderImage from "../../assets/images/header.png";
 
 const Card = ({ children }: { children: React.ReactNode }) => (
   <View className="bg-white p-4 mb-4 rounded-2xl shadow">{children}</View>
@@ -34,9 +34,9 @@ const Button = ({
 );
 
 const blogData = new Array(2).fill({
-  title: 'Exploring the Off-plan Investment Hotspots in Umm Al Quwain',
+  title: "Exploring the Off-plan Investment Hotspots in Umm Al Quwain",
   description:
-    'Want to make a potentially rewarding investment? Check out these off-plan hotspots in Umm Al Quwain',
+    "Want to make a potentially rewarding investment? Check out these off-plan hotspots in Umm Al Quwain",
 });
 
 const totalPages = 216;
@@ -56,7 +56,7 @@ const BlogCard = ({
 );
 
 const BlogScreen = () => {
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const navigation = useNavigation<NativeStackNavigationProp<any>>();
 
@@ -93,7 +93,11 @@ const BlogScreen = () => {
 
       {/* Header Image with Text Overlay */}
       <View className="relative w-full h-40">
-        <Image source={HeaderImage} className="w-full h-40" resizeMode="cover" />
+        <Image
+          source={HeaderImage}
+          className="w-full h-40"
+          resizeMode="cover"
+        />
         <View className="absolute inset-0 justify-center px-4">
           <Text className="text-white font-bold text-lg">NEW GAMING PCs</Text>
           <Text className="text-blue-400 font-bold text-base">OF THE WEEK</Text>
@@ -113,7 +117,9 @@ const BlogScreen = () => {
 
       {/* Pagination */}
       <View className="flex-row justify-center items-center space-x-2 pb-6">
-        {page > 1 && <Button onPress={() => handlePageChange(page - 1)}>Prev</Button>}
+        {page > 1 && (
+          <Button onPress={() => handlePageChange(page - 1)}>Prev</Button>
+        )}
         <Button onPress={() => handlePageChange(1)}>1</Button>
         {page > 4 && <Text className="text-sm">...</Text>}
         {page > 2 && (
@@ -124,7 +130,9 @@ const BlogScreen = () => {
           <Button onPress={() => handlePageChange(page + 1)}>{page + 1}</Button>
         )}
         {page < totalPages - 3 && <Text className="text-sm">...</Text>}
-        <Button onPress={() => handlePageChange(totalPages)}>{totalPages}</Button>
+        <Button onPress={() => handlePageChange(totalPages)}>
+          {totalPages}
+        </Button>
         {page < totalPages && (
           <Button onPress={() => handlePageChange(page + 1)}>Next</Button>
         )}
@@ -134,12 +142,12 @@ const BlogScreen = () => {
       <View className="bg-black py-6 px-4">
         <View className="flex-row flex-wrap justify-center mb-4">
           {[
-            'About Us',
-            'Advertising',
-            'Careers',
-            'Terms of use',
-            'Privacy Policy',
-            'Contact Us',
+            "About Us",
+            "Advertising",
+            "Careers",
+            "Terms of use",
+            "Privacy Policy",
+            "Contact Us",
           ].map((label, index, arr) => (
             <View key={label} className="flex-row items-center">
               <TouchableOpacity onPress={() => console.log(`${label} pressed`)}>
@@ -154,20 +162,20 @@ const BlogScreen = () => {
 
         <View className="flex-row justify-center space-x-4">
           <TouchableOpacity
-            onPress={() => Linking.openURL('https://facebook.com')}
+            onPress={() => Linking.openURL("https://facebook.com")}
             className="rounded-full p-3"
-            style={{ backgroundColor: '#8e2de2' }}
+            style={{ backgroundColor: "#8e2de2" }}
           >
             <Ionicons name="logo-facebook" size={20} color="white" />
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() => Linking.openURL('https://linkedin.com')}
+            onPress={() => Linking.openURL("https://linkedin.com")}
             className="bg-gray-800 rounded-full p-3"
           >
             <Ionicons name="logo-linkedin" size={20} color="white" />
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() => Linking.openURL('https://youtube.com')}
+            onPress={() => Linking.openURL("https://youtube.com")}
             className="bg-gray-800 rounded-full p-3"
           >
             <Ionicons name="logo-youtube" size={20} color="white" />
