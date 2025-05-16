@@ -26,24 +26,7 @@ const Profile = () => {
     }
   }, [user?.profile]);
 
-  // useEffect(() => {
-  //   const fetchUser = async () => {
-  //     try {
-  //       const userData = await AsyncStorage.getItem("user");
-  //       if (userData) {
-  //         const parsed = JSON.parse(userData);
-  //         setUser(parsed);
-  //         if (parsed.profile) {
-  //           setProfileImage({ uri: parsed.profile });
-  //         }
-  //       }
-  //     } catch (error) {
-  //       console.log("Error fetching user:", error);
-  //     }
-  //   };
-
-  //   fetchUser();
-  // }, []);
+ 
 
   return (
     <ScrollView className="bg-white">
@@ -69,7 +52,7 @@ const Profile = () => {
             <EditProfilePhotoModal
               visible={modalVisible}
               onClose={() => setModalVisible(false)}
-              setProfileImage={setProfileImage}
+              setProfileImage={setProfileImage}   
             />
           </View>
 
@@ -90,6 +73,7 @@ const Profile = () => {
             </Text>
           </View>
         </View>
+        
       </View>
 
       <View className="flex-row justify-center space-x-4 mt-6 mx-4">
@@ -247,41 +231,7 @@ const Profile = () => {
 
         <TouchableOpacity
           className="flex-row items-center justify-between py-4"
-          // onPress={async () => {
-          //   try {
-          //     const token = await AsyncStorage.getItem("token");
-
-          //     console.log("Stored token value:", token); 
-
-          //     if (!token || typeof token !== "string") {
-          //       Alert.alert("Error", "Invalid token. Please log in again.");
-          //       return;
-          //     }
-
-          //     const response = await axios.post(
-          //       "https://backend.gamergizmo.com/auth/logoutUser",
-          //       { token: token.trim() }, // Send token in body
-          //       {
-          //         headers: {
-          //           "Content-Type": "application/json",
-          //         },
-          //       }
-          //     );
-
-          //     if (response.status === 200) {
-          //       Alert.alert("Success", "You have been logged out.");
-          //       await AsyncStorage.removeItem("token");
-          //       await AsyncStorage.removeItem("user");
-          //       router.replace("/");
-          //     } else {
-          //       console.warn("Logout non-200 response:", response.status, response.data);
-          //       Alert.alert("Logout Failed", "Unexpected server response.");
-          //     }
-          //   } catch (error: any) {
-          //     console.error("Logout error", error.response?.data || error.message);
-          //     Alert.alert("Error", "Failed to log out. Please try again.");
-          //   }
-          // }}
+         
 
           onPress={async () => {
             try {
