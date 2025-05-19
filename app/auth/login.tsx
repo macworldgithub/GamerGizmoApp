@@ -65,7 +65,7 @@ const Login = ({ onClose }: Props) => {
         await AsyncStorage.setItem("userId", String(user?.id));
 
         dispatch(InitializeUserData(user));
-        alert("Login successful!");
+        // alert("Login successful!");
         router.replace("/(tabs)/home");
       } else {
         alert(response.data.message || "Login failed");
