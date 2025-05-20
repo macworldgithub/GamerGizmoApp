@@ -39,7 +39,7 @@ export default function LoginScreen() {
     </TouchableOpacity>
 
     <TouchableOpacity className="w-4/5 mb-3"
-      onPress={() => setShowLoginModal(true)} 
+      onPress={() => router.push("/home")} 
     >
       <Image
         source={require("../assets/images/google.png")}
