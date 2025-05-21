@@ -203,7 +203,8 @@ const Profile = () => {
           onSelect={(lang: any) => setSelectedLanguage(lang)}
         />
 
-        <TouchableOpacity className="flex-row items-center justify-between py-4  ">
+        <TouchableOpacity className="flex-row items-center justify-between py-4 "
+        onPress={() => router.push("/blog")}>
           <View className="flex-row items-center space-x-3">
             <Image
               source={require("../../assets/images/lock.png")}
