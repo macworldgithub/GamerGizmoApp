@@ -5,7 +5,8 @@ import { useSelector } from "react-redux";
 import type { RootState } from "@/store/store";
 import axios from "axios";
 import { API_BASE_URL } from "@/utils/config";
-import Add from "./add";
+
+import LiveAds from "./LiveAds"
 
 const PopularMainSection = () => {
   const [LaptopUsedData, setLaptopUsedData] = useState([]);
@@ -177,7 +178,7 @@ const PopularMainSection = () => {
         />
       </View>
       <View className="mt-4">
-        <Add />
+      <LiveAds pageName="Home" adId={2}/>
       </View>
       <View className="mt-6">
         <Productcarrd
@@ -199,7 +200,7 @@ const PopularMainSection = () => {
         />
       </View>
       <View className="mt-4">
-        <Add />
+      <LiveAds pageName="Home" adId={3}/>
       </View>
       <View className="mt-6">
         <Productcarrd
@@ -220,7 +221,7 @@ const PopularMainSection = () => {
         />
       </View>
       <View className="mt-4">
-        <Add />
+      <LiveAds pageName="Home" adId={4}/>
       </View>
       <View className="mt-6">
         <Productcarrd

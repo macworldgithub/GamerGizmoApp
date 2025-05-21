@@ -12,10 +12,10 @@ import {
   View,
   ActivityIndicator,
 } from "react-native";
-import HeaderImage from "../../assets/images/header.png";
 import { API_BASE_URL } from "@/utils/config";
 import TermsModal from "../(tabs)/TermsModal";
-// import PrivacyModal from "@/components/PrivacyModal";
+
+const HeaderImage = require("../../assets/images/header.png");
 
 const Card = ({ children }: { children: React.ReactNode }) => (
   <View className="bg-white p-4 mb-4 rounded-2xl shadow">{children}</View>
@@ -92,15 +92,16 @@ const BlogCard = ({
   );
 };
 
-const totalPages = 216;
+
 
 const BlogScreen = () => {
+  const blogsPerPage = 2;
   const [page, setPage] = useState(1);
   const [blogs, setBlogs] = useState([]);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const [showTermsModal, setShowTermsModal] = useState(false);
-  const [showPrivacyModal, setShowPrivacyModal] = useState(false);
+
 
 
   const fetchBlogs = async () => {
@@ -111,7 +112,6 @@ const BlogScreen = () => {
       );
       const json = await response.json();
       setBlogs(json?.data || []);
-
     } catch (error) {
       console.error("Failed to fetch blogs:", error);
     } finally {
@@ -121,19 +121,25 @@ const BlogScreen = () => {
 
   useEffect(() => {
     fetchBlogs();
-  }, [page]);
+  }, []);
+
+  const totalPages = Math.ceil(blogs.length / blogsPerPage);
+  const currentBlogs = blogs.slice(
+    (page - 1) * blogsPerPage,
+    page * blogsPerPage
+  );
 
   const handlePageChange = (newPage: number) => {
     if (newPage >= 1 && newPage <= totalPages) {
       setPage(newPage);
     }
-  };
+  }
+
 
   const footerLinks = [
     { label: "About Us", url: "https://gamergizmo.com/about" },
     { label: "Advertising", url: "https://gamergizmo.com/advertising" },
     { label: "Terms of use", url: "" },
-    { label: "Privacy Policy", url: "https://gamergizmo.com/privacy" },
     { label: "Contact Us", url: "https://gamergizmo.com/contact" },
   ];
 
@@ -167,6 +173,7 @@ const BlogScreen = () => {
         ) : (
           blogs.map((item: any, index: number) => (
             <TouchableOpacity
+              key={item.id || index}
               onPress={() =>
                 router.push({
                   pathname: "/blog/[id]",
@@ -175,7 +182,6 @@ const BlogScreen = () => {
               }
             >
               <BlogCard
-                key={index}
                 images={item.images}
                 title={item.title}
                 tags={item.tags}
@@ -194,25 +200,34 @@ const BlogScreen = () => {
       </View>
 
       {/* Pagination */}
-      <View className="flex-row justify-center items-center space-x-2 pb-6">
-        {page > 1 && (
-          <Button onPress={() => handlePageChange(page - 1)}>Prev</Button>
-        )}
-        <Button onPress={() => handlePageChange(1)}>1</Button>
-        {page > 4 && <Text className="text-sm">...</Text>}
-        {page > 2 && (
-          <Button onPress={() => handlePageChange(page - 1)}>{page - 1}</Button>
-        )}
-        <Button onPress={() => { }}>{page}</Button>
-        {page < totalPages - 1 && (
-          <Button onPress={() => handlePageChange(page + 1)}>{page + 1}</Button>
-        )}
-        {page < totalPages - 3 && <Text className="text-sm">...</Text>}
-        <Button onPress={() => handlePageChange(totalPages)}>{totalPages}</Button>
-        {page < totalPages && (
-          <Button onPress={() => handlePageChange(page + 1)}>Next</Button>
-        )}
-      </View>
+      {blogs.length > blogsPerPage && (
+        <View className="flex-row justify-center items-center space-x-2 pb-6">
+          {page > 1 && (
+            <Button onPress={() => handlePageChange(page - 1)}>Prev</Button>
+          )}
+          <Button onPress={() => handlePageChange(1)}>1</Button>
+          {page > 4 && <Text className="text-sm">...</Text>}
+          {page > 2 && (
+            <Button onPress={() => handlePageChange(page - 1)}>
+              {page - 1}
+            </Button>
+          )}
+          <Button onPress={() => { }}>{page}</Button>
+          {page < totalPages - 1 && (
+            <Button onPress={() => handlePageChange(page + 1)}>
+              {page + 1}
+            </Button>
+          )}
+          {page < totalPages - 3 && <Text className="text-sm">...</Text>}
+          <Button onPress={() => handlePageChange(totalPages)}>
+            {totalPages}
+          </Button>
+          {page < totalPages && (
+            <Button onPress={() => handlePageChange(page + 1)}>Next</Button>
+          )}
+        </View>
+      )}
+
 
       {/* Footer */}
       <View className="bg-black py-6 px-4">
@@ -223,8 +238,6 @@ const BlogScreen = () => {
                 onPress={() => {
                   if (item.label === "Terms of use") {
                     setShowTermsModal(true);
-                  } else if (item.label === "Privacy Policy") {
-                    setShowPrivacyModal(true);
                   } else {
                     Linking.openURL(item.url);
                   }
@@ -270,8 +283,6 @@ const BlogScreen = () => {
       </View>
 
       <TermsModal visible={showTermsModal} onClose={() => setShowTermsModal(false)} />
-      {/* <PrivacyModal visible={showPrivacyModal} onClose={() => setShowPrivacyModal(false)} /> */}
-
     </ScrollView>
   );
 };

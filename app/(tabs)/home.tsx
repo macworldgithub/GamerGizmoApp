@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import { useRouter } from "expo-router";
 import PopularMainSection from "./PopularMainSection";
-import Add from "../(tabs)/add";
+import LiveAds from "./LiveAds"
 
 // Categories data
 const categories = [
@@ -163,9 +163,7 @@ export default function GamingStore() {
         </View>
 
         {/* Add Section */}
-        <View>
-          <Add />
-        </View>
+        <LiveAds pageName="Home" adId={1}/>
 
         {/* Recently Looked At Section */}
         <View className="bg-white p-4 rounded-xl shadow-md flex-row items-center justify-between h-28 mt-7">
