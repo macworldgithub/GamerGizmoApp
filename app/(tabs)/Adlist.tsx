@@ -815,10 +815,10 @@ export default function AdList({
           keyExtractor={(item) => item.id.toString()}
           renderItem={renderItem}
         />
-      )}
-
+      )}       
+                                 
       {/* Pagination Controls */}
-      <View className="flex-row justify-center items-center space-x-4 mt-4">
+      <View className="flex-row justify-center items-center gap-x-6 mt-4 mb-10">
         <TouchableOpacity
           disabled={currentPage === 1}
           onPress={() => setCurrentPage(currentPage - 1)}

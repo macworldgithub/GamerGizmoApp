@@ -28,7 +28,7 @@ const Images = () => {
 
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
+      allowsEditing: false,
       aspect: [4, 3],
       quality: 1,
     });
@@ -128,7 +128,7 @@ const Images = () => {
                 marginRight: 10,
               }}
               resizeMode="cover"
-            />
+            />   
           ))}
         </ScrollView>
       )}
@@ -169,3 +169,5 @@ const Images = () => {
 };
 
 export default Images;
+
+

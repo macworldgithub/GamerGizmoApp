@@ -113,7 +113,7 @@ const EditProfileScreen = () => {
   return (
     <ScrollView className="flex-1 bg-white p-5">
       <View className="flex-row items-center p-4 border-b border-gray-200 mt-1 mb-2">
-        <TouchableOpacity onPress={() => router.push('/file')}>
+        <TouchableOpacity onPress={() => router.push('/UserInfo')}>
           <Image source={require("../../assets/images/arrow.png")} />
         </TouchableOpacity>
         <Text className="text-lg font-semibold ml-32">Edit Profile</Text>
