@@ -14,7 +14,8 @@ import {
 } from "react-native";
 import HeaderImage from "../../assets/images/header.png";
 import { API_BASE_URL } from "@/utils/config";
-
+import TermsModal from "../(tabs)/TermsModal";
+// import PrivacyModal from "@/components/PrivacyModal";
 
 const Card = ({ children }: { children: React.ReactNode }) => (
   <View className="bg-white p-4 mb-4 rounded-2xl shadow">{children}</View>
@@ -94,11 +95,13 @@ const BlogCard = ({
 const totalPages = 216;
 
 const BlogScreen = () => {
-  const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [blogs, setBlogs] = useState([]);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const [showTermsModal, setShowTermsModal] = useState(false);
+  const [showPrivacyModal, setShowPrivacyModal] = useState(false);
+
 
   const fetchBlogs = async () => {
     try {
@@ -134,7 +137,7 @@ const BlogScreen = () => {
     { label: "Contact Us", url: "https://gamergizmo.com/contact" },
   ];
 
-  
+
 
   return (
     <ScrollView className="h-full ">
@@ -216,9 +219,20 @@ const BlogScreen = () => {
         <View className="flex-row flex-wrap justify-center mb-4">
           {footerLinks.map((item, index) => (
             <View key={item.label} className="flex-row items-center">
-              <TouchableOpacity onPress={() => Linking.openURL(item.url)}>
+              <TouchableOpacity
+                onPress={() => {
+                  if (item.label === "Terms of use") {
+                    setShowTermsModal(true);
+                  } else if (item.label === "Privacy Policy") {
+                    setShowPrivacyModal(true);
+                  } else {
+                    Linking.openURL(item.url);
+                  }
+                }}
+              >
                 <Text className="text-gray-400 text-sm mx-1">{item.label}</Text>
               </TouchableOpacity>
+
               {index !== footerLinks.length - 1 && (
                 <Text className="text-gray-400 text-sm">|</Text>
               )}
@@ -254,6 +268,10 @@ const BlogScreen = () => {
           </TouchableOpacity>
         </View>
       </View>
+
+      <TermsModal visible={showTermsModal} onClose={() => setShowTermsModal(false)} />
+      {/* <PrivacyModal visible={showPrivacyModal} onClose={() => setShowPrivacyModal(false)} /> */}
+
     </ScrollView>
   );
 };
