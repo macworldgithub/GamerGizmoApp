@@ -116,6 +116,7 @@ const UserInfoScreen = () => {
         </TouchableOpacity>
       </View>
     </ScrollView>
+      
   );
 };
 

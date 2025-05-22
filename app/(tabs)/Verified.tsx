@@ -17,15 +17,12 @@ const Verified = () => {
           <Text className="text-2xl font-bold text-gray-500">×</Text>
         </TouchableOpacity>
         <Text className="text-base font-semibold text-black">Confirm Phone Number</Text>
-        <View style={{ width: 24 }} /> {/* placeholder for spacing */}
+        <View style={{ width: 24 }} /> 
       </View>
 
       {/* Shield Image */}
       <View className="items-center mb-5">
-        {/* <Image
-          source={require("../../assets/images/shield.png")} // replace with your own image
-          style={{ width: 100, height: 100, resizeMode: "contain" }}
-        /> */}
+       
       </View>
 
       {/* Title & Subtitle */}
@@ -49,12 +46,7 @@ const Verified = () => {
 
       {/* Button */}
       <TouchableOpacity
-        // className={`rounded py-3 items-center ${isValid
-        //   ? "bg-purple-600"
-        //   : "bg-gray-300"
-        //   }`}
-        // disabled={!isValid}
-        // onPress={() => router.push("/verify-code")} // adjust your route
+      
       >
         <Text className="text-white font-semibold text-base">Send verification code</Text>
       </TouchableOpacity>
