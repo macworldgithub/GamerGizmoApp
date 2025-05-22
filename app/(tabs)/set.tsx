@@ -70,7 +70,7 @@ const Set = () => {
       </View>
 
       {/* Price Input */}
-      <View className="border border-gray-200 rounded-md mb-4 p-3 flex-row items-center justify-between">
+      {/* <View className="border border-gray-200 rounded-md mb-4 p-3 flex-row items-center justify-between">
         <Text className="text-base text-black mr-2">Price (AED):</Text>
         <TouchableOpacity onPress={() => decrement(setPriceLocal, price)}>
           <Ionicons name="remove-circle-outline" size={24} color="gray" />
@@ -85,14 +85,14 @@ const Set = () => {
           className="text-base text-black text-center w-16 mx-2"
         />
         <TouchableOpacity onPress={() => increment(setPriceLocal, price)}>
-          <Ionicons name="add-circle-outline" size={24} color="gray" />
+          <Ionicons name="add-circle-outline" size={24} color="gray" className="" />
         </TouchableOpacity>
-      </View>
+      </View> */}
 
       {/* Quantity Input */}
-      <View className="border border-gray-200 rounded-md mb-10 p-3 flex-row items-center justify-between">
+      {/* <View className="border border-gray-200 rounded-md mb-10 p-3 flex-row items-center justify-between">
         <Text className="text-base text-black mr-2">Quantity:</Text>
-        <TouchableOpacity onPress={() => decrement(setQuantity, quantity)}>
+        <TouchableOpacity onPress={() => decrement(setQuantity, quantity)} className="ml-7">
           <Ionicons name="remove-circle-outline" size={24} color="gray" />
         </TouchableOpacity>
         <TextInput
@@ -107,7 +107,68 @@ const Set = () => {
         <TouchableOpacity onPress={() => increment(setQuantity, quantity)}>
           <Ionicons name="add-circle-outline" size={24} color="gray" />
         </TouchableOpacity>
-      </View>
+      </View> */}
+
+
+<View className="border border-gray-200 rounded-md mb-4 px-4 py-3">
+  <Text className="text-base text-black mb-2">Price (AED):</Text>
+  <View className="flex-row items-center justify-center space-x-4">
+    <TouchableOpacity
+      onPress={() => decrement(setPriceLocal, price)}
+      className="bg-gray-100 rounded-full w-10 h-10 items-center justify-center"
+    >
+      <Ionicons name="remove" size={24} color="gray" />
+    </TouchableOpacity>
+
+    <TextInput
+      value={price.toString()}
+      onChangeText={(text) => {
+        const numeric = Number(text);
+        if (!isNaN(numeric)) setPriceLocal(numeric);
+      }}
+      keyboardType="numeric"
+      className="text-base text-black text-center w-20 border border-gray-300 rounded-md px-2 py-1"
+    />
+
+    <TouchableOpacity
+      onPress={() => increment(setPriceLocal, price)}
+      className="bg-gray-100 rounded-full w-10 h-10 items-center justify-center"
+    >
+      <Ionicons name="add" size={24} color="gray" />
+    </TouchableOpacity>
+  </View>
+</View>
+
+{/* Quantity Input */}
+<View className="border border-gray-200 rounded-md mb-10 px-4 py-3">
+  <Text className="text-base text-black mb-2">Quantity:</Text>
+  <View className="flex-row items-center justify-center space-x-4">
+    <TouchableOpacity
+      onPress={() => decrement(setQuantity, quantity)}
+      className="bg-gray-100 rounded-full w-10 h-10 items-center justify-center"
+    >
+      <Ionicons name="remove" size={24} color="gray" />
+    </TouchableOpacity>
+
+    <TextInput
+      value={quantity.toString()}
+      onChangeText={(text) => {
+        const numeric = Number(text);
+        if (!isNaN(numeric)) setQuantity(numeric);
+      }}
+      keyboardType="numeric"
+      className="text-base text-black text-center w-20 border border-gray-300 rounded-md px-2 py-1"
+    />
+
+    <TouchableOpacity
+      onPress={() => increment(setQuantity, quantity)}
+      className="bg-gray-100 rounded-full w-10 h-10 items-center justify-center"
+    >
+      <Ionicons name="add" size={24} color="gray" />
+    </TouchableOpacity>
+  </View>
+</View>
+
 
       {/* Next Button */}
       <TouchableOpacity onPress={handleNext}>

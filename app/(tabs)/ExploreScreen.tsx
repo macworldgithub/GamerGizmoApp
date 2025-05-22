@@ -13,6 +13,7 @@ import Swiper from "react-native-swiper";
 import { API_BASE_URL } from "@/utils/config";
 import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
 import LiveAds from "./LiveAds";
+import SortModal from "../(tabs)/SortModal";
 
 type ProductImage = {
   id: number;
@@ -26,6 +27,7 @@ type Product = {
   price: number | string;
   description: string;
   images: ProductImage[];
+  created_at: string;
 };
 const extractFeature = (desc: string, key: string): string | null => {
   const regex = new RegExp(`${key}\\s*[:：]\\s*(.*)`, "i");
@@ -35,8 +37,11 @@ const extractFeature = (desc: string, key: string): string | null => {
 const ExploreScreen = () => {
   const { category, condition } = useLocalSearchParams();
   const [products, setProducts] = useState<Product[]>([]);
+  const [defaultProducts, setDefaultProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [noResults, setNoResults] = useState(false);
+  const [isSortVisible, setSortVisible] = useState(false);
+  const [selectedSort, setSelectedSort] = useState("Default");
   const router = useRouter();
   const categoryIdMap: Record<string, number> = {
     laptops: 1,
@@ -57,10 +62,13 @@ const ExploreScreen = () => {
         `${API_BASE_URL}/products/getAll?category_id=${categoryId}&condition=${condition}`
       );
 
-      if (response.data?.data?.length === 0) {
+      const data = response.data?.data || [];
+
+      if (data.length === 0) {
         setNoResults(true);
       } else {
-        setProducts(response.data?.data || []);
+        setDefaultProducts(data); // store original order
+        applySorting(selectedSort, data);
         setNoResults(false);
       }
     } catch (error) {
@@ -75,6 +83,31 @@ const ExploreScreen = () => {
       fetchProducts();
     }
   }, [category, condition]);
+
+  const applySorting = (option: string, list: Product[] = defaultProducts) => {
+    const sorted = [...list];
+
+    switch (option) {
+      case "Price Highest to Lowest":
+        sorted.sort((a, b) => Number(b.price) - Number(a.price));
+        break;
+      case "Price Lowest to Highest":
+        sorted.sort((a, b) => Number(a.price) - Number(b.price));
+        break;
+      case "Newest to Oldest":
+        sorted.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+        break;
+      case "Oldest to Newest":
+        sorted.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
+        break;
+      case "Default":
+      default:
+        setProducts(defaultProducts);
+        return;
+    }
+
+    setProducts(sorted);
+  };
 
   const getImageUrl = (image_url: string) => {
     return image_url?.startsWith("https") ? image_url : image_url;
@@ -111,9 +144,7 @@ const ExploreScreen = () => {
   if (noResults) {
     return (
       <View className="flex-1 justify-center items-center">
-        <Text className="text-xl font-bold text-gray-700">
-          No products found
-        </Text>
+        <Text className="text-xl font-bold text-gray-700">No products found</Text>
       </View>
     );
   }
@@ -131,7 +162,7 @@ const ExploreScreen = () => {
           <View style={{ width: 20 }} />
         </View>
 
-        {/* Top Action Bar */}
+        {/* Action Bar */}
         <View className="mt-4 flex-row items-center justify-center px-4 py-4 border-t border-gray-200">
           <TouchableOpacity className="flex-row items-center mx-3 mr-10 gap-3">
             <FontAwesome name="bookmark-o" size={18} color="black" />
@@ -143,11 +174,26 @@ const ExploreScreen = () => {
             <Text className="ml-1 text-gray-600 font-semibold">FILTERS</Text>
           </TouchableOpacity>
           <Text className="text-gray-400">|</Text>
-          <TouchableOpacity className="flex-row items-center mx-3 mr-5 gap-3">
+          <TouchableOpacity
+            onPress={() => setSortVisible(true)}
+            className="flex-row items-center mx-3 mr-5 gap-3"
+          >
             <FontAwesome5 name="sort" size={18} color="black" />
             <Text className="ml-1 text-gray-600 font-semibold">SORT</Text>
           </TouchableOpacity>
         </View>
+
+        {/* Sort Modal */}
+        <SortModal
+          isVisible={isSortVisible}
+          selected={selectedSort}
+          onClose={() => setSortVisible(false)}
+          onSelect={(option: string) => {
+            setSelectedSort(option);
+            setSortVisible(false);
+            applySorting(option); // auto-sort
+          }}
+        />
       </View>
 
       <ScrollView className="p-4 bg-gray-200 mb-2">
@@ -221,7 +267,7 @@ const ExploreScreen = () => {
                 } else {
                   return (
                     <TouchableOpacity onPress={() => router.push(`/product/${item.id}`)}>
-                      <Text className="text-gray-600 text-sm mt-1 underline" numberOfLines={1}>
+                      <Text className="text-gray-600 text-sm mt-1 underline" numberOfLines={1} ellipsizeMode="tail">
                         {item.description}
                       </Text>
                     </TouchableOpacity>

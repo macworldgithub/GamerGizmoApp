@@ -30,10 +30,14 @@ const PublicProfileScreen = () => {
 
             {/* Tabs */}
             <View className="flex-row border-b border-gray-200">
-                <TouchableOpacity
-                    className={`flex-1 items-center py-2 ${activeTab === 'ads' ? 'border-b-2 border-purple-600' : ''}`}
-                    onPress={() => setActiveTab('ads')}
-                >
+               <TouchableOpacity
+  className={`flex-1 items-center py-2 ${activeTab === 'ads' ? 'border-b-2 border-purple-600' : ''}`}
+  onPress={() => {
+    setActiveTab('ads');
+    router.push('/adds'); 
+  }}
+>
+                
                     <Text className={`text-sm ${activeTab === 'ads' ? 'text-purple-600 font-semibold' : 'text-gray-400'}`}>
                         Ads
                     </Text>

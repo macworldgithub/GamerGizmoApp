@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -6,12 +6,16 @@ import {
   Image,
   TouchableOpacity,
   ScrollView,
+  FlatList,
 } from "react-native";
 import { useRouter } from "expo-router";
 import PopularMainSection from "./PopularMainSection";
 import LiveAds from "./LiveAds"
+import GetStartedBadge from "@/components/GetStartedBadge";
+import axios from "axios";
+import { MagnifyingGlassIcon } from "react-native-heroicons/outline";
 
-// Categories data
+
 const categories = [
   {
     name: "Used Gaming PC",
@@ -71,40 +75,89 @@ const categories = [
 
 export default function GamingStore() {
   const [search, setSearch] = useState("");
+  const [results, setResults] = useState([]);
   const router = useRouter();
 
-  // Handle category click
-  const handleCategoryClick = (category: string, condition: string) => {
+  useEffect(() => {
+    const delayDebounce = setTimeout(() => {
+      if (search.trim()) {
+        fetchSearchResults(search);
+      } else {
+        setResults([]);
+      }
+    }, 500);
+
+    return () => clearTimeout(delayDebounce);
+  }, [search]);
+  //@ts-ignore
+  const fetchSearchResults = async (query) => {
+    try {
+      const response = await axios.get(
+        "https://backend.gamergizmo.com/products/search",
+        {
+          params: { query },
+        }
+      );
+      setResults(response.data.products || []);
+    } catch (error) {
+      console.error("Error fetching search results:", error);
+    }
+  };
+  //@ts-ignore
+  const handleCategoryClick = (category, condition) => {
     router.push({
       pathname: "/ExploreScreen",
       params: {
-        category: category,
-        condition: condition,
+        category,
+        condition,
       },
     });
   };
 
   return (
     <View className="p-6 bg-gray-100 h-full">
-      {/* Search Bar */}
-      <View className="flex-row items-center bg-white border border-gray-300 rounded-full shadow-lg">
+      <View className="flex-row items-center bg-gray-100 border border-gray-300 rounded-full px-4 py-2 shadow-sm">
+        <MagnifyingGlassIcon size={20} color="#6b7280" className="mr-2" />
         <TextInput
-          placeholder="Search"
-          className="flex-1 py-4 text-gray-700 text-md placeholder:px-4"
+          placeholder="Search for products..."
+          className="flex-1 text-gray-800 text-base"
           value={search}
           onChangeText={setSearch}
+          placeholderTextColor="#9ca3af"
         />
       </View>
 
+      {/* Search Results */}
+      <FlatList
+        data={results}
+
+        keyExtractor={(item: any) => item.id.toString()}
+        className="mt-4"
+        renderItem={({ item }) => (
+          <TouchableOpacity
+            onPress={() =>
+              router.push({
+                pathname: "/product/[id]",
+                params: { id: item.id.toString() },
+              })
+            }
+            className="mb-3 bg-white p-4 rounded-xl shadow-md border border-gray-100"
+          >
+
+            <Text className="text-lg font-semibold text-gray-800">{item.name}</Text>
+
+          </TouchableOpacity>
+        )}
+      />
+
       <ScrollView>
-        {/* Categories List (3 items per row) */}
+        {/* Categories List */}
         <View className="bg-white mt-6 px-2 py-3 border-t border-gray-200 rounded-2xl">
           <View className="mt-6 flex flex-wrap flex-row justify-between">
             {categories.map((item, index) => (
               <TouchableOpacity
                 key={index}
                 onPress={() =>
-                  //@ts-ignore
                   handleCategoryClick(item.category, item.condition)
                 }
                 className="bg-white w-[30%] m-1 p-3 rounded-lg shadow-lg shadow-purple-500 items-center"
@@ -118,68 +171,8 @@ export default function GamingStore() {
           </View>
         </View>
 
-        {/* New Projects Section */}
-        {/* <View className="bg-purple-100 p-4 rounded-xl shadow-md mb-4 mt-6">
-          <View className="flex-row justify-between items-center">
-            <View className="w-2/3">
-              <Text className="text-lg font-semibold text-gray-900">
-                New Projects
-              </Text>
-              <Text className="text-gray-600 text-sm">
-                Get access to the latest gaming accessories
-              </Text>
-            </View>
-            <Image
-              source={require("../../assets/images/check.png")}
-              className="w-20 h-20"
-            />
-          </View>
-          <TouchableOpacity className="mt-4 self-center w-full">
-            <Image
-              source={require("../../assets/images/explore.png")}
-              className="w-full"
-              resizeMode="contain"
-            />
-          </TouchableOpacity>
-        </View> */}
-
-        {/* Verified Badge Section */}
-        <View className="bg-purple-200 p-4 rounded-xl shadow-md flex-row items-center justify-between mb-4 h-28">
-          <View className="flex-row items-center">
-            <Image source={require("../../assets/images/verified1.png")} />
-            <View className="ml-9">
-              <Text className="text-sm font-semibold text-gray-900 text-center">
-                Got a verified badge yet?
-              </Text>
-              <Text className="text-gray-600 text-xs text-center">
-                Get more visibility
-              </Text>
-              <Text className="text-gray-600 text-xs text-center">
-                Enhance your credibility
-              </Text>
-            </View>
-          </View>
-          <Image source={require("../../assets/images/right.png")} />
-        </View>
-
-        {/* Add Section */}
-        <LiveAds pageName="Home" adId={1}/>
-
-        {/* Recently Looked At Section */}
-        <View className="bg-white p-4 rounded-xl shadow-md flex-row items-center justify-between h-28 mt-7">
-          <View className="flex-row items-center">
-            <Image source={require("../../assets/images/files.png")} />
-            <View className="ml-2">
-              <Text className="text-sm font-semibold text-gray-900">
-                You recently looked at
-              </Text>
-              <Text className="text-gray-600 text-xs">
-                Classifieds &gt; Computers & Accessories
-              </Text>
-            </View>
-          </View>
-          <Image source={require("../../assets/images/right.png")} />
-        </View>
+        <GetStartedBadge />
+        <LiveAds pageName="Home" adId={1} />
         <PopularMainSection />
       </ScrollView>
     </View>

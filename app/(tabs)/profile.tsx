@@ -103,7 +103,7 @@ const Profile = () => {
 
       <View className="mt-6 px-6 gap-3">
         <TouchableOpacity
-          onPress={() => router.push("/file")}
+          onPress={() => router.push("/UserInfo")}
           className="flex-row items-center justify-between py-4 "
         >
           <View className="flex-row items-center space-x-3">

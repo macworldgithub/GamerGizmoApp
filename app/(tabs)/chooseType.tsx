@@ -87,6 +87,7 @@ const ChooseType = () => {
                         selectedValue={componentTypeId}
                         onValueChange={(value) => {
                             const selected = componentCategories.find((item: any) => item.id === value);
+                            //@ts-ignore
                             setComponentType(selected?.name || "");
                             setComponentTypeId(value);
                         }}
