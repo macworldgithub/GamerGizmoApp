@@ -14,7 +14,7 @@ import { API_BASE_URL } from "@/utils/config";
 import axios from "axios";
 import { useRouter } from "expo-router";
 
-// ✅ Redux imports
+
 import { useDispatch } from "react-redux";
 import { setCity } from "../../store/slice/adSlice"; // adjust path as needed
 
@@ -24,7 +24,7 @@ const Placead = () => {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
-  // ✅ Redux dispatcher
+
   const dispatch = useDispatch();
 
   useFocusEffect(
