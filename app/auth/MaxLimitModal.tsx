@@ -29,7 +29,7 @@ return (
 
         <ScrollView className="max-h-80">
             {sessions.map((session, index) => (
-            <View key={index} className="flex-row justify-between items-center mb-2">
+            <View key={index} className="flex-row jxustify-between items-center mb-2">
                 <Text className="flex-1">
                 {session.location},{session.platform}{"\n"}
                 <Text className="text-xs text-gray-600">{session.timestamp}</Text>
