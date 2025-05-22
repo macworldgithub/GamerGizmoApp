@@ -594,9 +594,9 @@ const ProductDetail = () => {
         </View>
       </View>
 
-      <TouchableOpacity className="mt-6 border border-purple-600 rounded-md py-2 items-center">
+      {/* <TouchableOpacity className="mt-6 border border-purple-600 rounded-md py-2 items-center">
         <Text className="text-purple-600 font-semibold">Make an offer</Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
 
       <View className="mt-6">
         <Text className="text-lg font-semibold text-gray-800 mb-2">
