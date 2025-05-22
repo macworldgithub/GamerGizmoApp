@@ -20,7 +20,6 @@ type ProductImage = {
   image_url: string;
   created_at: string;
 };
-
 type Product = {
   id: number;
   name: string;
@@ -28,29 +27,23 @@ type Product = {
   description: string;
   images: ProductImage[];
 };
-
 const extractFeature = (desc: string, key: string): string | null => {
   const regex = new RegExp(`${key}\\s*[:：]\\s*(.*)`, "i");
   const match = desc.match(regex);
   return match ? match[1].trim() : null;
 };
-
-
-
 const ExploreScreen = () => {
   const { category, condition } = useLocalSearchParams();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [noResults, setNoResults] = useState(false);
   const router = useRouter();
-
   const categoryIdMap: Record<string, number> = {
     laptops: 1,
     desktop: 2,
     components: 3,
     console: 4,
   };
-
   const fetchProducts = async () => {
     try {
       setLoading(true);
@@ -87,22 +80,19 @@ const ExploreScreen = () => {
     return image_url?.startsWith("https") ? image_url : image_url;
   };
 
-  const limitedAds = ads.slice(0, 6);
 
   const getAdsInfo = (category: string | string[], condition: string | string[]) => {
     const lowerCategory = String(category).toLowerCase();
     const conditionValue = String(condition);
 
-
-
     if (lowerCategory === "laptops" && (conditionValue === "1" || conditionValue === "2")) {
-      return { pageName: "Popular Laptops", adId: 1 };
+      return { pageName: "Laptops", adId: 1 };
     } else if (lowerCategory === "components" || lowerCategory === "accessories") {
-      return { pageName: "Popular Components and Accessories", adId: 1 };
+      return { pageName: "Components and Accessories", adId: 1 };
     } else if (lowerCategory === "desktop") {
-      return { pageName: "Popular Gaming PCS", adId: 1 };
+      return { pageName: "Gaming PCS", adId: 1 };
     } else if (lowerCategory === "console") {
-      return { pageName: "Popular Gaming Consoles", adId: 1 };
+      return { pageName: "Gaming Consoles", adId: 1 };
     } else {
       return null;
     }
@@ -247,8 +237,12 @@ const ExploreScreen = () => {
             </View>
 
             {/* Ads after every 3 items */}
-            {(index + 1) % 3 === 0 && limitedAds[Math.floor(index / 3)] && (
-              <LiveAds ad={limitedAds[Math.floor(index / 3)]} />
+            {(index + 1) % 5 === 0 && adData && (
+              <View className="mt-4">
+                <LiveAds pageName={adData.pageName}
+                  adId={adData.adId + Math.floor((index + 1) / 3) - 1}
+                />
+              </View>
             )}
           </React.Fragment>
         ))}

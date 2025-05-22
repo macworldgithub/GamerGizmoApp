@@ -14,7 +14,7 @@ import {
 } from "react-native";
 import { API_BASE_URL } from "@/utils/config";
 import TermsModal from "../(tabs)/TermsModal";
-
+import LiveAd from "./LiveAds"
 const HeaderImage = require("../../assets/images/header.png");
 
 const Card = ({ children }: { children: React.ReactNode }) => (
@@ -172,29 +172,33 @@ const BlogScreen = () => {
           <ActivityIndicator size="large" color="#000" />
         ) : (
           blogs.map((item: any, index: number) => (
-            <TouchableOpacity
-              key={item.id || index}
-              onPress={() =>
-                router.push({
-                  pathname: "/blog/[id]",
-                  params: { id: item.id.toString() },
-                })
-              }
-            >
-              <BlogCard
-                images={item.images}
-                title={item.title}
-                tags={item.tags}
-                created_at={new Date(item.created_at).toLocaleDateString(
-                  "en-US",
-                  {
+            <View key={item.id || index}>
+              <TouchableOpacity
+                onPress={() =>
+                  router.push({
+                    pathname: "/blog/[id]",
+                    params: { id: item.id.toString() },
+                  })
+                }
+              >
+                <BlogCard
+                  images={item.images}
+                  title={item.title}
+                  tags={item.tags}
+                  created_at={new Date(item.created_at).toLocaleDateString("en-US", {
                     year: "numeric",
                     month: "long",
                     day: "numeric",
-                  }
-                )}
-              />
-            </TouchableOpacity>
+                  })}
+                />
+              </TouchableOpacity>
+
+              {(index + 1) % 4 === 0 && (
+                <View className="mt-4">
+                  <LiveAd pageName="Blogs" adId={(index + 1) / 4} />
+                </View>
+              )}
+            </View>
           ))
         )}
       </View>

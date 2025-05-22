@@ -70,3 +70,101 @@ const Ad = ({ pageName, adId }: AdProps) => {
 };
 
 export default Ad;
+
+
+// import React, { useEffect, useState } from "react";
+// import { View, Text, Image, ActivityIndicator } from "react-native";
+// import Video from "react-native-video";
+// import { API_BASE_URL } from "@/utils/config";
+
+// interface AdProps {
+//   pageName: string;
+//   adId: number;
+// }
+
+// const Ad = ({ pageName, adId }: AdProps) => {
+//   const [adImages, setAdImages] = useState<any[]>([]);
+//   const [loading, setLoading] = useState(true);
+//   const [error, setError] = useState<string | null>(null);
+
+//   const fetchAdImages = async () => {
+//     try {
+//       const response = await fetch(`${API_BASE_URL}/ads/fetch?page=${pageName}`);
+//       const data = await response.json();
+//       console.log("Ad data:", data);
+//       setAdImages(data || []);
+//     } catch (err) {
+//       console.error("Error fetching ads:", err);
+//       setError("Failed to load ad");
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   useEffect(() => {
+//     fetchAdImages();
+//   }, [pageName]);
+
+//   const selectedAd = adImages.find((ad: any) => ad.ad_id === adId);
+
+//   const adUrl = selectedAd
+//     ? selectedAd.url.startsWith("http")
+//       ? selectedAd.url
+//       : `${API_BASE_URL}${selectedAd.url.startsWith("/") ? selectedAd.url : "/" + selectedAd.url
+//       }`
+//     : "";
+
+//   const getFileExtension = (url: string) => {
+//     return url?.split("?")[0]?.split(".").pop()?.toLowerCase();
+//   };
+
+//   const isVideo = (url: string) => {
+//     const ext = getFileExtension(url);
+//     return ["mp4", "webm", "mov", "avi"].includes(ext || "");
+//   };
+
+//   return (
+//     <View
+//       style={{
+//         height: 130,
+//         padding: 10,
+//         borderRadius: 16,
+//         backgroundColor: !loading && !selectedAd ? "#E5E7EB" : "transparent",
+//         borderWidth: !loading && !selectedAd ? 1 : 0,
+//         borderColor: !loading && !selectedAd ? "#D1D5DB" : "transparent",
+//       }}
+//     >
+//       {loading && <ActivityIndicator size="small" color="#000" />}
+//       {!loading && error && <Text style={{ color: "red" }}>{error}</Text>}
+
+//       {!loading && selectedAd ? (
+//         isVideo(adUrl) ? (
+//           <Video
+//             source={{ uri: adUrl }}
+//             style={{ width: "100%", height: "100%", borderRadius: 12 }}
+//             resizeMode="cover"
+//             shouldPlay
+//             isLooping
+//             useNativeControls
+//           />
+
+//         ) : (
+//           <Image
+//             source={{ uri: adUrl }}
+//             style={{ width: "100%", height: "100%", borderRadius: 12 }}
+//             resizeMode="cover"
+//             onError={() => setError("Failed to load image")}
+//           />
+//         )
+//       ) : !loading && !selectedAd ? (
+//         <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+//           <Text className="text-center text-gray-500">
+//             No ad available for this slot
+//           </Text>
+//         </View>
+//       ) : null}
+//     </View>
+//   );
+// };
+
+// export default Ad;
