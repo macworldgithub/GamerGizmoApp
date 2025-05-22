@@ -119,24 +119,17 @@
 //           </View>
 //         </View>
 
-      
 // <GetStartedBadge/>
 
-
-        
 //         <View>
 //           <Add />
 //         </View>
 
-       
 //         <PopularMainSection />
 //       </ScrollView>
 //     </View>
 //   );
 // }
-
-
-
 
 // import React, { useState, useEffect } from "react";
 // import {
@@ -284,7 +277,6 @@
 //   )}
 // />
 
-
 //       <ScrollView>
 //         {/* Categories List */}
 //         <View className="bg-white mt-6 px-2 py-3 border-t border-gray-200 rounded-2xl">
@@ -311,9 +303,6 @@
 //     </View>
 //   );
 // }
-
-
-
 
 import React, { useState, useEffect } from "react";
 import {
@@ -449,8 +438,8 @@ export default function GamingStore() {
           <TouchableOpacity
             onPress={() =>
               router.push({
-                pathname: "/product-details/[productId]",
-                params: { productId: item.id.toString() },
+                pathname: "/product/[id]",
+                params: { id: item.id.toString() },
               })
             }
             className="p-2 border-b border-gray-200"
