@@ -16,6 +16,7 @@ const Ad = ({ pageName, adId }: AdProps) => {
     try {
       const response = await fetch(`${API_BASE_URL}/ads/fetch?page=${pageName}`);
       const data = await response.json();
+      console.log("Ad data:", data);
       setAdImages(data || []);
     } catch (err) {
       console.error("Error fetching ads:", err);
@@ -34,13 +35,19 @@ const Ad = ({ pageName, adId }: AdProps) => {
   const adUrl = selectedAd
     ? selectedAd.url.startsWith("http")
       ? selectedAd.url
-      : `https://backend.gamergizmo.com${
-          selectedAd.url.startsWith("/") ? selectedAd.url : "/" + selectedAd.url
-        }`
+      : `https://backend.gamergizmo.com${selectedAd.url.startsWith("/") ? selectedAd.url : "/" + selectedAd.url
+      }`
     : "";
 
   return (
-    <View style={{ height: 130, padding: 10, borderRadius: 16 }}>
+    <View style={{
+      height: 130,
+      padding: 10,
+      borderRadius: 16,
+      backgroundColor: !loading && !selectedAd ? "#E5E7EB" : "transparent",
+      borderWidth: !loading && !selectedAd ? 1 : 0,
+      borderColor: !loading && !selectedAd ? "#D1D5DB" : "transparent",
+    }}>
       {loading && <ActivityIndicator size="small" color="#000" />}
       {!loading && error && <Text style={{ color: "red" }}>{error}</Text>}
 
@@ -52,9 +59,11 @@ const Ad = ({ pageName, adId }: AdProps) => {
           onError={() => setError("Failed to load image")}
         />
       ) : !loading && !selectedAd ? (
-        <Text style={{ textAlign: "center", color: "#000" }}>
-          No ad available for this slot
-        </Text>
+        <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+          <Text className="text-center text-gray-500">
+            No ad available for this slot
+          </Text>
+        </View>
       ) : null}
     </View>
   );
