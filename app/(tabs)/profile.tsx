@@ -218,20 +218,6 @@ const Profile = () => {
           />
         </TouchableOpacity>
 
-        <TouchableOpacity className="flex-row items-center justify-between py-4 ">
-          <View className="flex-row items-center space-x-3">
-            <Image
-              source={require("../../assets/images/support.png")}
-              className="w-6 h-6"
-            />
-            <Text className="text-black ml-3">Support</Text>
-          </View>
-          <Image
-            source={require("../../assets/images/next.png")}
-            className=""
-          />
-        </TouchableOpacity>
-
         <View className="">
           {/* Your Call Us button */}
           <TouchableOpacity

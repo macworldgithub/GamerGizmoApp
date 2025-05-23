@@ -27,56 +27,6 @@ const NicUploadModal = ({ open, setOpen }: any) => {
     }
   };
 
-//   const handleUpload = async () => {
-//     if (!nicFront || !nicBack) {
-//       Alert.alert("Error", "Please upload both images.");
-//       return;
-//     }
-
-//     const formData = new FormData();
-//     // formData.append("nic_front_image", {
-//     //   uri: nicFront.uri,
-//     //   type: "image/jpeg",
-//     //   name: "front.jpg",
-//     // });
-//     // formData.append("nic_back_image", {
-//     //   uri: nicBack.uri,
-//     //   type: "image/jpeg",
-//     //   name: "back.jpg",
-//     // });
-
-// formData.append("nic_front_image", {
-//   uri: nicFront.uri,
-//   type: "image/jpeg",
-//   name: "front.jpg",
-// } as any); 
-
-// formData.append("nic_back_image", {
-//   uri: nicBack.uri,
-//   type: "image/jpeg",
-//   name: "back.jpg",
-// } as any); 
-
-
-
-//     try {
-//       await axios.post(
-//         `https://backend.gamergizmo.com/user/applyForVerification`,
-//         formData,
-//         {
-//           headers: {
-//             Authorization: `Bearer ${token}`,
-//             "Content-Type": "multipart/form-data",
-//           },
-//         }
-//       );
-//       Alert.alert("Success", "Images uploaded successfully!");
-//       setOpen(false);
-//     } catch (error: any) {
-//       Alert.alert("Error", "Upload failed. Please try again.");
-//     }
-//   };
-
 const handleUpload = async () => {
   if (!nicFront || !nicBack) {
     Alert.alert("Error", "Please upload both images.");

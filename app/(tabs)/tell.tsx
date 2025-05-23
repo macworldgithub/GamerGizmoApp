@@ -85,69 +85,7 @@ const Tell = () => {
       .then((res) => setModels(res.data?.data || []))
       .catch((e) => console.error("Failed to fetch models:", e));
   }, [brandId]);
-
-  // const handleNext = () => {
-  //   if (!title.trim()) {
-  //     return Platform.OS === "android"
-  //       ? ToastAndroid.show("Title is required.", ToastAndroid.SHORT)
-  //       : Alert.alert("Validation Error", "Title is required.");
-  //   }
-
-  //   if (!description.trim()) {
-  //     return Platform.OS === "android"
-  //       ? ToastAndroid.show("Description is required.", ToastAndroid.SHORT)
-  //       : Alert.alert("Validation Error", "Description is required.");
-  //   }
-
-  //   if (!isComponentsAndAccessories) {
-  //     if (!brand || !brandId) {
-  //       return Platform.OS === "android"
-  //         ? ToastAndroid.show("Please select a brand.", ToastAndroid.SHORT)
-  //         : Alert.alert("Validation Error", "Please select a brand.");
-  //     }
-
-  //     if (!model || !modelId) {
-  //       return Platform.OS === "android"
-  //         ? ToastAndroid.show("Please select a model.", ToastAndroid.SHORT)
-  //         : Alert.alert("Validation Error", "Please select a model.");
-  //     }
-  //   }
-
-  //   if (!condition || !conditionId) {
-  //     return Platform.OS === "android"
-  //       ? ToastAndroid.show("Please select a condition.", ToastAndroid.SHORT)
-  //       : Alert.alert("Validation Error", "Please select a condition.");
-  //   }
-
-  //   if (!location || !locationId) {
-  //     return Platform.OS === "android"
-  //       ? ToastAndroid.show("Please select a location.", ToastAndroid.SHORT)
-  //       : Alert.alert("Validation Error", "Please select a location.");
-  //   }
-
-  //   dispatch(
-  //     setDetails({
-  //       title,
-  //       brand: isComponentsAndAccessories ? null : brand,
-  //       brandId: isComponentsAndAccessories ? null : brandId,
-  //       model: isComponentsAndAccessories ? null : model,
-  //       modelId: isComponentsAndAccessories ? null : modelId,
-  //       condition,
-  //       conditionId,
-  //       location,
-  //       locationId,
-  //       description,
-  //     })
-  //   );
-
-  //  if (isComponentsAndAccessories) {
-  //   router.push("/chooseType"); // new screen
-  // } else {
-  //   router.push("/set");
-  // }
-  // };
-
-
+  
   const handleNext = () => {
     if (!title.trim()) {
       return Platform.OS === "android"
