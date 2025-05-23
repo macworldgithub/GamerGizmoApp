@@ -180,10 +180,10 @@ const ExploreScreen = () => {
 
         {/* Action Bar */}
         <View className="mt-4 flex-row items-center justify-center px-4 py-4 border-t border-gray-200">
-          <TouchableOpacity className="flex-row items-center mx-3 mr-10 gap-3">
+          {/* <TouchableOpacity className="flex-row items-center mx-3 mr-10 gap-3">
             <FontAwesome name="bookmark-o" size={18} color="black" />
             <Text className="ml-1 text-gray-600 font-semibold">SAVE</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
           <Text className="text-gray-400">|</Text>
           <TouchableOpacity className="flex-row items-center mx-3 gap-3">
             <FontAwesome5 name="sliders-h" size={18} color="black" />

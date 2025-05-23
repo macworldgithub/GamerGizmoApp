@@ -95,10 +95,10 @@ const Profile = () => {
             My Ads
           </Text>
         </TouchableOpacity>
-        <TouchableOpacity className="border border-gray-200 px-6 py-3 rounded-xl w-1/2 flex-column items-center justify-center ">
+        {/* <TouchableOpacity className="border border-gray-200 px-6 py-3 rounded-xl w-1/2 flex-column items-center justify-center ">
           <FontAwesome name="bookmark" size={18} color="purple" />
           <Text className="text-black font-bold ml-2 mt-3">My Search</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
 
       <View className="mt-6 px-6 gap-3">
