@@ -28,7 +28,8 @@ const EditProfilePhotoModal: React.FC<EditProfilePhotoModalProps> = ({
   try {
     if (!token) {
       Alert.alert('Not Logged In', 'Please log in to update your profile picture.');
-      setProfileImage(require('../../assets/images/profile.png'));
+      setProfileImage(null);
+      // setProfileImage(require('../../assets/images/profile1.png'));
       return;
     }
 

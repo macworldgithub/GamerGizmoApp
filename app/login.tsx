@@ -1,11 +1,13 @@
-import React, { useEffect, useState } from "react";
-import { View, Text, Image, TouchableOpacity, Modal, Button } from "react-native";
-import CreateAccount from "./auth/create";
-import { useRouter } from "expo-router";
-import Login from "./auth/login";
 import * as Google from 'expo-auth-session/providers/google';
-import * as WebBrowser from 'expo-web-browser';
 import Constants from 'expo-constants';
+import { useRouter } from "expo-router";
+import * as WebBrowser from 'expo-web-browser';
+import React, { useEffect, useState } from "react";
+import { Image, Modal, Text, TouchableOpacity, View } from "react-native";
+import Login from "./auth/login";
+import { useDispatch } from "react-redux";
+import { InitializeUserData } from '@/store/slice/loginSlice';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -15,17 +17,77 @@ export default function LoginScreen() {
 
   const [request, response, promptAsync] = Google.useAuthRequest({
     clientId: Constants.expoConfig?.extra?.googleClientId,
+    androidClientId: Constants.expoConfig?.extra?.googleClientIdAndroid,
   });
-// console.log("Redirect URI", Google.getRedirectUrl());
-  useEffect(() => {
-    if (response?.type === 'success') {
-      const { authentication } = response;
-      console.log("Access Token:", authentication);
+  const dispatch = useDispatch();
 
-      // ✅ You can now fetch user info using this token
-      // fetchUserInfo(authentication.accessToken);
+  useEffect(() => {
+  const fetchGoogleUser = async (accessToken: string) => {
+    try {
+      const res = await fetch("https://www.googleapis.com/userinfo/v2/me", {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      });
+
+      const userInfo = await res.json();
+      alert("User Info: " + JSON.stringify(userInfo, null, 2));
+
+
+      const basicUser = {
+        token: accessToken,
+        id: userInfo.id,
+        username: userInfo.name,
+        email: userInfo.email,
+        first_name: userInfo.given_name,
+        last_name: userInfo.family_name,
+        profile: userInfo.picture,
+        phone: null,
+        dob: null,
+        gender: null,
+        address: null,
+        isLoggedIn: true,
+      };
+
+      // Store partially in Redux (awaiting additional fields)
+      dispatch(InitializeUserData(basicUser));
+
+      // Save partial data in AsyncStorage
+      await AsyncStorage.setItem(
+        "user",
+        JSON.stringify({
+          name: userInfo.name,
+          email: userInfo.email,
+          createdAt: new Date().toISOString(),
+        })
+      );
+      await AsyncStorage.setItem("token", accessToken);
+      await AsyncStorage.setItem("userId", String(userInfo.id));
+
+      // Navigate to complete-profile to gather missing fields
+      router.push("/home");
+    } catch (error) {
+      console.error("Google user fetch failed:", error);
+      alert("Google login failed. Try again.");
     }
-  }, [response]);
+  };
+
+  if (response?.type === "success" && response.authentication?.accessToken) {
+    const { accessToken } = response.authentication;
+    
+    fetchGoogleUser(accessToken);
+  }
+}, [response]);
+
+
+  // useEffect(() => {
+  //   if (response?.type === 'success' && response.authentication?.accessToken) {
+  //     const { accessToken } = response.authentication;
+  //     console.warn(" Logged in with token:", accessToken); 
+  //   alert(" Logged in with token: " + accessToken);
+  //     setTimeout(() => {
+  //       router.push("/home");
+  //     }, 100); 
+  //   }
+  // }, [response]);
 
   return (
     <View className="flex-1 bg-white justify-start items-center px-5 pt-20">
@@ -49,7 +111,9 @@ export default function LoginScreen() {
         Login to contact the seller
       </Text>
 
-      <TouchableOpacity className="w-4/5 mb-3">
+      <TouchableOpacity className="w-4/5 mb-3"
+        onPress={() => router.push('/home')}
+      >
         <Image
           source={require("../assets/images/facebbok.png")}
           className="w-full h-10"
