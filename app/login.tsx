@@ -8,6 +8,8 @@ import Login from "./auth/login";
 import { useDispatch } from "react-redux";
 import { InitializeUserData } from '@/store/slice/loginSlice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { API_BASE_URL } from '@/utils/config';
+import { Platform } from "react-native";
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -21,73 +23,78 @@ export default function LoginScreen() {
   });
   const dispatch = useDispatch();
 
+
   useEffect(() => {
-  const fetchGoogleUser = async (accessToken: string) => {
-    try {
-      const res = await fetch("https://www.googleapis.com/userinfo/v2/me", {
-        headers: { Authorization: `Bearer ${accessToken}` },
-      });
+    const fetchGoogleUser = async (idToken: string) => {
+      try {
+        const backendRes = await fetch(`${API_BASE_URL}/auth/google-signin`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            idToken: idToken,
+            platform: Platform.OS,
+            region: 'PK',
+          }),
+        });
 
-      const userInfo = await res.json();
-      alert("User Info: " + JSON.stringify(userInfo, null, 2));
+        console.log("Response status:", backendRes.status);
+        const responseText = await backendRes.text();
+        console.log("Raw response body:", responseText);
+
+        const backendData = JSON.parse(responseText);
+
+        if (!backendRes.ok) {
+          console.error("Backend error response:", backendData);
+          alert(backendData.message || "Backend signup failed");
+          return;
+        }
+
+        console.log("backendData is:", backendData);
+
+        if (!backendData.id) {
+          throw new Error("User data missing from backend response");
+        }
+
+        await AsyncStorage.setItem("token", backendData.token);
+        await AsyncStorage.setItem("userId", String(backendData.id));
+
+        dispatch(InitializeUserData({
+          token: backendData.token,
+          id: backendData.id,
+          username: backendData.username,
+          email: backendData.email,
+          first_name: backendData.first_name,
+          last_name: backendData.last_name || "",
+          profile: backendData.profile,
+          phone: backendData.phone || null,
+          dob: backendData.dob || null,
+          gender: backendData.gender || null,
+          address: backendData.address || null,
+          isLoggedIn: true,
+        }));
 
 
-      const basicUser = {
-        token: accessToken,
-        id: userInfo.id,
-        username: userInfo.name,
-        email: userInfo.email,
-        first_name: userInfo.given_name,
-        last_name: userInfo.family_name,
-        profile: userInfo.picture,
-        phone: null,
-        dob: null,
-        gender: null,
-        address: null,
-        isLoggedIn: true,
-      };
+        router.push("/home");
+      } catch (error) {
+        console.error("Google login failed:", error);
+        alert("Google login failed. Try again.");
+      }
+    };
 
-      // Store partially in Redux (awaiting additional fields)
-      dispatch(InitializeUserData(basicUser));
-
-      // Save partial data in AsyncStorage
-      await AsyncStorage.setItem(
-        "user",
-        JSON.stringify({
-          name: userInfo.name,
-          email: userInfo.email,
-          createdAt: new Date().toISOString(),
-        })
-      );
-      await AsyncStorage.setItem("token", accessToken);
-      await AsyncStorage.setItem("userId", String(userInfo.id));
-
-      // Navigate to complete-profile to gather missing fields
-      router.push("/home");
-    } catch (error) {
-      console.error("Google user fetch failed:", error);
-      alert("Google login failed. Try again.");
+    if (
+      response?.type === "success" &&
+      "authentication" in response &&
+      response.authentication?.idToken
+    ) {
+      const idToken = response.authentication.idToken;
+      alert("Google ID Token:\n\n" + idToken);
+      console.warn(" Google ID Token: ", response.authentication.idToken);
+      fetchGoogleUser(response.authentication.idToken);
+      alert("id token" + response.authentication.idToken)
     }
-  };
-
-  if (response?.type === "success" && response.authentication?.accessToken) {
-    const { accessToken } = response.authentication;
-    
-    fetchGoogleUser(accessToken);
-  }
-}, [response]);
-
-
-  // useEffect(() => {
-  //   if (response?.type === 'success' && response.authentication?.accessToken) {
-  //     const { accessToken } = response.authentication;
-  //     console.warn(" Logged in with token:", accessToken); 
-  //   alert(" Logged in with token: " + accessToken);
-  //     setTimeout(() => {
-  //       router.push("/home");
-  //     }, 100); 
-  //   }
-  // }, [response]);
+  }, [response]);
 
   return (
     <View className="flex-1 bg-white justify-start items-center px-5 pt-20">
