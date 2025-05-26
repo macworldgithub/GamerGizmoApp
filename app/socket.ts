@@ -1,9 +1,8 @@
-// socket.js
-import { io } from 'socket.io-client';
+import { io } from "socket.io-client";
 
-const socket = io('https://backend.gamergizmo.com', {
-  transports: ['websocket'],
+const SOCKET_URL = "https://backend.gamergizmo.com"; // your local/server URL
+
+export const socket = io(SOCKET_URL, {
+  transports: ["websocket"],
   autoConnect: false,
 });
-
-export default socket;

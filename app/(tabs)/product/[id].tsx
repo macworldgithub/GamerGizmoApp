@@ -116,7 +116,7 @@
 //         return;
 //       }
 
-   
+
 //       if (isFavourite) {
 //         Alert.alert(
 //           "Already Favourited",
@@ -127,7 +127,7 @@
 
 //       const productId = id;
 
-  
+
 //       const response = await axios.post(
 //         "https://backend.gamergizmo.com/product/favourite/addToFavourite",
 //         {
@@ -198,7 +198,7 @@
 //             className="bg-white/70 p-2 rounded-full"
 //           >
 //             <FontAwesome
-            
+
 //               color={isFavourite ? "red" : "black"}
 //               name={isFavourite ? "heart" : "heart-o"}
 //               size={20}
@@ -486,7 +486,7 @@
 //           productId,
 //         }
 //       );
-  
+
 
 
 //       console.log("Favourite added:", response.data);
@@ -536,7 +536,7 @@
 //   try {
 //     const senderId = await AsyncStorage.getItem("userId");
 //     const receiverId = product?.user_id;
-    
+
 
 //     if (!senderId || !receiverId) {
 //       alert("User or seller ID missing");
@@ -552,7 +552,7 @@
 //       receiver_id: receiverId,
 //       product_id: id, 
 //     });
-    
+
 
 
 //     const chatId = response.data?.data?.id;
@@ -874,7 +874,7 @@ const ProductDetail = () => {
       const productId = id;
 
       const response = await axios.post(
-        "https://backend.gamergizmo.com/product/favourite/addToFavourite",
+        `${API_BASE_URL}/product/favourite/addToFavourite`,
         {
           userId,
           productId,
@@ -890,37 +890,50 @@ const ProductDetail = () => {
 
   const handleStartChat = async () => {
     try {
-      const senderId = await AsyncStorage.getItem("userId");
-      const receiverId = product?.user_id;
+      const currentUserId = await AsyncStorage.getItem("userId");
+      const sellerId = product?.users?.id;
 
-      if (!senderId || !receiverId) {
-        alert("User or seller ID missing");
+      console.log("🟡 Retrieved currentUserId from AsyncStorage:", currentUserId);
+      console.log("🟡 Seller ID from product.users:", sellerId);
+      console.log("🟡 Full product.users object:", product?.users);
+
+      if (!currentUserId || !product?.users?.id) {
+        alert("User information not available.");
         return;
       }
 
-      const response = await axios.post(`${API_BASE_URL}/chats/create`, {
-        sender_id: senderId,
-        receiver_id: receiverId,
+
+      console.log("Sending chat creation request with:", {
+        sender_id: currentUserId,
+        receiver_id: sellerId,
         product_id: id,
       });
 
-      const chatId = response.data?.data?.id;
+      const response = await axios.post(`${API_BASE_URL}/chat`, {
+        senderId: currentUserId,
+        receiverId: sellerId,
+      });
+
+      const { chatId } = response.data;
+
+      console.log("🟢 Chat created:", response.data);
+      console.log("🔵 Navigating to chat screen with:", { chatId, senderId: currentUserId, receiverId: sellerId });
 
       router.push({
-        pathname: "/(tabs)/chat/[id]",
+        pathname: "/chatScreen",
         params: {
-          id: chatId,
-          senderId,
-          receiverId,
-          sellerName: product?.users?.first_name || "Seller",
+          chatId,
+          senderId: currentUserId,
+          receiverId: sellerId,
         },
       });
-    } catch (error) {
-      alert("Failed to start chat.");
+    } catch (err) {
+      console.error("🔴 Failed to start chat:", err);
+      alert("Failed to initiate chat.");
     }
   };
 
-  const productUrl = `https://gamergizmo.com/product-details/${id}`;
+  const productUrl = `${API_BASE_URL}/product-details/${id}`;
 
   return (
     <ScrollView className="p-4 bg-white">
