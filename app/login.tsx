@@ -127,7 +127,8 @@ export default function LoginScreen() {
           resizeMode="contain"
         />
       </TouchableOpacity>
-      <TouchableOpacity className="w-4/5 mb-3"
+      <TouchableOpacity
+        className="w-4/5 mb-3"
         disabled={!request}
         onPress={() => promptAsync()}
       >
@@ -141,7 +142,7 @@ export default function LoginScreen() {
       <Text className="text-[#6345ED] text-xl mt-3 font-semibold">
         Already have an account?{" "}
         <TouchableOpacity onPress={() => setShowLoginModal(true)}>
-          <Text className="text-[#6345ED] font-semibold mt-2">  Login</Text>
+          <Text className="text-[#6345ED] font-semibold mt-2"> Login</Text>
         </TouchableOpacity>
       </Text>
 
@@ -150,15 +151,10 @@ export default function LoginScreen() {
         <Text className="text-[#6345ED] font-semibold">
           Terms and Conditions
         </Text>{" "}
-        and{" "}
-        <Text className="text-[#6345ED] font-semibold">Privacy Policy</Text>
+        and <Text className="text-[#6345ED] font-semibold">Privacy Policy</Text>
       </Text>
 
-      <Modal
-        visible={showLoginModal}
-        animationType="slide"
-        transparent={false}
-      >
+      <Modal visible={showLoginModal} animationType="slide" transparent={false}>
         <Login onClose={() => setShowLoginModal(false)} />
       </Modal>
     </View>
