@@ -87,7 +87,7 @@
 //         );
 //         setProduct(response.data.data);
 //         console.log("product detail:", response.data.data);
-//         // console.log("User ID:", response.data.data.users?.id); 
+//         // console.log("User ID:", response.data.data.users?.id);
 //       } catch (err) {
 //         console.error("Error fetching product", err);
 //       } finally {
@@ -106,7 +106,6 @@
 //     return image_url?.startsWith("https") ? image_url : image_url;
 //   };
 
-
 //   const handleFavourite = async () => {
 //     try {
 //       const userId = await AsyncStorage.getItem("userId");
@@ -116,7 +115,6 @@
 //         return;
 //       }
 
-   
 //       if (isFavourite) {
 //         Alert.alert(
 //           "Already Favourited",
@@ -127,7 +125,6 @@
 
 //       const productId = id;
 
-  
 //       const response = await axios.post(
 //         "https://backend.gamergizmo.com/product/favourite/addToFavourite",
 //         {
@@ -198,7 +195,7 @@
 //             className="bg-white/70 p-2 rounded-full"
 //           >
 //             <FontAwesome
-            
+
 //               color={isFavourite ? "red" : "black"}
 //               name={isFavourite ? "heart" : "heart-o"}
 //               size={20}
@@ -251,7 +248,7 @@
 
 //        <TouchableOpacity className="mt-6 border border-purple-600 rounded-md py-2 items-center">
 //         <Text className="text-purple-600 font-semibold">Chat</Text>
-//       </TouchableOpacity> 
+//       </TouchableOpacity>
 
 //       <View className="mt-6">
 //         <Text className="text-lg font-semibold text-gray-800 mb-2">
@@ -351,10 +348,6 @@
 // };
 
 // export default ProductDetail;
-
-
-
-
 
 // import dayjs from "dayjs";
 // import relativeTime from "dayjs/plugin/relativeTime";
@@ -486,8 +479,6 @@
 //           productId,
 //         }
 //       );
-  
-
 
 //       console.log("Favourite added:", response.data);
 //       setIsFavourite(true);
@@ -536,7 +527,6 @@
 //   try {
 //     const senderId = await AsyncStorage.getItem("userId");
 //     const receiverId = product?.user_id;
-    
 
 //     if (!senderId || !receiverId) {
 //       alert("User or seller ID missing");
@@ -550,10 +540,8 @@
 //     const response = await axios.post(`${API_BASE_URL}/chats/create`, {
 //       sender_id: senderId,
 //       receiver_id: receiverId,
-//       product_id: id, 
+//       product_id: id,
 //     });
-    
-
 
 //     const chatId = response.data?.data?.id;
 
@@ -571,7 +559,6 @@
 //     alert("Failed to start chat.");
 //   }
 // };
-
 
 //   const productUrl = `https://gamergizmo.com/product-details/${id}`;
 
@@ -753,8 +740,6 @@
 
 // export default ProductDetail;
 
-
-
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { router, useLocalSearchParams } from "expo-router";
@@ -853,7 +838,8 @@ const ProductDetail = () => {
   }, [id]);
 
   if (loading) return <ActivityIndicator className="mt-20" />;
-  if (!product) return <Text className="text-center mt-10">Product not found</Text>;
+  if (!product)
+    return <Text className="text-center mt-10">Product not found</Text>;
 
   const getImageUrl = (image_url: string) => {
     return image_url?.startsWith("https") ? image_url : image_url;
@@ -959,18 +945,32 @@ const ProductDetail = () => {
         </TouchableOpacity>
 
         <View className="absolute bottom-2 right-2 flex-row space-x-2">
-          <TouchableOpacity onPress={handleFavourite} className="bg-white/70 p-2 rounded-full">
-            <FontAwesome color={isFavourite ? "red" : "black"} name={isFavourite ? "heart" : "heart-o"} size={20} />
+          <TouchableOpacity
+            onPress={handleFavourite}
+            className="bg-white/70 p-2 rounded-full"
+          >
+            <FontAwesome
+              color={isFavourite ? "red" : "black"}
+              name={isFavourite ? "heart" : "heart-o"}
+              size={20}
+            />
           </TouchableOpacity>
-          <TouchableOpacity className="bg-white/70 p-2 rounded-full" onPress={() => setIsVisible(true)}>
+          <TouchableOpacity
+            className="bg-white/70 p-2 rounded-full"
+            onPress={() => setIsVisible(true)}
+          >
             <FontAwesome name="share-alt" size={20} color="black" />
           </TouchableOpacity>
         </View>
       </View>
 
       {/* Price and name */}
-      <Text className="text-purple-600 text-2xl font-bold mt-4">AED {product.price}</Text>
-      <Text className="text-lg font-semibold text-gray-800 mt-1">{product.name}</Text>
+      <Text className="text-purple-600 text-2xl font-bold mt-4">
+        AED {product.price}
+      </Text>
+      <Text className="text-lg font-semibold text-gray-800 mt-1">
+        {product.name}
+      </Text>
 
       <View className="border-b border-gray-200 my-2" />
 
@@ -984,15 +984,21 @@ const ProductDetail = () => {
 
       {/* Description */}
       <View className="mt-6">
-        <Text className="text-lg font-semibold text-gray-800 mb-2">Description</Text>
-        <Text className="text-gray-700">{product.description || "No description provided."}</Text>
+        <Text className="text-lg font-semibold text-gray-800 mb-2">
+          Description
+        </Text>
+        <Text className="text-gray-700">
+          {product.description || "No description provided."}
+        </Text>
       </View>
 
       <View className="border-b border-gray-200 my-4" />
 
       {/* Location */}
       <View>
-        <Text className="text-lg font-semibold text-gray-800 mb-2">Location</Text>
+        <Text className="text-lg font-semibold text-gray-800 mb-2">
+          Location
+        </Text>
         <Text className="text-gray-700">{product.location || "Dubai"}</Text>
         <View className="h-32 bg-gray-200 rounded-md mt-2 items-center justify-center">
           <Text className="text-gray-500">MAP</Text>
@@ -1005,11 +1011,14 @@ const ProductDetail = () => {
           <Ionicons name="person-circle-outline" size={40} color="gray" />
           <View className="ml-2">
             <Text className="text-base font-semibold text-gray-800">
-              {product.users?.first_name} {product.users?.last_name} ({product.users?.gender})
+              {product.users?.first_name} {product.users?.last_name} (
+              {product.users?.gender})
             </Text>
             <Text className="text-sm text-gray-500">
               Member Since{" "}
-              {product.users?.created_at ? dayjs(product.users.created_at).format("DD MMM YYYY") : "N/A"}
+              {product.users?.created_at
+                ? dayjs(product.users.created_at).format("DD MMM YYYY")
+                : "N/A"}
             </Text>
           </View>
         </View>
@@ -1019,7 +1028,9 @@ const ProductDetail = () => {
             if (product.users?.phone) {
               const phone = product.users.phone.replace(/\s+/g, "");
               const url = `https://wa.me/${phone}`;
-              Linking.openURL(url).catch(() => alert("WhatsApp is not installed or link is invalid"));
+              Linking.openURL(url).catch(() =>
+                alert("WhatsApp is not installed or link is invalid")
+              );
             }
           }}
           className="flex-row items-center mt-2"
@@ -1032,7 +1043,9 @@ const ProductDetail = () => {
           onPress={() => {
             if (product.users?.email) {
               const url = `mailto:${product.users.email}`;
-              Linking.openURL(url).catch(() => alert("Unable to open email client"));
+              Linking.openURL(url).catch(() =>
+                alert("Unable to open email client")
+              );
             }
           }}
           className="flex-row items-center mt-2"
@@ -1065,6 +1078,3 @@ const ProductDetail = () => {
 };
 
 export default ProductDetail;
-
-
-
