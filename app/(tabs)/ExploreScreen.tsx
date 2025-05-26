@@ -78,7 +78,7 @@ const ExploreScreen = () => {
     }
   };
 
-  useEffect(() => {
+  useEffect(() => {    
     if (category && condition) {
       fetchProducts();
     }
