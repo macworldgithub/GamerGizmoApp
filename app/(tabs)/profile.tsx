@@ -38,6 +38,11 @@ const Profile = () => {
     }
   }, [user?.profile]);
 
+  useEffect(() => {
+    console.log("Redux user profile URL:", user?.profile);
+  }, [user?.profile]);
+
+
 
   return (
     <ScrollView className="bg-white">
@@ -48,29 +53,32 @@ const Profile = () => {
 
               <View className="relative">
                 {profileImage ? (
-                  <Image
-                    source={{ uri: profileImage.uri }}
-                    style={{ width: 70, height: 70, borderRadius: 50 }}
-                  />
-                ) : (
-                  <View
-                    style={{
-                      width: 70,
-                      height: 70,
-                      borderRadius: 50,
-                      backgroundColor: '#f0f0f0',
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                    }}
-                  >
-                    <FontAwesome name="user-circle" size={70} color="#999" />
-                  </View>
+                  <>
+                    {console.log("Image Source URI:", profileImage.uri)}
+                    <Image
+                      source={{ uri: profileImage.uri }}
+                      style={{ width: 70, height: 70, borderRadius: 50 }}
+                    />
+                      </>
+                    ) : (
+                    <View
+                      style={{
+                        width: 70,
+                        height: 70,
+                        borderRadius: 50,
+                        backgroundColor: '#f0f0f0',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                      }}
+                    >
+                      <FontAwesome name="user-circle" size={70} color="#999" />
+                    </View>
                 )}
 
-                <View className="absolute bottom-0 right-0 bg-white rounded-full p-1 shadow">
-                  <Pencil size={16} color="#000" />
-                </View>
-              </View>
+                    <View className="absolute bottom-0 right-0 bg-white rounded-full p-1 shadow">
+                      <Pencil size={16} color="#000" />
+                    </View>
+                  </View>
             </TouchableOpacity>
 
             <EditProfilePhotoModal
@@ -110,7 +118,7 @@ const Profile = () => {
             My Ads
           </Text>
         </TouchableOpacity>
-       
+
       </View>
 
       <View className="mt-6 px-6 gap-3">

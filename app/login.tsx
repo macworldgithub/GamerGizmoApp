@@ -74,6 +74,8 @@ export default function LoginScreen() {
           address: backendData.address || null,
           isLoggedIn: true,
         }));
+        console.log("Profile image URL from backend:", backendData.profile);
+
 
 
         router.push("/home");
