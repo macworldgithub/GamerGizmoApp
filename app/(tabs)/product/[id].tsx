@@ -1,3 +1,4 @@
+
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { router, useLocalSearchParams } from "expo-router";
@@ -9,6 +10,7 @@ import {
   ScrollView,
   TouchableOpacity,
   Alert,
+  Linking,
 } from "react-native";
 import { useEffect, useState } from "react";
 import axios from "axios";
@@ -18,7 +20,9 @@ import Swiper from "react-native-swiper";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import ShareModal from "../ShareModal";
 import Modal from "react-native-modal";
-import { Linking } from "react-native";
+import { io } from "socket.io-client";
+import { useNavigation } from "@react-navigation/native";
+import socket from "../../socket";
 
 dayjs.extend(relativeTime);
 
@@ -78,6 +82,8 @@ const ProductDetail = () => {
   const [loading, setLoading] = useState(true);
   const [isFavourite, setIsFavourite] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
+  const [isConnecting, setIsConnecting] = useState(false);
+  const navigation = useNavigation();
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -105,17 +111,13 @@ const ProductDetail = () => {
     return image_url?.startsWith("https") ? image_url : image_url;
   };
 
-
   const handleFavourite = async () => {
     try {
       const userId = await AsyncStorage.getItem("userId");
-
       if (!userId) {
         alert("User not logged in.");
         return;
       }
-
-   
       if (isFavourite) {
         Alert.alert(
           "Already Favourited",
@@ -124,15 +126,9 @@ const ProductDetail = () => {
         return;
       }
 
-      const productId = id;
-
-  
       const response = await axios.post(
         "https://backend.gamergizmo.com/product/favourite/addToFavourite",
-        {
-          userId,
-          productId,
-        }
+        { userId, productId: id }
       );
 
       console.log("Favourite added:", response.data);
@@ -147,6 +143,58 @@ const ProductDetail = () => {
     }
   };
 
+  const handleStartChat = async () => {
+    setIsConnecting(true);
+    try {
+      const buyerUserId = await AsyncStorage.getItem("userId");
+      const sellerId = product?.users?.id;
+
+      console.log("Buyer ID:", buyerUserId); // Add logging
+      console.log("Seller ID:", sellerId); // Add logging
+
+      if (!buyerUserId) {
+        alert("Please login to start a chat");
+        return;
+      }
+
+      if (!sellerId) {
+        alert("Seller information not available");
+        return;
+      }
+
+      const response = await axios.post(
+        "https://backend.gamergizmo.com/chats/create",
+        {
+          user1Id: buyerUserId,
+          user2Id: sellerId,
+          productId: id,
+        }
+      );
+
+      const chatId = response.data.data.id;
+
+      // Initialize socket connection if not already connected
+      if (!socket.connected) {
+        socket.io.opts.query = { userId: buyerUserId };
+        socket.connect();
+      }
+
+      router.push({
+        pathname: "/(tabs)/Chating",
+        params: {
+          chatId,
+          sellerId,
+          productId: id, // Also pass productId for reference
+        },
+      });
+    } catch (error) {
+      console.error("Chat Error:", error);
+      alert("Failed to start chat. Please try again.");
+    } finally {
+      setIsConnecting(false);
+    }
+  };
+
   const productUrl = `https://gamergizmo.com/product-details/${id}`;
 
   return (
@@ -156,11 +204,7 @@ const ProductDetail = () => {
           <Swiper
             style={{ height: 200 }}
             dotStyle={{ backgroundColor: "#ccc", width: 6, height: 6 }}
-            activeDotStyle={{
-              backgroundColor: "#6D28D9",
-              width: 8,
-              height: 8,
-            }}
+            activeDotStyle={{ backgroundColor: "#6D28D9", width: 8, height: 8 }}
             loop
             showsPagination
           >
@@ -197,15 +241,14 @@ const ProductDetail = () => {
             className="bg-white/70 p-2 rounded-full"
           >
             <FontAwesome
-            
               color={isFavourite ? "red" : "black"}
               name={isFavourite ? "heart" : "heart-o"}
               size={20}
             />
           </TouchableOpacity>
           <TouchableOpacity
-            className="bg-white/70 p-2 rounded-full"
             onPress={() => setIsVisible(true)}
+            className="bg-white/70 p-2 rounded-full"
           >
             <FontAwesome name="share-alt" size={20} color="black" />
           </TouchableOpacity>
@@ -248,19 +291,23 @@ const ProductDetail = () => {
         </View>
       </View>
 
-      {/* <TouchableOpacity className="mt-6 border border-purple-600 rounded-md py-2 items-center">
-        <Text className="text-purple-600 font-semibold">Make an offer</Text>
-      </TouchableOpacity> */}
+      <TouchableOpacity
+        onPress={handleStartChat}
+        className="mt-6 border border-purple-600 rounded-md py-2 items-center"
+        disabled={isConnecting}
+      >
+        <Text className="text-purple-600 font-semibold">
+          {isConnecting ? "Connecting..." : "Chat"}
+        </Text>
+      </TouchableOpacity>
 
       <View className="mt-6">
         <Text className="text-lg font-semibold text-gray-800 mb-2">
           Description
         </Text>
-        <View className="flex-row">
-          <Text className="text-gray-700 flex-1">
-            {product.description || "No description provided."}
-          </Text>
-        </View>
+        <Text className="text-gray-700">
+          {product.description || "No description provided."}
+        </Text>
       </View>
 
       <View className="border-b border-gray-200 my-4" />
@@ -276,7 +323,7 @@ const ProductDetail = () => {
         </View>
       </View>
 
-      {/* User Info Section */}
+      {/* User Info */}
       <View className="mt-6 p-4 border border-gray-300 rounded-md bg-gray-50 shadow-sm">
         <View className="flex-row items-center mb-2">
           <Ionicons name="person-circle-outline" size={40} color="gray" />
@@ -299,9 +346,8 @@ const ProductDetail = () => {
           onPress={() => {
             if (product.users?.phone) {
               const phone = product.users.phone.replace(/\s+/g, "");
-              const url = `https://wa.me/${phone}`;
-              Linking.openURL(url).catch(() =>
-                alert("WhatsApp is not installed or link is invalid")
+              Linking.openURL(`https://wa.me/${phone}`).catch(() =>
+                alert("WhatsApp not installed or link is invalid")
               );
             }
           }}
@@ -311,12 +357,11 @@ const ProductDetail = () => {
           <Text className="ml-2 text-gray-700">{product.users?.phone}</Text>
         </TouchableOpacity>
 
-        {/* Gmail */}
+        {/* Email */}
         <TouchableOpacity
           onPress={() => {
             if (product.users?.email) {
-              const url = `mailto:${product.users.email}`;
-              Linking.openURL(url).catch(() =>
+              Linking.openURL(`mailto:${product.users.email}`).catch(() =>
                 alert("Unable to open email client")
               );
             }
@@ -334,6 +379,7 @@ const ProductDetail = () => {
         <Text className="text-sm ml-2">Report an ad</Text>
       </TouchableOpacity>
 
+      {/* Share Modal */}
       <Modal
         isVisible={isVisible}
         onBackdropPress={() => setIsVisible(false)}
@@ -350,6 +396,3 @@ const ProductDetail = () => {
 };
 
 export default ProductDetail;
-
-
-
