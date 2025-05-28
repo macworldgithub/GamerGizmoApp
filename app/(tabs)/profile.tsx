@@ -15,6 +15,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import { useDispatch } from "react-redux";
 import { LogoutUser } from "../../store/slice/loginSlice";
+import { API_BASE_URL } from "@/utils/config";
 
 const Profile = () => {
   const router = useRouter();
@@ -38,12 +39,6 @@ const Profile = () => {
     }
   }, [user?.profile]);
 
-  useEffect(() => {
-    console.log("Redux user profile URL:", user?.profile);
-  }, [user?.profile]);
-
-
-
   return (
     <ScrollView className="bg-white">
       <View className="bg-white rounded-2xl mx-4 mt-4 py-4 px-4 border border-gray-200 ">
@@ -54,7 +49,6 @@ const Profile = () => {
               <View className="relative">
                 {profileImage ? (
                   <>
-                    {console.log("Image Source URI:", profileImage.uri)}
                     <Image
                       source={{ uri: profileImage.uri }}
                       style={{ width: 70, height: 70, borderRadius: 50 }}
@@ -279,7 +273,7 @@ const Profile = () => {
               }
 
               const response = await axios.post(
-                "https://backend.gamergizmo.com/auth/logoutUser",
+                `${API_BASE_URL}/auth/logoutUser`,
                 JSON.stringify({ token: token.trim() }),
                 {
                   headers: {

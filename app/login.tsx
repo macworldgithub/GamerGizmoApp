@@ -39,19 +39,15 @@ export default function LoginScreen() {
           }),
         });
 
-        console.log("Response status:", backendRes.status);
         const responseText = await backendRes.text();
-        console.log("Raw response body:", responseText);
 
         const backendData = JSON.parse(responseText);
 
         if (!backendRes.ok) {
-          console.error("Backend error response:", backendData);
           alert(backendData.message || "Backend signup failed");
           return;
         }
 
-        console.log("backendData is:", backendData);
 
         if (!backendData.id) {
           throw new Error("User data missing from backend response");
@@ -74,13 +70,11 @@ export default function LoginScreen() {
           address: backendData.address || null,
           isLoggedIn: true,
         }));
-        console.log("Profile image URL from backend:", backendData.profile);
 
 
 
-        router.push("/home");
+        router.replace("/home");
       } catch (error) {
-        console.error("Google login failed:", error);
         alert("Google login failed. Try again.");
       }
     };
@@ -91,10 +85,8 @@ export default function LoginScreen() {
       response.authentication?.idToken
     ) {
       const idToken = response.authentication.idToken;
-      alert("Google ID Token:\n\n" + idToken);
-      console.warn(" Google ID Token: ", response.authentication.idToken);
+
       fetchGoogleUser(response.authentication.idToken);
-      alert("id token" + response.authentication.idToken)
     }
   }, [response]);
 

@@ -13,7 +13,7 @@ import { UpdateUserField } from '../../store/slice/loginSlice';
 interface EditProfilePhotoModalProps {
   visible: boolean;
   onClose: () => void;
-  setProfileImage: (image: ImageURISource) => void;
+  setProfileImage: (image: { uri: string } | null) => void;
 }
 
 const EditProfilePhotoModal: React.FC<EditProfilePhotoModalProps> = ({
