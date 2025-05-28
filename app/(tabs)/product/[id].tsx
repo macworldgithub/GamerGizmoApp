@@ -147,30 +147,29 @@ const ProductDetail = () => {
     setIsConnecting(true);
     try {
       const buyerUserId = await AsyncStorage.getItem("userId");
-      const sellerId = product?.users?.id;
+      const sellerId = product?.user_id;
 
-      console.log("Buyer ID:", buyerUserId); // Add logging
-      console.log("Seller ID:", sellerId); // Add logging
+      console.log("Buyer ID:", buyerUserId);
+      console.log("Seller ID:", sellerId);
 
-      if (!buyerUserId) {
-        alert("Please login to start a chat");
+      if (!buyerUserId || !sellerId) {
+        alert("User IDs missing.");
         return;
       }
-
-      if (!sellerId) {
-        alert("Seller information not available");
+      if (Number(buyerUserId) === Number(sellerId)) {
+        alert("You cannot chat with yourself.");
         return;
       }
-
       const response = await axios.post(
         "https://backend.gamergizmo.com/chats/create",
         {
-          user1Id: buyerUserId,
-          user2Id: sellerId,
-          productId: id,
+          user1Id: Number(buyerUserId),
+          user2Id: Number(sellerId),
+          // productId: id,
         }
       );
-
+      console.log("Chat response:", response.data);
+      alert(response.data.message);
       const chatId = response.data.data.id;
 
       // Initialize socket connection if not already connected
@@ -187,9 +186,9 @@ const ProductDetail = () => {
           productId: id, // Also pass productId for reference
         },
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Chat Error:", error);
-      alert("Failed to start chat. Please try again.");
+      alert(error.response?.data?.message || "Failed to start chat. Please try again.");
     } finally {
       setIsConnecting(false);
     }
