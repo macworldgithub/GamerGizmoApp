@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   Modal,
+  Platform,
 } from "react-native";
 import axios from "axios";
 import { useDispatch } from "react-redux";
@@ -17,6 +18,7 @@ import ForgotPasswordModal from "./ForgotPasswordModal";
 import ResetPasswordModal from "./ResetPasswordModal";
 import MaxLimitModal from "./MaxLimitModal";
 import { API_BASE_URL } from "@/utils/config";
+import { getLocation } from "@/utils/getLocation";
 
 type Props = {
   onClose: () => void;
@@ -32,8 +34,18 @@ const Login = ({ onClose }: Props) => {
   const [resetEmail, setResetEmail] = useState("");
   const [maxLimitModalVisible, setMaxLimitModalVisible] = useState(false);
   const [sessions, setSessions] = useState([]);
+  const [region, setRegion] = useState<string | null>(null);
+
   const dispatch = useDispatch();
   const router = useRouter();
+
+  useEffect(() => {
+    const fetchRegion = async () => {
+      const loc = await getLocation();
+      setRegion(loc);
+    };
+    fetchRegion();
+  }, []);
 
   const handleLogin = async () => {
     if (!email || !password) return alert("Please fill in all fields");
@@ -41,12 +53,12 @@ const Login = ({ onClose }: Props) => {
     setLoading(true);
     try {
       const response = await axios.post(
-        "https://backend.gamergizmo.com/auth/signin",
+        `${API_BASE_URL}/auth/signin`,
         {
           name: email,
           password,
-          platform: "mobile",
-          region: "PK",
+          platform: Platform.OS,
+          region: region || "Unknown",
         }
       );
 
@@ -56,7 +68,7 @@ const Login = ({ onClose }: Props) => {
         await AsyncStorage.setItem(
           "user",
           JSON.stringify({
-             name: user?.name || email,
+            name: user?.name || email,
             createdAt: user?.createdAt,
           })
         );
@@ -69,7 +81,7 @@ const Login = ({ onClose }: Props) => {
         router.replace("/(tabs)/home");
       } else {
         alert(response.data.message || "Login failed");
-      }  
+      }
     } catch (error: any) {
       const data = error.response?.data;
       console.log(data || error.message);
@@ -95,7 +107,7 @@ const Login = ({ onClose }: Props) => {
     }
   };
 
- 
+
 
   const handleLogoutSession = async (index: number) => {
     const session = sessions[index];
@@ -148,7 +160,7 @@ const Login = ({ onClose }: Props) => {
       <TouchableOpacity
         className="bg-fuchsia-500 rounded-lg py-3 mb-5 items-center"
         onPress={handleLogin}
-        disabled={loading}
+        disabled={loading || !region}
       >
         {loading ? (
           <ActivityIndicator color="#fff" />

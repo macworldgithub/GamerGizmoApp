@@ -10,22 +10,25 @@ import { InitializeUserData } from '@/store/slice/loginSlice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { API_BASE_URL } from '@/utils/config';
 import { Platform } from "react-native";
-
+import { getLocation } from "@/utils/getLocation";
 WebBrowser.maybeCompleteAuthSession();
 
 export default function LoginScreen() {
   const [showLoginModal, setShowLoginModal] = useState(false);
-  const router = useRouter();
+  const [locationCity, setLocationCity] = useState<string | null>(null);
 
   const [request, response, promptAsync] = Google.useAuthRequest({
     clientId: Constants.expoConfig?.extra?.googleClientId,
     androidClientId: Constants.expoConfig?.extra?.googleClientIdAndroid,
   });
+
+
+  const router = useRouter();
   const dispatch = useDispatch();
 
 
   useEffect(() => {
-    const fetchGoogleUser = async (idToken: string) => {
+    const fetchGoogleUser = async (idToken: string, region: string | null) => {
       try {
         const backendRes = await fetch(`${API_BASE_URL}/auth/google-signin`, {
           method: "POST",
@@ -35,7 +38,7 @@ export default function LoginScreen() {
           body: JSON.stringify({
             idToken: idToken,
             platform: Platform.OS,
-            region: 'PK',
+            region: region || 'PK',
           }),
         });
 
@@ -84,11 +87,15 @@ export default function LoginScreen() {
       "authentication" in response &&
       response.authentication?.idToken
     ) {
-      const idToken = response.authentication.idToken;
-
-      fetchGoogleUser(response.authentication.idToken);
+      fetchGoogleUser(response.authentication.idToken, locationCity);
     }
   }, [response]);
+
+  const handleGoogleLogin = async () => {
+    const city = await getLocation();
+    setLocationCity(city); // set to state for later use
+    promptAsync();
+  };
 
   return (
     <View className="flex-1 bg-white justify-start items-center px-5 pt-20">
@@ -123,7 +130,8 @@ export default function LoginScreen() {
       </TouchableOpacity>
       <TouchableOpacity className="w-4/5 mb-3"
         disabled={!request}
-        onPress={() => promptAsync()}
+        onPress={handleGoogleLogin}
+      // onPress={() => promptAsync()}
       >
         <Image
           source={require("../assets/images/google.png")}
