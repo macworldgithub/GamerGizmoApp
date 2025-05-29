@@ -20,6 +20,10 @@ type FormDataType = {
 
 const EditProfileScreen = () => {
   const token = useSelector((state: RootState) => state.user.token);
+
+  const handletoken = () => {
+  console.log("my Token:", token);
+};
   const dispatch = useDispatch();
   const [formData, setFormData] = useState<FormDataType>({
     first_name: '',
@@ -45,6 +49,7 @@ const EditProfileScreen = () => {
         },
       });
       const data = res.data.data;
+      alert("data"+ data)
       setFormData({
         first_name: data?.first_name || '',
         last_name: data?.last_name || '',
@@ -109,14 +114,16 @@ const EditProfileScreen = () => {
       Alert.alert('Update error', error?.response?.data?.message || error.message);
     }
   };
-
+ 
   return (
     <ScrollView className="flex-1 bg-white p-5">
       <View className="flex-row items-center p-4 border-b border-gray-200 mt-1 mb-2">
         <TouchableOpacity onPress={() => router.push('/UserInfo')}>
           <Image source={require("../../assets/images/arrow.png")} />
         </TouchableOpacity>
-        <Text className="text-lg font-semibold ml-32">Edit Profile</Text>
+        <Text className="text-lg font-semibold ml-32"
+        onPress={()=>handletoken()}
+        >Edit Profile</Text>
       </View>
       <InputField
         label="First Name"

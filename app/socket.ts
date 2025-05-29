@@ -1,9 +1,8 @@
-// socket.js
-import { io } from 'socket.io-client';
+// utils/socket.ts
+import { io } from "socket.io-client";
 
-const socket = io('https://backend.gamergizmo.com', {
-  transports: ['websocket'],
-  autoConnect: false,
+const socket = io("https://backend.gamergizmo.com", {
+  autoConnect: false, // prevent connecting before login
 });
 
 export default socket;

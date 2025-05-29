@@ -13,7 +13,7 @@ import { UpdateUserField } from '../../store/slice/loginSlice';
 interface EditProfilePhotoModalProps {
   visible: boolean;
   onClose: () => void;
-  setProfileImage: (image: ImageURISource) => void;
+  setProfileImage: (image: { uri: string } | null) => void;
 }
 
 const EditProfilePhotoModal: React.FC<EditProfilePhotoModalProps> = ({
@@ -28,7 +28,8 @@ const EditProfilePhotoModal: React.FC<EditProfilePhotoModalProps> = ({
   try {
     if (!token) {
       Alert.alert('Not Logged In', 'Please log in to update your profile picture.');
-      setProfileImage(require('../../assets/images/profile.png'));
+      setProfileImage(null);
+      // setProfileImage(require('../../assets/images/profile1.png'));
       return;
     }
 

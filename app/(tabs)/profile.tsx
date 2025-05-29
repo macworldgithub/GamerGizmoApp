@@ -8,17 +8,18 @@ import { useRouter } from "expo-router";
 import ContactModal from "../(tabs)/ContactModal";
 import CitySelectorModal from "../(tabs)/CityModal";
 import LanguageModal from "../(tabs)/LanguageModal";
-import TermsModal from "../(tabs)/TermsModal"; 
+import TermsModal from "../(tabs)/TermsModal";
 import EditProfilePhotoModal from './EditProfilePhotoModal';
 import { Pencil } from "lucide-react-native";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
+import { useDispatch } from "react-redux";
+import { LogoutUser } from "../../store/slice/loginSlice";
+import { API_BASE_URL } from "@/utils/config";
 
 const Profile = () => {
   const router = useRouter();
   const user = useSelector((state: RootState) => state.user);
-
-
   const [modalVisible, setModalVisible] = useState(false);
   const [profileImage, setProfileImage] = useState(
     user?.profile ? { uri: user.profile } : null
@@ -29,44 +30,60 @@ const Profile = () => {
   const [languageModalVisible, setLanguageModalVisible] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState("English");
   const [termsModalVisible, setTermsModalVisible] = useState(false);
+  const dispatch = useDispatch();
 
-   React.useEffect(() => {
+
+  React.useEffect(() => {
     if (user?.profile) {
       setProfileImage({ uri: user.profile });
     }
   }, [user?.profile]);
 
-  
   return (
     <ScrollView className="bg-white">
       <View className="bg-white rounded-2xl mx-4 mt-4 py-4 px-4 border border-gray-200 ">
         <View className="flex-row items-center space-x-4 gap-4">
           <View className="items-center ">
             <TouchableOpacity onPress={() => setModalVisible(true)}>
+
               <View className="relative">
-                <Image
-                  source={
-                    profileImage
-                      ? { uri: profileImage.uri }
-                      : require('../../assets/images/profile.png')
-                  }
-                  style={{ width: 70, height: 70, borderRadius: 50 }}
-                />
-                <View className="absolute bottom-0 right-0 bg-white rounded-full p-1 shadow">
-                  <Pencil size={16} color="#000" />
-                </View>
-              </View>
+                {profileImage ? (
+                  <>
+                    <Image
+                      source={{ uri: profileImage.uri }}
+                      style={{ width: 70, height: 70, borderRadius: 50 }}
+                    />
+                      </>
+                    ) : (
+                    <View
+                      style={{
+                        width: 70,
+                        height: 70,
+                        borderRadius: 50,
+                        backgroundColor: '#f0f0f0',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                      }}
+                    >
+                      <FontAwesome name="user-circle" size={70} color="#999" />
+                    </View>
+                )}
+
+                    <View className="absolute bottom-0 right-0 bg-white rounded-full p-1 shadow">
+                      <Pencil size={16} color="#000" />
+                    </View>
+                  </View>
             </TouchableOpacity>
 
             <EditProfilePhotoModal
               visible={modalVisible}
               onClose={() => setModalVisible(false)}
-              setProfileImage={setProfileImage}   
+              setProfileImage={setProfileImage}
             />
           </View>
 
           <View>
-          <Text className="text-lg font-bold text-black">
+            <Text className="text-lg font-bold text-black">
               {user?.first_name && user?.last_name
                 ? `${user.first_name} ${user.last_name}`
                 : "Not Logged In"}
@@ -77,12 +94,12 @@ const Profile = () => {
               </Text>
               <FontAwesome name="check-circle" size={14} color="purple" />
             </View>
-          <Text className="text-xs text-gray-500 mt-3">
+            <Text className="text-xs text-gray-500 mt-3">
               Joined on {user?.created_at?.slice(0, 10) || "Unknown"}
             </Text>
           </View>
         </View>
-        
+
       </View>
 
       <View className="flex-row justify-center space-x-4 mt-6 mx-4">
@@ -95,10 +112,7 @@ const Profile = () => {
             My Ads
           </Text>
         </TouchableOpacity>
-        {/* <TouchableOpacity className="border border-gray-200 px-6 py-3 rounded-xl w-1/2 flex-column items-center justify-center ">
-          <FontAwesome name="bookmark" size={18} color="purple" />
-          <Text className="text-black font-bold ml-2 mt-3">My Search</Text>
-        </TouchableOpacity> */}
+
       </View>
 
       <View className="mt-6 px-6 gap-3">
@@ -109,20 +123,6 @@ const Profile = () => {
           <View className="flex-row items-center space-x-3">
             <Image source={require("../../assets/images/profile1.png")} />
             <Text className="text-black ml-3">Profile</Text>
-          </View>
-          <Image
-            source={require("../../assets/images/next.png")}
-            className="w-4 h-4"
-          />
-        </TouchableOpacity>
-
-        <TouchableOpacity className="flex-row items-center justify-between py-4">
-          <View className="flex-row items-center space-x-3">
-            <Image
-              source={require("../../assets/images/account.png")}
-              className="w-6 h-6"
-            />
-            <Text className="text-black ml-3">Settings</Text>
           </View>
           <Image
             source={require("../../assets/images/next.png")}
@@ -204,7 +204,7 @@ const Profile = () => {
         />
 
         <TouchableOpacity className="flex-row items-center justify-between py-4 "
-        onPress={() => router.push("/blog")}>
+          onPress={() => router.push("/blog")}>
           <View className="flex-row items-center space-x-3">
             <Image
               source={require("../../assets/images/lock.png")}
@@ -261,9 +261,6 @@ const Profile = () => {
 
         <TouchableOpacity
           className="flex-row items-center justify-between py-4"
-         
-         
-
           onPress={async () => {
             try {
               const token = await AsyncStorage.getItem("token");
@@ -276,7 +273,7 @@ const Profile = () => {
               }
 
               const response = await axios.post(
-                "https://backend.gamergizmo.com/auth/logoutUser",
+                `${API_BASE_URL}/auth/logoutUser`,
                 JSON.stringify({ token: token.trim() }),
                 {
                   headers: {
@@ -291,6 +288,7 @@ const Profile = () => {
                 Alert.alert("Success", "You have been logged out.");
                 await AsyncStorage.removeItem("token");
                 await AsyncStorage.removeItem("user");
+                dispatch(LogoutUser());
                 router.replace("/auth/login");
               } else {
                 console.warn("Logout non-200 response:", response.status, response.data);
@@ -315,7 +313,7 @@ const Profile = () => {
             source={require("../../assets/images/next.png")}
             className="w-4 h-4"
           />
-        </TouchableOpacity>             
+        </TouchableOpacity>
 
       </View>
     </ScrollView>
