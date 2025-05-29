@@ -1,26 +1,24 @@
-import axios from "axios";
-import { Alert, Button } from "react-native";
+import { RootState } from "@/store/store";
+import { API_BASE_URL } from "@/utils/config";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import React, { useEffect, useState } from "react";
-import { View, Text, Image, TouchableOpacity, ScrollView } from "react-native";
-import FontAwesome from "react-native-vector-icons/FontAwesome";
+import axios from "axios";
 import { useRouter } from "expo-router";
-import ContactModal from "../(tabs)/ContactModal";
+import { Pencil } from "lucide-react-native";
+import React, { useState } from "react";
+import { Alert, Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import FontAwesome from "react-native-vector-icons/FontAwesome";
+import { useDispatch, useSelector } from "react-redux";
 import CitySelectorModal from "../(tabs)/CityModal";
+import ContactModal from "../(tabs)/ContactModal";
 import LanguageModal from "../(tabs)/LanguageModal";
 import TermsModal from "../(tabs)/TermsModal";
-import EditProfilePhotoModal from './EditProfilePhotoModal';
-import { Pencil } from "lucide-react-native";
-import { useSelector } from "react-redux";
-import { RootState } from "@/store/store";
-import { useDispatch } from "react-redux";
 import { LogoutUser } from "../../store/slice/loginSlice";
-import { API_BASE_URL } from "@/utils/config";
+import EditProfilePhotoModal from './EditProfilePhotoModal';
 
 const Profile = () => {
   const router = useRouter();
   const user = useSelector((state: RootState) => state.user);
-  const [modalVisible, setModalVisible] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false); 
   const [profileImage, setProfileImage] = useState(
     user?.profile ? { uri: user.profile } : null
   );

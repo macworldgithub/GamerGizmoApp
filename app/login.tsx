@@ -51,7 +51,6 @@ export default function LoginScreen() {
           return;
         }
 
-
         if (!backendData.id) {
           throw new Error("User data missing from backend response");
         }
@@ -74,8 +73,6 @@ export default function LoginScreen() {
           address: backendData.address || null,
           isLoggedIn: true,
         }));
-
-
 
         router.replace("/home");
       } catch (error) {
