@@ -1,4 +1,3 @@
-
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { router, useLocalSearchParams } from "expo-router";
@@ -11,6 +10,7 @@ import {
   TouchableOpacity,
   Alert,
   Linking,
+  StyleSheet,
 } from "react-native";
 import { useEffect, useState } from "react";
 import axios from "axios";
@@ -74,6 +74,7 @@ interface Product {
   product_images: ProductImage[];
   seller?: Seller;
   users?: User;
+  user_id: number;
 }
 
 const ProductDetail = () => {
@@ -149,52 +150,148 @@ const ProductDetail = () => {
       const buyerUserId = await AsyncStorage.getItem("userId");
       const sellerId = product?.user_id;
 
-      console.log("Buyer ID:", buyerUserId);
-      console.log("Seller ID:", sellerId);
+      // Detailed ID logging
+      console.log("==========================================");
+      console.log("🔍 CHAT CREATION - ID VERIFICATION");
+      console.log("==========================================");
+      console.log("👤 BUYER/USER INFORMATION:");
+      console.log("- Buyer User ID:", buyerUserId);
+      console.log("- Buyer ID Type:", typeof buyerUserId);
+      
+      console.log("\n🏪 SELLER INFORMATION:");
+      console.log("- Seller ID:", sellerId);
+      console.log("- Seller ID Type:", typeof sellerId);
+      
+      console.log("\n📦 PRODUCT DETAILS:");
+      console.log("- Product ID:", product?.id);
+      console.log("- Product User ID:", product?.user_id);
+      
+      console.log("\n👥 SELLER USER DETAILS:");
+      console.log("- Seller User Object:", product?.users);
+      console.log("- Seller Name:", `${product?.users?.first_name} ${product?.users?.last_name}`);
+      console.log("==========================================");
 
-      if (!buyerUserId || !sellerId) {
-        alert("User IDs missing.");
+      // Validate buyer is logged in
+      if (!buyerUserId) {
+        console.log("❌ ERROR: Buyer not logged in");
+        alert("Please log in to start a chat.");
         return;
       }
-      if (Number(buyerUserId) === Number(sellerId)) {
+      
+      // Validate seller info exists
+      if (!sellerId) {
+        console.log("❌ ERROR: Seller information missing");
+        alert("Seller information is missing.");
+        return;
+      }
+
+      // Convert IDs to numbers and validate
+      const buyerIdNumber = parseInt(buyerUserId, 10);
+      const sellerIdNumber = parseInt(String(sellerId), 10);
+
+      console.log("\n🔄 CONVERTED IDs:");
+      console.log("- Converted Buyer ID:", buyerIdNumber, "(Type:", typeof buyerIdNumber, ")");
+      console.log("- Converted Seller ID:", sellerIdNumber, "(Type:", typeof sellerIdNumber, ")");
+
+      // Validate number conversion
+      if (isNaN(buyerIdNumber) || isNaN(sellerIdNumber)) {
+        console.log("❌ ERROR: ID conversion failed");
+        alert("Invalid user IDs - please try again");
+        return;
+      }
+
+      // Validate not chatting with self
+      if (buyerIdNumber === sellerIdNumber) {
+        console.log("❌ ERROR: Same user IDs", { buyerIdNumber, sellerIdNumber });
         alert("You cannot chat with yourself.");
         return;
       }
+
+      // Create payload and log it
+      const chatPayload = {
+        user1Id: buyerIdNumber,
+        user2Id: sellerIdNumber
+      };
+
+      console.log("\n📦 PAYLOAD BEING SENT TO SERVER:");
+      console.log("==================================");
+      console.log(JSON.stringify(chatPayload, null, 2), "chatPayload");
+      console.log("==================================");
+      console.log("URL:", "https://backend.gamergizmo.com/chats/create");
+      console.log("Method: POST");
+      console.log("==================================");
+
+      // Create chat request
       const response = await axios.post(
         "https://backend.gamergizmo.com/chats/create",
-        {
-          user1Id: Number(buyerUserId),
-          user2Id: Number(sellerId),
-          // productId: id,
-        }
+        chatPayload
       );
-      console.log("Chat response:", response.data);
-      alert(response.data.message);
-      const chatId = response.data.data.id;
+      
+      console.log("\n📥 SERVER RESPONSE:");
+      console.log("==================================");
+      console.log(JSON.stringify(response.data, null, 2));
+      console.log("==================================");
 
-      // Initialize socket connection if not already connected
-      if (!socket.connected) {
-        socket.io.opts.query = { userId: buyerUserId };
-        socket.connect();
+      // Handle existing chat case
+      if (response.data.message === "Chat already exists") {
+        console.log("ℹ️ Using existing chat");
+        const chatId = response.data.data.id;
+        router.push({
+          pathname: "/(tabs)/Chating",
+          params: {
+            chatId,
+            sellerId: sellerIdNumber,
+            productId: id,
+          },
+        });
+        return;
       }
 
+      // Handle new chat case
+      const chatId = response.data.data.id;
+      console.log("✅ New chat created:", chatId);
+
+      // Connect to socket if needed
+      if (!socket.connected) {
+        socket.io.opts.query = { userId: buyerIdNumber };
+        socket.connect();
+        console.log("🔌 Socket connected");
+      }
+
+      // Navigate to chat
       router.push({
         pathname: "/(tabs)/Chating",
         params: {
           chatId,
-          sellerId,
-          productId: id, // Also pass productId for reference
+          sellerId: sellerIdNumber,
+          productId: id,
         },
       });
     } catch (error: any) {
-      console.error("Chat Error:", error);
-      alert(error.response?.data?.message || "Failed to start chat. Please try again.");
+      console.log("\n❌ ERROR DETAILS:");
+      console.log("==================================");
+      console.log("Response Data:", error.response?.data);
+      console.log("Status:", error.response?.status);
+      console.log("Status Text:", error.response?.statusText);
+      console.log("Error Message:", error.message);
+      console.log("Full Error Object:", error);
+      console.log("==================================");
+      
+      const errorMessage = error.response?.data?.message 
+        || error.message 
+        || "Failed to start chat. Please try again.";
+      
+      alert(errorMessage);
     } finally {
       setIsConnecting(false);
+      console.log("==========================================\n");
     }
   };
 
   const productUrl = `https://gamergizmo.com/product-details/${id}`;
+
+  if (loading) return <ActivityIndicator className="mt-20" />;
+  if (!product) return <Text className="text-center mt-10">Product not found</Text>;
 
   return (
     <ScrollView className="p-4 bg-white">
