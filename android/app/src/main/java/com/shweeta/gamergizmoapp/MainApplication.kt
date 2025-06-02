@@ -1,4 +1,4 @@
-package com.shweeta.gamergizmoapp
+package com.gamergizmoapp
 
 import android.app.Application
 import android.content.res.Configuration

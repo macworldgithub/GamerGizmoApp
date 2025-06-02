@@ -17,6 +17,7 @@ import { API_BASE_URL } from "@/utils/config";
 const ViewDetails: React.FC = ({ navigation }: any) => {
   const adData = useSelector((state: RootState) => state.ad);
   const [userData, setUserData] = useState<any>(null);
+  const userid = useSelector((state: RootState) => state.user.id);
   const [loading, setLoading] = useState(false);
 
   const isComponentsCategory = adData.category?.id === 3;
@@ -30,19 +31,26 @@ const ViewDetails: React.FC = ({ navigation }: any) => {
           const parsedUser = JSON.parse(user);
           setUserData({
             ...parsedUser,
-            id: await AsyncStorage.getItem("userId"),
+            id: userid,
             token,
           });
+        } else {
+          setUserData({ id: userid, token: null });
         }
       } catch (error) {
         console.error("Error fetching user data:", error);
+        setUserData({ id: userid, token: null });
       }
     };
     getUserData();
-  }, []);
-
+  }, [userid]);
 
   const handlePostAd = async () => {
+    if (!userid) {
+      Alert.alert("Error", "Please login to post an ad");
+      return;
+    }
+    
     setLoading(true);
     const formData = new FormData();
 

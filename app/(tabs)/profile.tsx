@@ -287,7 +287,7 @@ const Profile = () => {
                 await AsyncStorage.removeItem("token");
                 await AsyncStorage.removeItem("user");
                 dispatch(LogoutUser());
-                router.replace("/auth/login");
+                router.replace("/login");
               } else {
                 console.warn("Logout non-200 response:", response.status, response.data);
                 Alert.alert("Logout Failed", "Unexpected server response.");

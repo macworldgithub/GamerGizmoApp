@@ -87,7 +87,8 @@ const Login = ({ onClose }: Props) => {
       console.log(data || error.message);
 
       if (
-        data?.message === "You have reached max account logins" &&
+        typeof data?.message === "string" &&
+        data.message.toLowerCase().includes("max account logins") &&
         Array.isArray(data?.accounts)
       ) {
         setSessions(

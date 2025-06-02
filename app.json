@@ -16,7 +16,7 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.shweeta.gamergizmoapp"
+      "package": "com.gamergizmoapp"
     },
     "web": {
       "bundler": "metro",
@@ -46,7 +46,7 @@
         "projectId": "7289e9dc-f73f-4c31-bf6c-75a10a3b9d10"
       },
       "googleClientId": "1067596237443-61c50tr1djq6pii5oil7m3he9c2btfj4.apps.googleusercontent.com",
-      "googleClientIdAndroid": "1067596237443-404l9ibfi3undvh93as9mu9q8ae73g8j.apps.googleusercontent.com"
+      "googleClientIdAndroid": "663923789268-kpbnv7pi2mph8khmcvq420c18945mje0.apps.googleusercontent.com"
     },
     "owner": "khanareeba"
   }

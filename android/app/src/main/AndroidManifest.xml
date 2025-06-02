@@ -26,7 +26,7 @@
         <category android:name="android.intent.category.DEFAULT"/>
         <category android:name="android.intent.category.BROWSABLE"/>
         <data android:scheme="myapp"/>
-        <data android:scheme="com.shweeta.gamergizmoapp"/>
+        <data android:scheme="com.gamergizmoapp"/>
         <data android:scheme="exp+gamergizmoapp"/>
       </intent-filter>
     </activity>
