@@ -61,6 +61,7 @@ const Login = ({ onClose }: Props) => {
           region: region || "Unknown",
         }
       );
+      console.log(response.data, "response");
 
       if (response.status === 200 || response.status === 201) {
         const user = response.data;

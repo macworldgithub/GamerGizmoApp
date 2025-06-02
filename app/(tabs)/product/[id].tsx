@@ -147,6 +147,7 @@ const ProductDetail = () => {
   const handleStartChat = async () => {
     setIsConnecting(true);
     try {
+      const token = await AsyncStorage.getItem("token");
       const buyerUserId = await AsyncStorage.getItem("userId");
       const sellerId = product?.user_id;
 
@@ -172,16 +173,14 @@ const ProductDetail = () => {
       console.log("==========================================");
 
       // Validate buyer is logged in
-      if (!buyerUserId) {
-        console.log("❌ ERROR: Buyer not logged in");
-        alert("Please log in to start a chat.");
+      if (!buyerUserId || !token) {
+        Alert.alert("Error", "Please log in to start a chat.");
         return;
       }
       
       // Validate seller info exists
       if (!sellerId) {
-        console.log("❌ ERROR: Seller information missing");
-        alert("Seller information is missing.");
+        Alert.alert("Error", "Seller information is missing.");
         return;
       }
 
@@ -195,19 +194,17 @@ const ProductDetail = () => {
 
       // Validate number conversion
       if (isNaN(buyerIdNumber) || isNaN(sellerIdNumber)) {
-        console.log("❌ ERROR: ID conversion failed");
-        alert("Invalid user IDs - please try again");
+        Alert.alert("Error", "Invalid user IDs - please try again");
         return;
       }
 
       // Validate not chatting with self
       if (buyerIdNumber === sellerIdNumber) {
-        console.log("❌ ERROR: Same user IDs", { buyerIdNumber, sellerIdNumber });
-        alert("You cannot chat with yourself.");
+        Alert.alert("Error", "You cannot chat with yourself.");
         return;
       }
 
-      // Create payload and log it
+      // Create payload
       const chatPayload = {
         user1Id: buyerIdNumber,
         user2Id: sellerIdNumber
@@ -223,8 +220,13 @@ const ProductDetail = () => {
 
       // Create chat request
       const response = await axios.post(
-        "https://backend.gamergizmo.com/chats/create",
-        chatPayload
+        `${API_BASE_URL}/chats/create`,
+        chatPayload,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
       );
       
       console.log("\n📥 SERVER RESPONSE:");
@@ -236,14 +238,21 @@ const ProductDetail = () => {
       if (response.data.message === "Chat already exists") {
         console.log("ℹ️ Using existing chat");
         const chatId = response.data.data.id;
-        router.push({
-          pathname: "/(tabs)/Chating",
-          params: {
-            chatId,
-            sellerId: sellerIdNumber,
-            productId: id,
-          },
-        });
+        Alert.alert("Success", "Redirecting ", [
+          {
+            text: "OK",
+            onPress: () => {
+              router.push({
+                pathname: "/(tabs)/Chating",
+                params: {
+                  chatId,
+                  sellerId: sellerIdNumber,
+                  productId: id,
+                },
+              });
+            }
+          }
+        ]);
         return;
       }
 
@@ -258,33 +267,31 @@ const ProductDetail = () => {
         console.log("🔌 Socket connected");
       }
 
-      // Navigate to chat
-      router.push({
-        pathname: "/(tabs)/Chating",
-        params: {
-          chatId,
-          sellerId: sellerIdNumber,
-          productId: id,
-        },
-      });
+      // Show success message and navigate
+      Alert.alert("Success", "Chat created successfully!", [
+        {
+          text: "OK",
+          onPress: () => {
+            router.push({
+              pathname: "/(tabs)/Chating",
+              params: {
+                chatId,
+                sellerId: sellerIdNumber,
+                productId: id,
+              },
+            });
+          }
+        }
+      ]);
+
     } catch (error: any) {
-      console.log("\n❌ ERROR DETAILS:");
-      console.log("==================================");
-      console.log("Response Data:", error.response?.data);
-      console.log("Status:", error.response?.status);
-      console.log("Status Text:", error.response?.statusText);
-      console.log("Error Message:", error.message);
-      console.log("Full Error Object:", error);
-      console.log("==================================");
-      
       const errorMessage = error.response?.data?.message 
         || error.message 
         || "Failed to start chat. Please try again.";
       
-      alert(errorMessage);
+      Alert.alert("Error", errorMessage);
     } finally {
       setIsConnecting(false);
-      console.log("==========================================\n");
     }
   };
 
