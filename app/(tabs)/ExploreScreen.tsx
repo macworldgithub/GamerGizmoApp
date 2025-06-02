@@ -14,6 +14,7 @@ import { API_BASE_URL } from "@/utils/config";
 import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
 import LiveAds from "./LiveAds";
 import SortModal from "../(tabs)/SortModal";
+import FilterModal from "../(tabs)/FilterModal";
 
 type ProductImage = {
   id: number;
@@ -42,6 +43,7 @@ const ExploreScreen = () => {
   const [noResults, setNoResults] = useState(false);
   const [isSortVisible, setSortVisible] = useState(false);
   const [selectedSort, setSelectedSort] = useState("Default");
+  const [isFilterVisible, setFilterVisible] = useState(false);
   const router = useRouter();
   const categoryIdMap: Record<string, number> = {
     laptops: 1,
@@ -185,7 +187,10 @@ const ExploreScreen = () => {
             <Text className="ml-1 text-gray-600 font-semibold">SAVE</Text>
           </TouchableOpacity> */}
           <Text className="text-gray-400">|</Text>
-          <TouchableOpacity className="flex-row items-center mx-3 gap-3">
+          <TouchableOpacity 
+            className="flex-row items-center mx-3 gap-3"
+            onPress={() => setFilterVisible(true)}
+          >
             <FontAwesome5 name="sliders-h" size={18} color="black" />
             <Text className="ml-1 text-gray-600 font-semibold">FILTERS</Text>
           </TouchableOpacity>
@@ -207,7 +212,17 @@ const ExploreScreen = () => {
           onSelect={(option: string) => {
             setSelectedSort(option);
             setSortVisible(false);
-            applySorting(option); // apply sort
+            applySorting(option);
+          }}
+        />
+
+        {/* Filter Modal */}
+        <FilterModal
+          isVisible={isFilterVisible}
+          onClose={() => setFilterVisible(false)}
+          onApplyFilters={() => {
+            setFilterVisible(false);
+            // Add filter logic here
           }}
         />
       </View>
