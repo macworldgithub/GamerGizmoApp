@@ -1,82 +1,78 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
   TouchableOpacity,
   TextInput,
   ScrollView,
+  ActivityIndicator,
 } from 'react-native';
 import { Modal as RNModal } from 'react-native';
 import { FontAwesome, MaterialIcons } from '@expo/vector-icons';
 import CityModal from './CityModal';
 import Modal from "react-native-modal";
+import axios from 'axios';
+import { API_BASE_URL } from '@/utils/config';
+import { useRouter } from 'expo-router';
 
 type FilterModalProps = {
   isVisible: boolean;
   onClose: () => void;
-  onApplyFilters: () => void;
+  onApplyFilters: (filters: any) => void;
 };
 
-// First create AdsPostedModal component inline
-const AdsPostedModal = ({ 
-  isVisible, 
-  onClose, 
-  selected,
-  onSelect 
-}: {
-  isVisible: boolean;
-  onClose: () => void;
-  selected: string;
-  onSelect: (option: string) => void;
-}) => {
-  const ADS_POSTED_OPTIONS = [
-    "Newest to Oldest",
-    "Oldest to Newest",
-  ];
-
-  return (
-    <Modal
-      isVisible={isVisible}
-      onBackdropPress={onClose}
-      swipeDirection={["down"]}
-      onSwipeComplete={onClose}
-      style={{ justifyContent: "flex-end", margin: 0 }}
-    >
-      <View className="bg-white rounded-t-2xl p-4">
-        {/* Handle Bar */}
-        <View className="items-center mb-4">
-          <View className="w-10 h-1.5 rounded-full bg-gray-300" />
-        </View>
-
-        <Text className="text-xl font-semibold mb-4">Ads Posted</Text>
-
-        {ADS_POSTED_OPTIONS.map((option) => (
-          <TouchableOpacity
-            key={option}
-            onPress={() => onSelect(option)}
-            className="flex-row items-center justify-between py-3 border-b border-gray-100"
-          >
-            <Text className="text-base text-gray-800">{option}</Text>
-            {selected === option && (
-              <MaterialIcons name="check" size={20} color="#ef4444" />
-            )}
-          </TouchableOpacity>
-        ))}
-      </View>
-    </Modal>
-  );
+type Location = {
+  id: number;
+  name: string;
 };
 
-// Main FilterModal component
 const FilterModal: React.FC<FilterModalProps> = ({
   isVisible,
   onClose,
   onApplyFilters,
 }) => {
   const [isCityModalVisible, setIsCityModalVisible] = useState(false);
-  const [selectedCity, setSelectedCity] = useState<string>('');
-  const [isAdsPostedModalVisible, setAdsPostedModalVisible] = useState(false);
-  const [selectedAdsPosted, setSelectedAdsPosted] = useState('');
+  const [selectedCity, setSelectedCity] = useState<Location | null>(null);
+  const [minPrice, setMinPrice] = useState('');
+  const [maxPrice, setMaxPrice] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [locations, setLocations] = useState<Location[]>([]);
+  const router = useRouter();
+
+  useEffect(() => {
+    const fetchLocations = async () => {
+      try {
+        const response = await axios.get(`${API_BASE_URL}/location/getAll`);
+        if (response.data?.data) {
+          setLocations(response.data.data);
+        }
+      } catch (error) {
+        console.error('Failed to fetch locations:', error);
+      }
+    };
+
+    fetchLocations();
+  }, []);
+
+  const handleApplyFilters = async () => {
+    console.log('Selected City:', selectedCity);
+    console.log('Price Range:', { minPrice, maxPrice });
+    
+    const filters = {
+      locationId: selectedCity?.id,
+      minPrice: minPrice ? parseInt(minPrice) : undefined,
+      maxPrice: maxPrice ? parseInt(maxPrice) : undefined,
+    };
+    
+    console.log('Applying filters:', filters);
+    onApplyFilters(filters);
+  };
+
+  const handleReset = () => {
+    setSelectedCity(null);
+    setMinPrice('');
+    setMaxPrice('');
+  };
 
   return (
     <>
@@ -92,10 +88,7 @@ const FilterModal: React.FC<FilterModalProps> = ({
               <FontAwesome name="times" size={24} color="black" />
             </TouchableOpacity>
             <Text className="text-xl font-semibold">Filters</Text>
-            <TouchableOpacity onPress={() => {
-              setSelectedCity('');
-              setSelectedAdsPosted('');
-            }}>
+            <TouchableOpacity onPress={handleReset}>
               <Text className="text-gray-400">Reset</Text>
             </TouchableOpacity>
           </View>
@@ -108,7 +101,7 @@ const FilterModal: React.FC<FilterModalProps> = ({
             >
               <View>
                 <Text className="text-base font-medium mb-1">City</Text>
-                <Text className="text-gray-500">{selectedCity || 'Select City'}</Text>
+                <Text className="text-gray-500">{selectedCity?.name || 'Select City'}</Text>
               </View>
               <MaterialIcons name="keyboard-arrow-right" size={24} color="gray" />
             </TouchableOpacity>
@@ -121,35 +114,25 @@ const FilterModal: React.FC<FilterModalProps> = ({
                   className="flex-1 border border-gray-300 rounded-lg p-3"
                   placeholder="Min"
                   keyboardType="numeric"
+                  value={minPrice}
+                  onChangeText={setMinPrice}
                 />
                 <TextInput
                   className="flex-1 border border-gray-300 rounded-lg p-3"
                   placeholder="Max"
                   keyboardType="numeric"
+                  value={maxPrice}
+                  onChangeText={setMaxPrice}
                 />
               </View>
             </View>
-
-            {/* Ads Posted */}
-            <TouchableOpacity 
-              className="flex-row justify-between items-center p-4 border-b border-gray-100"
-              onPress={() => setAdsPostedModalVisible(true)}
-            >
-              <View>
-                <Text className="text-base font-medium">Ads Posted</Text>
-                {selectedAdsPosted && (
-                  <Text className="text-gray-500">{selectedAdsPosted}</Text>
-                )}
-              </View>
-              <MaterialIcons name="keyboard-arrow-right" size={24} color="gray" />
-            </TouchableOpacity>
           </ScrollView>
 
           {/* Show Results Button */}
           <View className="p-4">
             <TouchableOpacity 
               className="bg-red-600 rounded-lg py-4"
-              onPress={onApplyFilters}
+              onPress={handleApplyFilters}
             >
               <Text className="text-white text-center font-semibold text-lg">
                 Show Results
@@ -163,21 +146,14 @@ const FilterModal: React.FC<FilterModalProps> = ({
       <CityModal
         visible={isCityModalVisible}
         onClose={() => setIsCityModalVisible(false)}
-        selectedCity={selectedCity}
-        onSelect={(city: string) => {
-          setSelectedCity(city);
+        selectedCity={selectedCity?.name || ''}
+        onSelect={(cityName: string) => {
+          const city = locations.find(loc => loc.name === cityName);
+          if (city) {
+            console.log('Selected city with ID:', city.id);
+            setSelectedCity(city);
+          }
           setIsCityModalVisible(false);
-        }}
-      />
-
-      {/* Ads Posted Modal */}
-      <AdsPostedModal
-        isVisible={isAdsPostedModalVisible}
-        onClose={() => setAdsPostedModalVisible(false)}
-        selected={selectedAdsPosted}
-        onSelect={(option) => {
-          setSelectedAdsPosted(option);
-          setAdsPostedModalVisible(false);
         }}
       />
     </>
