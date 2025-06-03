@@ -18,7 +18,7 @@ import { useRouter } from 'expo-router';
 type FilterModalProps = {
   isVisible: boolean;
   onClose: () => void;
-  onApplyFilters: (filters: any) => void;
+  onApplyFilter: (filters: { location_id?: number }) => void;
 };
 
 type Location = {
@@ -29,12 +29,10 @@ type Location = {
 const FilterModal: React.FC<FilterModalProps> = ({
   isVisible,
   onClose,
-  onApplyFilters,
+  onApplyFilter,
 }) => {
   const [isCityModalVisible, setIsCityModalVisible] = useState(false);
   const [selectedCity, setSelectedCity] = useState<Location | null>(null);
-  const [minPrice, setMinPrice] = useState('');
-  const [maxPrice, setMaxPrice] = useState('');
   const [loading, setLoading] = useState(false);
   const [locations, setLocations] = useState<Location[]>([]);
   const router = useRouter();
@@ -56,22 +54,17 @@ const FilterModal: React.FC<FilterModalProps> = ({
 
   const handleApplyFilters = async () => {
     console.log('Selected City:', selectedCity);
-    console.log('Price Range:', { minPrice, maxPrice });
     
     const filters = {
-      locationId: selectedCity?.id,
-      minPrice: minPrice ? parseInt(minPrice) : undefined,
-      maxPrice: maxPrice ? parseInt(maxPrice) : undefined,
+      location_id: selectedCity?.id,
     };
     
     console.log('Applying filters:', filters);
-    onApplyFilters(filters);
+    onApplyFilter(filters);
   };
 
   const handleReset = () => {
     setSelectedCity(null);
-    setMinPrice('');
-    setMaxPrice('');
   };
 
   return (
@@ -105,27 +98,6 @@ const FilterModal: React.FC<FilterModalProps> = ({
               </View>
               <MaterialIcons name="keyboard-arrow-right" size={24} color="gray" />
             </TouchableOpacity>
-
-            {/* Price */}
-            <View className="p-4 border-b border-gray-100">
-              <Text className="text-base font-medium mb-3">Price (AED)</Text>
-              <View className="flex-row space-x-4">
-                <TextInput
-                  className="flex-1 border border-gray-300 rounded-lg p-3"
-                  placeholder="Min"
-                  keyboardType="numeric"
-                  value={minPrice}
-                  onChangeText={setMinPrice}
-                />
-                <TextInput
-                  className="flex-1 border border-gray-300 rounded-lg p-3"
-                  placeholder="Max"
-                  keyboardType="numeric"
-                  value={maxPrice}
-                  onChangeText={setMaxPrice}
-                />
-              </View>
-            </View>
           </ScrollView>
 
           {/* Show Results Button */}
