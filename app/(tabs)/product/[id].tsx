@@ -128,7 +128,7 @@ const ProductDetail = () => {
       }
 
       const response = await axios.post(
-        "https://backend.gamergizmo.com/product/favourite/addToFavourite",
+        `${API_BASE_URL}/product/favourite/addToFavourite`,
         { userId, productId: id }
       );
 
@@ -152,32 +152,29 @@ const ProductDetail = () => {
       const sellerId = product?.user_id;
 
       // Detailed ID logging
-      console.log("==========================================");
       console.log("🔍 CHAT CREATION - ID VERIFICATION");
-      console.log("==========================================");
       console.log("👤 BUYER/USER INFORMATION:");
       console.log("- Buyer User ID:", buyerUserId);
       console.log("- Buyer ID Type:", typeof buyerUserId);
-      
+
       console.log("\n🏪 SELLER INFORMATION:");
       console.log("- Seller ID:", sellerId);
       console.log("- Seller ID Type:", typeof sellerId);
-      
+
       console.log("\n📦 PRODUCT DETAILS:");
       console.log("- Product ID:", product?.id);
       console.log("- Product User ID:", product?.user_id);
-      
+
       console.log("\n👥 SELLER USER DETAILS:");
       console.log("- Seller User Object:", product?.users);
       console.log("- Seller Name:", `${product?.users?.first_name} ${product?.users?.last_name}`);
-      console.log("==========================================");
 
       // Validate buyer is logged in
       if (!buyerUserId || !token) {
         Alert.alert("Error", "Please log in to start a chat.");
         return;
       }
-      
+
       // Validate seller info exists
       if (!sellerId) {
         Alert.alert("Error", "Seller information is missing.");
@@ -210,13 +207,6 @@ const ProductDetail = () => {
         user2Id: sellerIdNumber
       };
 
-      console.log("\n📦 PAYLOAD BEING SENT TO SERVER:");
-      console.log("==================================");
-      console.log(JSON.stringify(chatPayload, null, 2), "chatPayload");
-      console.log("==================================");
-      console.log("URL:", "https://backend.gamergizmo.com/chats/create");
-      console.log("Method: POST");
-      console.log("==================================");
 
       // Create chat request
       const response = await axios.post(
@@ -228,7 +218,7 @@ const ProductDetail = () => {
           }
         }
       );
-      
+
       console.log("\n📥 SERVER RESPONSE:");
       console.log("==================================");
       console.log(JSON.stringify(response.data, null, 2));
@@ -248,6 +238,7 @@ const ProductDetail = () => {
                   chatId,
                   sellerId: sellerIdNumber,
                   productId: id,
+                  sellerName: `${product?.users?.first_name || ""} ${product?.users?.last_name || ""}`,
                 },
               });
             }
@@ -285,10 +276,10 @@ const ProductDetail = () => {
       ]);
 
     } catch (error: any) {
-      const errorMessage = error.response?.data?.message 
-        || error.message 
+      const errorMessage = error.response?.data?.message
+        || error.message
         || "Failed to start chat. Please try again.";
-      
+
       Alert.alert("Error", errorMessage);
     } finally {
       setIsConnecting(false);

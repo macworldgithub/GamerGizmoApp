@@ -31,29 +31,44 @@ export default function BuyingSelling() {
       const token = await AsyncStorage.getItem("token");
       const response = await axios.get(`${API_BASE_URL}/chats/buyers-and-sellers`, {
         headers: {
-          Authorization: `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const buyerIds = response.data?.data?.buyers || [];
+      const sellerIds = response.data?.data?.sellers || [];
+
+      const allUserIds = [...buyerIds.map((id) => ({ id, type: "buyer" })), ...sellerIds.map((id) => ({ id, type: "seller" }))];
+
+      // Fetch user profile for each ID
+      const userPromises = allUserIds.map(async ({ id, type }) => {
+        try {
+          const res = await axios.get(`${API_BASE_URL}/users/${id}`, {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          return { ...res.data, type };
+        } catch (err: any) {
+          if (err.response?.status === 404) {
+            console.warn(`User ID ${id} not found – possibly deleted`);
+          } else {
+            console.error(`Unexpected error fetching user ${id}:`, err.message);
+          }
+          return null;
         }
       });
 
-      if (response.data && (response.data.buyers || response.data.sellers)) {
-        const buyers = (response.data.buyers || []).map((buyer: any) => ({
-          ...buyer,
-          type: 'buyer'
-        }));
-        
-        const sellers = (response.data.sellers || []).map((seller: any) => ({
-          ...seller,
-          type: 'seller'
-        }));
+      const fullUsers = (await Promise.all(userPromises)).filter(Boolean);
+      // filter out nulls
+      setUsers(fullUsers);
 
-        setUsers([...buyers, ...sellers]);
-      }
     } catch (error) {
-      console.error("Error fetching buyers and sellers:", error);
+      console.error("Error fetching full user details:", error);
     } finally {
       setLoading(false);
     }
   };
+
+
 
   const getFilteredUsers = () => {
     if (!Array.isArray(users)) return [];
@@ -81,7 +96,7 @@ export default function BuyingSelling() {
   };
 
   const renderChatItem = ({ item }: { item: ChatUser }) => (
-    <TouchableOpacity 
+    <TouchableOpacity
       className="flex-row items-center px-4 py-3 border-b border-gray-100"
       onPress={() => handleChatPress(item)}
     >
@@ -96,7 +111,7 @@ export default function BuyingSelling() {
           resizeMode="cover"
         />
       </View>
-      
+
       <View className="flex-1 ml-3">
         <View className="flex-row items-center">
           <Text className="text-base font-semibold text-gray-800">
@@ -122,14 +137,12 @@ export default function BuyingSelling() {
             <TouchableOpacity
               key={tab}
               onPress={() => setActiveTab(tab)}
-              className={`pb-2 px-6 ${
-                activeTab === tab ? "border-b-2 border-[#6345ED]" : ""
-              }`}
+              className={`pb-2 px-6 ${activeTab === tab ? "border-b-2 border-[#6345ED]" : ""
+                }`}
             >
               <Text
-                className={`text-base ${
-                  activeTab === tab ? "text-[#6345ED] font-semibold" : "text-gray-400"
-                }`}
+                className={`text-base ${activeTab === tab ? "text-[#6345ED] font-semibold" : "text-gray-400"
+                  }`}
               >
                 {tab}
               </Text>

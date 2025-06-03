@@ -10,10 +10,11 @@ import {
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios, { AxiosError } from "axios";
-import { useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import socket from "../socket";
 import dayjs from "dayjs";
 import { API_BASE_URL } from "@/utils/config";
+import { FontAwesome } from "@expo/vector-icons";
 
 interface Message {
   id?: number;
@@ -22,11 +23,12 @@ interface Message {
   receiver_id: number;
   message_text: string;
   product_id: number;
-  created_at: Date;
+  sent_at: Date;
+  is_read: boolean;
 }
 
 const Chating = () => {
-  const { chatId, sellerId, productId } = useLocalSearchParams();
+  const { chatId, sellerId, productId, sellerName } = useLocalSearchParams();
   const [messages, setMessages] = useState<Message[]>([]);
   const [messageText, setMessageText] = useState("");
   const [buyerUserId, setBuyerUserId] = useState<number | null>(null);
@@ -51,18 +53,28 @@ const Chating = () => {
   useEffect(() => {
     const fetchMessages = async () => {
       try {
+
+        const token = await AsyncStorage.getItem('token');
+        console.log("Token retrieved:", token);
+        if (!token) {
+          console.warn("No token found, cannot fetch messages.");
+          return;
+        }
+
         console.log("Fetching messages for chat ID:", chatId);
         const res = await axios.get(`${API_BASE_URL}/chats/messages`, {
           params: {
             chatId: chatId
-          }
+          },
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         });
         console.log("Messages response:", res.data);
-        
-        if (res.data && res.data.data && Array.isArray(res.data.data)) {
-          // Sort messages by date and reverse to show newest at bottom
-          const sortedMessages = [...res.data.data].sort((a, b) => 
-            new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+
+        if (Array.isArray(res.data)) {
+          const sortedMessages = [...res.data].sort((a, b) =>
+            new Date(a.sent_at).getTime() - new Date(b.sent_at).getTime()
           );
           console.log("Sorted messages count:", sortedMessages.length);
           setMessages(sortedMessages);
@@ -70,6 +82,7 @@ const Chating = () => {
           console.log("No messages found or invalid response format:", res.data);
           setMessages([]);
         }
+
       } catch (error) {
         const err = error as AxiosError;
         console.error("Failed to load messages:", {
@@ -93,16 +106,26 @@ const Chating = () => {
   // Socket receive message
   useEffect(() => {
     socket.on("receiveMessage", (msg: Message) => {
-      console.log("Received message:", msg);
       if (msg.chat_id === Number(chatId)) {
-        setMessages((prev) => [...prev, msg]);
+        setMessages((prev) => {
+          // Remove any temp messages (optional logic)
+          const filtered = prev.filter(m => m.id !== msg.id);
+          return [...filtered, msg];
+        });
       }
+    });
+
+    socket.on("messageSendError", (error) => {
+      console.error("Socket message send error:", error);
+      alert("Failed to send message. Please try again.");
     });
 
     return () => {
       socket.off("receiveMessage");
+      socket.off("messageSendError");
     };
   }, [chatId]);
+
 
   const sendMessage = async () => {
     if (!messageText.trim() || !buyerUserId) return;
@@ -126,15 +149,16 @@ const Chating = () => {
       });
 
       // Add message to local state immediately for UI responsiveness
-      const localMessage = {
+      const localMessage: Message = {
         ...message,
-        created_at: new Date(),
-        id: Date.now() // temporary ID
+        sent_at: new Date(),
+        id: Date.now(), 
+        is_read: false  
       };
       setMessages((prev) => [...prev, localMessage]);
       setMessageText("");
       flatListRef.current?.scrollToEnd({ animated: true });
-      
+
     } catch (error) {
       console.error("Message send failed:", error);
       alert("Failed to send message. Please try again.");
@@ -169,27 +193,55 @@ const Chating = () => {
 
   const renderItem = ({ item }: { item: Message }) => {
     const isOwnMessage = item.sender_id === buyerUserId;
+    const time = dayjs(item.sent_at).format("HH:mm");
+
     return (
       <View
-        className={`my-1 px-4 py-2 rounded-lg max-w-[75%] ${
-          isOwnMessage ? "bg-purple-600 self-end" : "bg-gray-200 self-start"
-        }`}
+        className={`my-1 px-4 py-2 rounded-lg max-w-[75%] ${isOwnMessage ? "bg-purple-600 self-end" : "bg-gray-200 self-start"
+          }`}
       >
         <Text className={isOwnMessage ? "text-white" : "text-black"}>
           {item.message_text}
         </Text>
-        <Text className="text-xs mt-1 text-gray-400">
-          {dayjs(item.created_at).format("HH:mm")}
-        </Text>
+
+        {isOwnMessage && (
+          <View className="flex-row justify-end items-center mt-1 gap-3">
+            <Text className="text-xs mr-1 text-gray-400">{time}</Text>
+            <Text className={`text-xs ${item.is_read ? "text-blue-400" : "text-white"}`}>
+              ✓✓
+            </Text>
+          </View>
+        )}
+
+        {!isOwnMessage && (
+          <Text className="text-xs mt-1 text-gray-400">{time}</Text>
+        )}
       </View>
     );
   };
+
 
   return (
     <KeyboardAvoidingView
       className="flex-1 bg-white"
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
+      <View className="p-4 border-b border-gray-200 bg-white">
+        <TouchableOpacity
+          onPress={() =>
+            router.push({
+              pathname: "/product/[id]",
+              params: { id: productId?.toString() },
+            })
+          }
+          className="absolute top-2 left-2 bg-white/70 p-2 rounded-full"
+        >
+          <FontAwesome name="arrow-left" size={20} color="black" />
+        </TouchableOpacity>
+        <Text className="text-lg font-bold text-black text-center">
+          {sellerName || "Seller"}
+        </Text>
+      </View>
       <FlatList
         ref={flatListRef}
         data={messages}
