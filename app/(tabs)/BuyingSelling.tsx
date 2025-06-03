@@ -26,47 +26,56 @@ export default function BuyingSelling() {
     fetchBuyersAndSellers();
   }, []);
 
-  const fetchBuyersAndSellers = async () => {
-    try {
-      const token = await AsyncStorage.getItem("token");
-      const response = await axios.get(`${API_BASE_URL}/chats/buyers-and-sellers`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+ const fetchBuyersAndSellers = async () => {
+  try {
+    const token = await AsyncStorage.getItem("token");
 
-      const buyerIds = response.data?.data?.buyers || [];
-      const sellerIds = response.data?.data?.sellers || [];
+    // 1. Get buyer and seller IDs
+    const response = await axios.get(`${API_BASE_URL}/chats/buyers-and-sellers`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
-      const allUserIds = [...buyerIds.map((id) => ({ id, type: "buyer" })), ...sellerIds.map((id) => ({ id, type: "seller" }))];
+    const buyerIds: number[] = response.data?.data?.buyers || [];
+    const sellerIds: number[] = response.data?.data?.sellers || [];
+    const allUserIds = [
+      ...buyerIds.map((id) => ({ id, type: "buyer" })),
+      ...sellerIds.map((id) => ({ id, type: "seller" })),
+    ];
 
-      // Fetch user profile for each ID
-      const userPromises = allUserIds.map(async ({ id, type }) => {
-        try {
-          const res = await axios.get(`${API_BASE_URL}/users/${id}`, {
-            headers: { Authorization: `Bearer ${token}` }
-          });
-          return { ...res.data, type };
-        } catch (err: any) {
-          if (err.response?.status === 404) {
-            console.warn(`User ID ${id} not found – possibly deleted`);
-          } else {
-            console.error(`Unexpected error fetching user ${id}:`, err.message);
-          }
-          return null;
-        }
-      });
+    // 2. Get all users
+    const allUsersRes = await axios.get(`https://backend.gamergizmo.com/user/getAllUsers?pageNo=1`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
 
-      const fullUsers = (await Promise.all(userPromises)).filter(Boolean);
-      // filter out nulls
-      setUsers(fullUsers);
+    const allUsers = allUsersRes.data?.data?.users || []; // adapt based on real response structure
 
-    } catch (error) {
-      console.error("Error fetching full user details:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+    // 3. Match users with buyers/sellers
+    const matchedUsers: ChatUser[] = allUserIds.map(({ id, type }) => {
+      const user = allUsers.find((u: any) => u.id === id);
+      if (!user) {
+        console.warn(`User ID ${id} not found – possibly deleted`);
+        return null;
+      }
+
+      return {
+        id: user.id,
+        first_name: user.first_name,
+        last_name: user.last_name,
+        email: user.email,
+        avatar: user.avatar || null,
+        type: type as 'buyer' | 'seller',
+      };
+    }).filter(Boolean) as ChatUser[];
+
+    setUsers(matchedUsers);
+  } catch (error) {
+    console.error("Error fetching users:", error);
+  } finally {
+    setLoading(false);
+  }
+};
 
 
 
