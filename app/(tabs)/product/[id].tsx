@@ -75,6 +75,11 @@ interface Product {
   seller?: Seller;
   users?: User;
   user_id: number;
+  // location_product_locationTolocation: Location
+   location_product_locationTolocation: {
+    id: number;
+    name: string;
+  };
 }
 
 const ProductDetail = () => {
@@ -411,7 +416,8 @@ const ProductDetail = () => {
         <Text className="text-lg font-semibold text-gray-800 mb-2">
           Location
         </Text>
-        <Text className="text-gray-700">{product.location || "Dubai"}</Text>
+        //@ts-ignore
+        <Text className="text-gray-700">{product.location_product_locationTolocation.name }</Text>
         <View className="h-32 bg-gray-200 rounded-md mt-2 items-center justify-center">
           <Text className="text-gray-500">MAP</Text>
         </View>
