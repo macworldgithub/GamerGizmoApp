@@ -29,13 +29,16 @@ export default function BuyingSelling() {
  const fetchBuyersAndSellers = async () => {
   try {
     const token = await AsyncStorage.getItem("token");
+    console.log("Token fetched:", token);
 
     // 1. Get buyer and seller IDs
     const response = await axios.get(`${API_BASE_URL}/chats/buyers-and-sellers`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+  headers: {
+    Authorization: `Bearer ${token}`,
+  },
+});
+ console.log("Buyers & Sellers API response:", response.data);
+
 
     const buyerIds: number[] = response.data?.data?.buyers || [];
     const sellerIds: number[] = response.data?.data?.sellers || [];
@@ -46,10 +49,14 @@ export default function BuyingSelling() {
 
     // 2. Get all users
     const allUsersRes = await axios.get(`https://backend.gamergizmo.com/user/getAllUsers?pageNo=1`, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
+  headers: {
+    Authorization: `Bearer ${token}`,
+  },
+});
 
-    const allUsers = allUsersRes.data?.data?.users || []; // adapt based on real response structure
+console.log("All Users API response:", allUsersRes.data);
+
+    const allUsers = allUsersRes.data?.data?.users || []; 
 
     // 3. Match users with buyers/sellers
     const matchedUsers: ChatUser[] = allUserIds.map(({ id, type }) => {

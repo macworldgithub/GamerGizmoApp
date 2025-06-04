@@ -21,9 +21,7 @@ type FormDataType = {
 const EditProfileScreen = () => {
   const token = useSelector((state: RootState) => state.user.token);
 
-  const handletoken = () => {
-  console.log("my Token:", token);
-};
+ 
   const dispatch = useDispatch();
   const [formData, setFormData] = useState<FormDataType>({
     first_name: '',
@@ -122,7 +120,6 @@ const EditProfileScreen = () => {
           <Image source={require("../../assets/images/arrow.png")} />
         </TouchableOpacity>
         <Text className="text-lg font-semibold ml-32"
-        onPress={()=>handletoken()}
         >Edit Profile</Text>
       </View>
       <InputField
