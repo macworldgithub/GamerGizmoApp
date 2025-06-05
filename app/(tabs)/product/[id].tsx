@@ -297,11 +297,11 @@ const ProductDetail = () => {
   if (!product) return <Text className="text-center mt-10">Product not found</Text>;
 
   return (
-    <ScrollView className="p-4 bg-white">
-      <View className="h-60 rounded-lg overflow-hidden relative">
+    <ScrollView className="bg-white">
+      <View className="h-80 relative">
         {product.product_images && product.product_images.length > 0 ? (
           <Swiper
-            style={{ height: 200 }}
+            style={{ height: 320 }}
             dotStyle={{ backgroundColor: "#ccc", width: 6, height: 6 }}
             activeDotStyle={{ backgroundColor: "#6D28D9", width: 8, height: 8 }}
             loop
@@ -310,21 +310,33 @@ const ProductDetail = () => {
             {product.product_images.map((img, i) => {
               const imageUrl = getImageUrl(img.image_url);
               return (
-                <Image
+                <ScrollView 
                   key={i}
-                  source={{ uri: imageUrl }}
-                  className="w-full h-48 rounded-lg"
-                  resizeMode="cover"
-                />
+                  maximumZoomScale={3}
+                  minimumZoomScale={1}
+                  contentContainerStyle={{ flex: 1 }}
+                >
+                  <Image
+                    source={{ uri: imageUrl }}
+                    style={styles.image}
+                    resizeMode="contain"
+                  />
+                </ScrollView>
               );
             })}
           </Swiper>
         ) : (
-          <Image
-            source={require("../../../assets/images/check.png")}
-            className="w-full h-48 rounded-lg"
-            resizeMode="cover"
-          />
+          <ScrollView
+            maximumZoomScale={3}
+            minimumZoomScale={1}
+            contentContainerStyle={{ flex: 1 }}
+          >
+            <Image
+              source={require("../../../assets/images/check.png")}
+              style={styles.image}
+              resizeMode="contain"
+            />
+          </ScrollView>
         )}
 
         <TouchableOpacity
@@ -353,7 +365,7 @@ const ProductDetail = () => {
           </TouchableOpacity>
         </View>
       </View>
-
+<View className="p-5">
       <Text className="text-purple-600 text-2xl font-bold mt-4">
         AED {product.price}
       </Text>
@@ -418,10 +430,12 @@ const ProductDetail = () => {
         </Text>
         //@ts-ignore
         <Text className="text-gray-700">{product.location_product_locationTolocation.name }</Text>
+        </View>
         <View className="h-32 bg-gray-200 rounded-md mt-2 items-center justify-center">
           <Text className="text-gray-500">MAP</Text>
         </View>
       </View>
+      
 
       {/* User Info */}
       <View className="mt-6 p-4 border border-gray-300 rounded-md bg-gray-50 shadow-sm">
@@ -494,5 +508,12 @@ const ProductDetail = () => {
     </ScrollView>
   );
 };
+
+const styles = StyleSheet.create({
+  image: {
+    width: '100%',
+    height: '100%',
+  },
+});
 
 export default ProductDetail;

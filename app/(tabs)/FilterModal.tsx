@@ -3,7 +3,6 @@ import {
   View,
   Text,
   TouchableOpacity,
-  TextInput,
   ScrollView,
   ActivityIndicator,
 } from "react-native";
@@ -75,14 +74,12 @@ const FilterModal: React.FC<FilterModalProps> = ({
     const city = locations.find((loc) => loc.name === cityName);
     if (city) {
       setSelectedCity(city);
-      setSelectedPriceRange(null);
     }
     setIsCityModalVisible(false);
   };
 
   const handlePriceRangeSelect = (range: PriceRange) => {
     setSelectedPriceRange(range);
-    setSelectedCity(null);
   };
 
   const handleApplyFilters = async () => {
@@ -98,6 +95,7 @@ const FilterModal: React.FC<FilterModalProps> = ({
 
     console.log("Applying filters:", filters);
     onApplyFilter(filters);
+    onClose();
   };
 
   const handleReset = () => {
@@ -123,11 +121,8 @@ const FilterModal: React.FC<FilterModalProps> = ({
           <ScrollView className="flex-1">
             {/* City */}
             <TouchableOpacity
-              className={`flex-row justify-between items-center p-4 border-b border-gray-100 ${
-                selectedPriceRange ? "opacity-50" : ""
-              }`}
-              onPress={() => !selectedPriceRange && setIsCityModalVisible(true)}
-              disabled={!!selectedPriceRange}
+              className="flex-row justify-between items-center p-4 border-b border-gray-100"
+              onPress={() => setIsCityModalVisible(true)}
             >
               <View>
                 <Text className="text-base font-medium mb-1">City</Text>
@@ -143,11 +138,7 @@ const FilterModal: React.FC<FilterModalProps> = ({
             </TouchableOpacity>
 
             {/* Price Range */}
-            <View
-              className={`p-4 border-b border-gray-100 ${
-                selectedCity ? "opacity-50" : ""
-              }`}
-            >
+            <View className="p-4 border-b border-gray-100">
               <Text className="text-base font-medium mb-3">Price Range</Text>
               <View className="space-y-2">
                 {PRICE_RANGES.map((range, index) => (
@@ -158,10 +149,7 @@ const FilterModal: React.FC<FilterModalProps> = ({
                         ? "border-purple-600 bg-purple-50"
                         : "border-gray-200"
                     }`}
-                    onPress={() =>
-                      !selectedCity && handlePriceRangeSelect(range)
-                    }
-                    disabled={!!selectedCity}
+                    onPress={() => handlePriceRangeSelect(range)}
                   >
                     <Text
                       className={`${
