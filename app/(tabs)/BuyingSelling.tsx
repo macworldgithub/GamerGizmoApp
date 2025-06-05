@@ -77,18 +77,6 @@ export default function BuyingSelling() {
     }
   };
 
-  // const handleChatPress = (user: ChatUser) => {
-  //   router.push({
-  //     pathname: "/(tabs)/Chating",
-  //     params: {
-  //       userId: user.id.toString(),
-  //       userName: `${user.first_name} ${user.last_name}`,
-  //       userType: user.type,
-  //       username: user.username,
-  //     },
-  //   });
-  // };
-
   const handleChatPress = async (user: ChatUser) => {
   try {
     const token = await AsyncStorage.getItem("token");
@@ -152,7 +140,7 @@ export default function BuyingSelling() {
         <Text className="text-base font-semibold text-gray-800">
           {item.first_name} {item.last_name}
         </Text>
-        <Text className="text-sm text-gray-500 capitalize">{item.type}</Text>
+        {/* <Text className="text-sm text-gray-500 capitalize">{item.type}</Text> */}
         <Text className="text-xs text-gray-400">{item.username}</Text>
       </View>
     </TouchableOpacity>

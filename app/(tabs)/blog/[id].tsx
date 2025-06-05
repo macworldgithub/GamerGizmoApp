@@ -66,7 +66,7 @@ const BlogDetail = () => {
 
   return (
     <>
-      <View className="flex-row items-center justify-between px-4 py-2 bg-white border-b border-gray-200">
+      <View className="flex-row items-center justify-between px-4 py-2 bg-white border-b border-gray-200 pt-4">
         <TouchableOpacity onPress={() => router.push("/blog")}>
           <ArrowLeftIcon size={24} color="black" />
         </TouchableOpacity>
