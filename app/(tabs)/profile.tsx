@@ -142,7 +142,7 @@ const Profile = () => {
           />
         </TouchableOpacity>
 
-        <TouchableOpacity className="flex-row items-center justify-between py-4 border-b border-gray-200">
+        {/* <TouchableOpacity className="flex-row items-center justify-between py-4 border-b border-gray-200">
           <View className="flex-row items-center space-x-3">
             <Image
               source={require("../../assets/images/lock.png")}
@@ -154,7 +154,7 @@ const Profile = () => {
             source={require("../../assets/images/next.png")}
             className="w-4 h-4"
           />
-        </TouchableOpacity>
+        </TouchableOpacity> */}
 
         <TouchableOpacity
           className="flex-row items-center justify-between py-4"

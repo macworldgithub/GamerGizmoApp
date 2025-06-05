@@ -1,21 +1,26 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
   TouchableOpacity,
   ScrollView,
-} from 'react-native';
-import { Modal as RNModal } from 'react-native';
-import { FontAwesome, MaterialIcons } from '@expo/vector-icons';
-import CityModal from './CityModal';
-import axios from 'axios';
-import { API_BASE_URL } from '@/utils/config';
-import { useRouter } from 'expo-router';
+  ActivityIndicator,
+} from "react-native";
+import { Modal as RNModal } from "react-native";
+import { FontAwesome, MaterialIcons } from "@expo/vector-icons";
+import CityModal from "./CityModal";
+import Modal from "react-native-modal";
+import axios from "axios";
+import { API_BASE_URL } from "@/utils/config";
+import { useRouter } from "expo-router";
 
 type FilterModalProps = {
   isVisible: boolean;
   onClose: () => void;
-  onApplyFilter: (filters: { location_id?: number, priceRange?: { min: number; max: number } }) => void;
+  onApplyFilter: (filters: {
+    location_id?: number;
+    priceRange?: { min: number; max: number };
+  }) => void;
 };
 
 type Location = {
@@ -30,11 +35,11 @@ type PriceRange = {
 };
 
 const PRICE_RANGES: PriceRange[] = [
-  { label: 'Below 500 AED', min: 0, max: 499 },
-  { label: '500 - 1000 AED', min: 500, max: 999 },
-  { label: '1000 - 3000 AED', min: 1000, max: 2999 },
-  { label: '3000 - 5000 AED', min: 3000, max: 4999 },
-  { label: '5000+ AED', min: 5000, max: null },
+  { label: "Below 500 AED", min: 0, max: 499 },
+  { label: "500 - 1000 AED", min: 500, max: 999 },
+  { label: "1000 - 3000 AED", min: 1000, max: 2999 },
+  { label: "3000 - 5000 AED", min: 3000, max: 4999 },
+  { label: "5000+ AED", min: 5000, max: null },
 ];
 
 const FilterModal: React.FC<FilterModalProps> = ({
@@ -44,7 +49,8 @@ const FilterModal: React.FC<FilterModalProps> = ({
 }) => {
   const [isCityModalVisible, setIsCityModalVisible] = useState(false);
   const [selectedCity, setSelectedCity] = useState<Location | null>(null);
-  const [selectedPriceRange, setSelectedPriceRange] = useState<PriceRange | null>(null);
+  const [selectedPriceRange, setSelectedPriceRange] =
+    useState<PriceRange | null>(null);
   const [loading, setLoading] = useState(false);
   const [locations, setLocations] = useState<Location[]>([]);
   const router = useRouter();
@@ -57,40 +63,39 @@ const FilterModal: React.FC<FilterModalProps> = ({
           setLocations(response.data.data);
         }
       } catch (error) {
-        console.error('Failed to fetch locations:', error);
+        console.error("Failed to fetch locations:", error);
       }
     };
 
     fetchLocations();
   }, []);
 
-  // When city is selected, clear price range
   const handleCitySelect = (cityName: string) => {
-    const city = locations.find(loc => loc.name === cityName);
+    const city = locations.find((loc) => loc.name === cityName);
     if (city) {
       setSelectedCity(city);
-      setSelectedPriceRange(null); // Clear price range when city is selected
     }
     setIsCityModalVisible(false);
   };
 
-  // When price range is selected, clear city
   const handlePriceRangeSelect = (range: PriceRange) => {
     setSelectedPriceRange(range);
-    setSelectedCity(null); // Clear city when price range is selected
   };
 
   const handleApplyFilters = async () => {
     const filters = {
       location_id: selectedCity?.id,
-      priceRange: selectedPriceRange ? {
-        min: selectedPriceRange.min,
-        max: selectedPriceRange.max || Number.MAX_SAFE_INTEGER
-      } : undefined
+      priceRange: selectedPriceRange
+        ? {
+            min: selectedPriceRange.min,
+            max: selectedPriceRange.max || Number.MAX_SAFE_INTEGER,
+          }
+        : undefined,
     };
-    
-    console.log('Applying filters:', filters);
+
+    console.log("Applying filters:", filters);
     onApplyFilter(filters);
+    onClose();
   };
 
   const handleReset = () => {
@@ -100,11 +105,7 @@ const FilterModal: React.FC<FilterModalProps> = ({
 
   return (
     <>
-      <RNModal
-        visible={isVisible}
-        animationType="slide"
-        transparent={false}
-      >
+      <RNModal visible={isVisible} animationType="slide" transparent={false}>
         <View className="flex-1 bg-white">
           {/* Header */}
           <View className="flex-row justify-between items-center p-4 border-b border-gray-200">
@@ -119,20 +120,25 @@ const FilterModal: React.FC<FilterModalProps> = ({
 
           <ScrollView className="flex-1">
             {/* City */}
-            <TouchableOpacity 
-              className={`flex-row justify-between items-center p-4 border-b border-gray-100 ${selectedPriceRange ? 'opacity-50' : ''}`}
-              onPress={() => !selectedPriceRange && setIsCityModalVisible(true)}
-              disabled={!!selectedPriceRange}
+            <TouchableOpacity
+              className="flex-row justify-between items-center p-4 border-b border-gray-100"
+              onPress={() => setIsCityModalVisible(true)}
             >
               <View>
                 <Text className="text-base font-medium mb-1">City</Text>
-                <Text className="text-gray-500">{selectedCity?.name || 'Select City'}</Text>
+                <Text className="text-gray-500">
+                  {selectedCity?.name || "Select City"}
+                </Text>
               </View>
-              <MaterialIcons name="keyboard-arrow-right" size={24} color="gray" />
+              <MaterialIcons
+                name="keyboard-arrow-right"
+                size={24}
+                color="gray"
+              />
             </TouchableOpacity>
 
             {/* Price Range */}
-            <View className={`p-4 border-b border-gray-100 ${selectedCity ? 'opacity-50' : ''}`}>
+            <View className="p-4 border-b border-gray-100">
               <Text className="text-base font-medium mb-3">Price Range</Text>
               <View className="space-y-2">
                 {PRICE_RANGES.map((range, index) => (
@@ -140,17 +146,18 @@ const FilterModal: React.FC<FilterModalProps> = ({
                     key={index}
                     className={`p-3 rounded-lg border ${
                       selectedPriceRange?.label === range.label
-                        ? 'border-purple-600 bg-purple-50'
-                        : 'border-gray-200'
+                        ? "border-purple-600 bg-purple-50"
+                        : "border-gray-200"
                     }`}
-                    onPress={() => !selectedCity && handlePriceRangeSelect(range)}
-                    disabled={!!selectedCity}
+                    onPress={() => handlePriceRangeSelect(range)}
                   >
-                    <Text className={`${
-                      selectedPriceRange?.label === range.label
-                        ? 'text-purple-600'
-                        : 'text-gray-700'
-                    }`}>
+                    <Text
+                      className={`${
+                        selectedPriceRange?.label === range.label
+                          ? "text-purple-600"
+                          : "text-gray-700"
+                      }`}
+                    >
                       {range.label}
                     </Text>
                   </TouchableOpacity>
@@ -161,8 +168,8 @@ const FilterModal: React.FC<FilterModalProps> = ({
 
           {/* Show Results Button */}
           <View className="p-4">
-            <TouchableOpacity 
-              className="bg-red-600 rounded-lg py-4"
+            <TouchableOpacity
+              className="bg-purple-700 rounded-lg py-4"
               onPress={handleApplyFilters}
             >
               <Text className="text-white text-center font-semibold text-lg">
@@ -177,7 +184,7 @@ const FilterModal: React.FC<FilterModalProps> = ({
       <CityModal
         visible={isCityModalVisible}
         onClose={() => setIsCityModalVisible(false)}
-        selectedCity={selectedCity?.name || ''}
+        selectedCity={selectedCity?.name || ""}
         onSelect={handleCitySelect}
       />
     </>

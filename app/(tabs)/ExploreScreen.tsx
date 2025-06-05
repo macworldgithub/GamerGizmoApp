@@ -40,7 +40,7 @@ const ExploreScreen = () => {
   const { category, condition } = useLocalSearchParams();
   const [products, setProducts] = useState<Product[]>([]);
   const [defaultProducts, setDefaultProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [noResults, setNoResults] = useState(false);
   const [isSortVisible, setSortVisible] = useState(false);
   const [selectedSort, setSelectedSort] = useState("Default");
@@ -55,11 +55,21 @@ const ExploreScreen = () => {
     console: 4,
   };
 
+  const resetStates = () => {
+    setNoResults(false);
+    setProducts(defaultProducts);
+    setSelectedSort("Default");
+    setShowModal(false);
+  };
+
   const fetchProducts = async () => {
     try {
+      if (!category || !condition) return;
+
       setLoading(true);
+      setNoResults(false);
       const categoryId = categoryIdMap[String(category).toLowerCase()];
-      if (!categoryId || !condition) {
+      if (!categoryId) {
         setNoResults(true);
         return;
       }
@@ -79,6 +89,7 @@ const ExploreScreen = () => {
       }
     } catch (error) {
       console.error("Failed to fetch products", error);
+      setNoResults(true);
     } finally {
       setLoading(false);
     }
@@ -121,12 +132,21 @@ const ExploreScreen = () => {
     setProducts(sorted);
   };
 
-  const handleFilter = async ({ location_id, priceRange }: { location_id?: number, priceRange?: { min: number; max: number } }) => {
+  const handleFilter = async ({
+    location_id,
+    priceRange,
+  }: {
+    location_id?: number;
+    priceRange?: { min: number; max: number };
+  }) => {
     try {
+      if (!category || !condition) return;
+
       setLoading(true);
+      setNoResults(false);
 
       const categoryId = categoryIdMap[String(category).toLowerCase()];
-      if (!categoryId || !condition) {
+      if (!categoryId) {
         setNoResults(true);
         return;
       }
@@ -134,20 +154,20 @@ const ExploreScreen = () => {
       let query = `category_id=${categoryId}&condition=${condition}`;
       if (location_id) query += `&location=${location_id}`;
 
-      console.log('Fetching products with query:', query);
-      const response = await axios.get(`${API_BASE_URL}/products/getAll?${query}`);
+      const response = await axios.get(
+        `${API_BASE_URL}/products/getAll?${query}`
+      );
       let data = response.data?.data || [];
 
-      // Filter products by price range on client side
       if (priceRange) {
         data = data.filter((product: Product) => {
           const productPrice = Number(product.price);
-          // For 5000+ AED range, only check min price
           if (priceRange.max === null) {
             return productPrice >= priceRange.min;
           }
-          // For other ranges, check both min and max
-          return productPrice >= priceRange.min && productPrice <= priceRange.max;
+          return (
+            productPrice >= priceRange.min && productPrice <= priceRange.max
+          );
         });
       }
 
@@ -163,6 +183,7 @@ const ExploreScreen = () => {
       }
     } catch (error) {
       console.error("Error applying filter", error);
+      setNoResults(true);
     } finally {
       setLoading(false);
       setShowModal(false);
@@ -173,13 +194,22 @@ const ExploreScreen = () => {
     return image_url?.startsWith("https") ? image_url : image_url;
   };
 
-  const getAdsInfo = (category: string | string[], condition: string | string[]) => {
+  const getAdsInfo = (
+    category: string | string[],
+    condition: string | string[]
+  ) => {
     const lowerCategory = String(category).toLowerCase();
     const conditionValue = String(condition);
 
-    if (lowerCategory === "laptops" && (conditionValue === "1" || conditionValue === "2")) {
+    if (
+      lowerCategory === "laptops" &&
+      (conditionValue === "1" || conditionValue === "2")
+    ) {
       return { pageName: "Laptops", adId: 1 };
-    } else if (lowerCategory === "components" || lowerCategory === "accessories") {
+    } else if (
+      lowerCategory === "components" ||
+      lowerCategory === "accessories"
+    ) {
       return { pageName: "Components and Accessories", adId: 1 };
     } else if (lowerCategory === "desktop") {
       return { pageName: "Gaming PCS", adId: 1 };
@@ -211,10 +241,33 @@ const ExploreScreen = () => {
 
   if (noResults) {
     return (
-      <View className="flex-1 justify-center items-center">
-        <Text className="text-xl font-bold text-gray-700">
-          No products found
-        </Text>
+      <View className="flex-1 bg-white">
+        <View className="mt-5 px-4">
+          <TouchableOpacity
+            onPress={() => {
+              resetStates();
+              fetchProducts();
+              router.push("/home");
+            }}
+          >
+            <FontAwesome name="arrow-left" size={20} color="black" />
+          </TouchableOpacity>
+        </View>
+        <View className="flex-1 justify-center items-center">
+          <Text className="text-xl font-bold text-gray-700 mb-4">
+            No products found
+          </Text>
+          <TouchableOpacity
+            onPress={() => {
+              resetStates();
+              fetchProducts();
+              router.push("/home");
+            }}
+            className="bg-purple-700 px-6 py-3 rounded-lg"
+          >
+            <Text className="text-white font-semibold">Back to Home</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     );
   }
@@ -302,7 +355,9 @@ const ExploreScreen = () => {
                   resizeMode="cover"
                 />
               )}
-              <TouchableOpacity onPress={() => router.push(`/product/${item.id}`)}>
+              <TouchableOpacity
+                onPress={() => router.push(`/product/${item.id}`)}
+              >
                 <Text className="text-purple-600 font-bold text-lg mt-2">
                   AED {item.price}
                 </Text>
@@ -350,7 +405,9 @@ const ExploreScreen = () => {
 
               <View className="flex-row justify-between mt-3">
                 <TouchableOpacity className="bg-[#e8e3fc] w-32 mx-1 py-2 rounded-full">
-                  <Text className="text-black text-center font-semibold">Chat</Text>
+                  <Text className="text-black text-center font-semibold">
+                    Chat
+                  </Text>
                 </TouchableOpacity>
               </View>
             </View>

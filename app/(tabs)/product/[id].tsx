@@ -133,7 +133,7 @@ const ProductDetail = () => {
       }
 
       const response = await axios.post(
-        "https://backend.gamergizmo.com/product/favourite/addToFavourite",
+        `${API_BASE_URL}/product/favourite/addToFavourite`,
         { userId, productId: id }
       );
 
@@ -157,32 +157,29 @@ const ProductDetail = () => {
       const sellerId = product?.user_id;
 
       // Detailed ID logging
-      console.log("==========================================");
       console.log("🔍 CHAT CREATION - ID VERIFICATION");
-      console.log("==========================================");
       console.log("👤 BUYER/USER INFORMATION:");
       console.log("- Buyer User ID:", buyerUserId);
       console.log("- Buyer ID Type:", typeof buyerUserId);
-      
+
       console.log("\n🏪 SELLER INFORMATION:");
       console.log("- Seller ID:", sellerId);
       console.log("- Seller ID Type:", typeof sellerId);
-      
+
       console.log("\n📦 PRODUCT DETAILS:");
       console.log("- Product ID:", product?.id);
       console.log("- Product User ID:", product?.user_id);
-      
+
       console.log("\n👥 SELLER USER DETAILS:");
       console.log("- Seller User Object:", product?.users);
       console.log("- Seller Name:", `${product?.users?.first_name} ${product?.users?.last_name}`);
-      console.log("==========================================");
 
       // Validate buyer is logged in
       if (!buyerUserId || !token) {
         Alert.alert("Error", "Please log in to start a chat.");
         return;
       }
-      
+
       // Validate seller info exists
       if (!sellerId) {
         Alert.alert("Error", "Seller information is missing.");
@@ -215,13 +212,6 @@ const ProductDetail = () => {
         user2Id: sellerIdNumber
       };
 
-      console.log("\n📦 PAYLOAD BEING SENT TO SERVER:");
-      console.log("==================================");
-      console.log(JSON.stringify(chatPayload, null, 2), "chatPayload");
-      console.log("==================================");
-      console.log("URL:", "https://backend.gamergizmo.com/chats/create");
-      console.log("Method: POST");
-      console.log("==================================");
 
       // Create chat request
       const response = await axios.post(
@@ -233,7 +223,7 @@ const ProductDetail = () => {
           }
         }
       );
-      
+
       console.log("\n📥 SERVER RESPONSE:");
       console.log("==================================");
       console.log(JSON.stringify(response.data, null, 2));
@@ -253,6 +243,7 @@ const ProductDetail = () => {
                   chatId,
                   sellerId: sellerIdNumber,
                   productId: id,
+                  sellerName: `${product?.users?.first_name || ""} ${product?.users?.last_name || ""}`,
                 },
               });
             }
@@ -290,10 +281,10 @@ const ProductDetail = () => {
       ]);
 
     } catch (error: any) {
-      const errorMessage = error.response?.data?.message 
-        || error.message 
+      const errorMessage = error.response?.data?.message
+        || error.message
         || "Failed to start chat. Please try again.";
-      
+
       Alert.alert("Error", errorMessage);
     } finally {
       setIsConnecting(false);
@@ -306,11 +297,11 @@ const ProductDetail = () => {
   if (!product) return <Text className="text-center mt-10">Product not found</Text>;
 
   return (
-    <ScrollView className="p-4 bg-white">
-      <View className="h-60 rounded-lg overflow-hidden relative">
+    <ScrollView className="bg-white">
+      <View className="h-80 relative">
         {product.product_images && product.product_images.length > 0 ? (
           <Swiper
-            style={{ height: 200 }}
+            style={{ height: 320 }}
             dotStyle={{ backgroundColor: "#ccc", width: 6, height: 6 }}
             activeDotStyle={{ backgroundColor: "#6D28D9", width: 8, height: 8 }}
             loop
@@ -319,21 +310,33 @@ const ProductDetail = () => {
             {product.product_images.map((img, i) => {
               const imageUrl = getImageUrl(img.image_url);
               return (
-                <Image
+                <ScrollView 
                   key={i}
-                  source={{ uri: imageUrl }}
-                  className="w-full h-48 rounded-lg"
-                  resizeMode="cover"
-                />
+                  maximumZoomScale={3}
+                  minimumZoomScale={1}
+                  contentContainerStyle={{ flex: 1 }}
+                >
+                  <Image
+                    source={{ uri: imageUrl }}
+                    style={styles.image}
+                    resizeMode="contain"
+                  />
+                </ScrollView>
               );
             })}
           </Swiper>
         ) : (
-          <Image
-            source={require("../../../assets/images/check.png")}
-            className="w-full h-48 rounded-lg"
-            resizeMode="cover"
-          />
+          <ScrollView
+            maximumZoomScale={3}
+            minimumZoomScale={1}
+            contentContainerStyle={{ flex: 1 }}
+          >
+            <Image
+              source={require("../../../assets/images/check.png")}
+              style={styles.image}
+              resizeMode="contain"
+            />
+          </ScrollView>
         )}
 
         <TouchableOpacity
@@ -362,7 +365,7 @@ const ProductDetail = () => {
           </TouchableOpacity>
         </View>
       </View>
-
+<View className="p-5">
       <Text className="text-purple-600 text-2xl font-bold mt-4">
         AED {product.price}
       </Text>
@@ -427,10 +430,12 @@ const ProductDetail = () => {
         </Text>
         //@ts-ignore
         <Text className="text-gray-700">{product.location_product_locationTolocation.name }</Text>
+        </View>
         <View className="h-32 bg-gray-200 rounded-md mt-2 items-center justify-center">
           <Text className="text-gray-500">MAP</Text>
         </View>
       </View>
+      
 
       {/* User Info */}
       <View className="mt-6 p-4 border border-gray-300 rounded-md bg-gray-50 shadow-sm">
@@ -503,5 +508,12 @@ const ProductDetail = () => {
     </ScrollView>
   );
 };
+
+const styles = StyleSheet.create({
+  image: {
+    width: '100%',
+    height: '100%',
+  },
+});
 
 export default ProductDetail;

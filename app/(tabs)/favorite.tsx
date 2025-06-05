@@ -13,6 +13,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
+import { router } from "expo-router";
 
 const ITEMS_PER_PAGE = 5;
 
@@ -134,7 +135,7 @@ const Favorite = () => {
           <TouchableOpacity
             className="bg-white border border-gray-400 px-6 py-3 rounded-md mt-6"
             //@ts-ignore
-            onPress={() => navigation.navigate("Home")}
+            onPress={() => router.push('/home')}
           >
             <Text className="text-black font-semibold">
               Continue Searching
