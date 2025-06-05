@@ -125,7 +125,7 @@ const Profile = () => {
           <Image
             source={require("../../assets/images/next.png")}
             className="w-4 h-4"
-          />
+          />  
         </TouchableOpacity>
 
         <TouchableOpacity className="flex-row items-center justify-between py-4">

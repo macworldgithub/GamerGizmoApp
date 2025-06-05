@@ -148,7 +148,6 @@ const Chating = () => {
         messageText: messageText
       });
 
-      // Add message to local state immediately for UI responsiveness
       const localMessage: Message = {
         ...message,
         sent_at: new Date(),
@@ -165,7 +164,6 @@ const Chating = () => {
     }
   };
 
-  // Update socket message handler to handle server response
   useEffect(() => {
     // Handle successful message send
     socket.on("receiveMessage", (msg: Message) => {
@@ -228,12 +226,7 @@ const Chating = () => {
     >
       <View className="p-4 border-b border-gray-200 bg-white">
         <TouchableOpacity
-          onPress={() =>
-            router.push({
-              pathname: "/product/[id]",
-              params: { id: productId?.toString() },
-            })
-          }
+          onPress={() => router.back()}
           className="absolute top-2 left-2 bg-white/70 p-2 rounded-full"
         >
           <FontAwesome name="arrow-left" size={20} color="black" />
