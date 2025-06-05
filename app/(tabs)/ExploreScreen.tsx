@@ -121,7 +121,7 @@ const ExploreScreen = () => {
     setProducts(sorted);
   };
 
-  const handleFilter = async ({ location_id }: { location_id?: number }) => {
+  const handleFilter = async ({ location_id, priceRange }: { location_id?: number, priceRange?: { min: number; max: number } }) => {
     try {
       setLoading(true);
 
@@ -136,7 +136,20 @@ const ExploreScreen = () => {
 
       console.log('Fetching products with query:', query);
       const response = await axios.get(`${API_BASE_URL}/products/getAll?${query}`);
-      const data = response.data?.data || [];
+      let data = response.data?.data || [];
+
+      // Filter products by price range on client side
+      if (priceRange) {
+        data = data.filter((product: Product) => {
+          const productPrice = Number(product.price);
+          // For 5000+ AED range, only check min price
+          if (priceRange.max === null) {
+            return productPrice >= priceRange.min;
+          }
+          // For other ranges, check both min and max
+          return productPrice >= priceRange.min && productPrice <= priceRange.max;
+        });
+      }
 
       if (data.length === 0) {
         setNoResults(true);
