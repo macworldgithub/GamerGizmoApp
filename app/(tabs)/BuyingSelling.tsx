@@ -1,4 +1,3 @@
-// ChatsScreen.tsx
 import React, { useState, useEffect } from "react";
 import { View, Text, TouchableOpacity, FlatList, Image } from "react-native";
 import axios from "axios";
@@ -10,11 +9,11 @@ const tabs = ["All", "Buying", "Selling"];
 
 interface ChatUser {
   id: number;
+  username: string;
   first_name: string;
   last_name: string;
-  email: string;
   avatar?: string;
-  type: 'buyer' | 'seller';
+  type: "buyer" | "seller";
 }
 
 export default function BuyingSelling() {
@@ -26,90 +25,111 @@ export default function BuyingSelling() {
     fetchBuyersAndSellers();
   }, []);
 
- const fetchBuyersAndSellers = async () => {
-  try {
-    const token = await AsyncStorage.getItem("token");
-    console.log("Token fetched:", token);
+  const fetchBuyersAndSellers = async () => {
+    try {
+      const token = await AsyncStorage.getItem("token");
+      console.log("Token fetched:", token);
 
-    // 1. Get buyer and seller IDs
-    const response = await axios.get(`${API_BASE_URL}/chats/buyers-and-sellers`, {
-  headers: {
-    Authorization: `Bearer ${token}`,
-  },
-});
- console.log("Buyers & Sellers API response:", response.data);
+      const response = await axios.get(`${API_BASE_URL}/chats/buyers-and-sellers`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
+      console.log("Buyers & Sellers API response:", response.data);
 
-    const buyerIds: number[] = response.data?.data?.buyers || [];
-    const sellerIds: number[] = response.data?.data?.sellers || [];
-    const allUserIds = [
-      ...buyerIds.map((id) => ({ id, type: "buyer" })),
-      ...sellerIds.map((id) => ({ id, type: "seller" })),
-    ];
-
-    // 2. Get all users
-    const allUsersRes = await axios.get(`https://backend.gamergizmo.com/user/getAllUsers?pageNo=1`, {
-  headers: {
-    Authorization: `Bearer ${token}`,
-  },
-});
-
-console.log("All Users API response:", allUsersRes.data);
-
-    const allUsers = allUsersRes.data?.data?.users || []; 
-
-    // 3. Match users with buyers/sellers
-    const matchedUsers: ChatUser[] = allUserIds.map(({ id, type }) => {
-      const user = allUsers.find((u: any) => u.id === id);
-      if (!user) {
-        console.warn(`User ID ${id} not found – possibly deleted`);
-        return null;
-      }
-
-      return {
+      const buyers: ChatUser[] = (response.data?.data?.buyers || []).map((user: any) => ({
         id: user.id,
         first_name: user.first_name,
         last_name: user.last_name,
-        email: user.email,
+        username: user.username,
         avatar: user.avatar || null,
-        type: type as 'buyer' | 'seller',
-      };
-    }).filter(Boolean) as ChatUser[];
+        type: "buyer",
+      }));
 
-    setUsers(matchedUsers);
-  } catch (error) {
-    console.error("Error fetching users:", error);
-  } finally {
-    setLoading(false);
-  }
-};
+      const sellers: ChatUser[] = (response.data?.data?.sellers || []).map((user: any) => ({
+        id: user.id,
+        first_name: user.first_name,
+        last_name: user.last_name,
+        username: user.username,
+        avatar: user.avatar || null,
+        type: "seller",
+      }));
 
-
+      setUsers([...buyers, ...sellers]);
+    } catch (error) {
+      console.error("Error fetching users:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const getFilteredUsers = () => {
     if (!Array.isArray(users)) return [];
 
     switch (activeTab) {
       case "Buying":
-        return users.filter(user => user.type === 'buyer');
+        return users.filter((user) => user.type === "buyer");
       case "Selling":
-        return users.filter(user => user.type === 'seller');
+        return users.filter((user) => user.type === "seller");
       default:
         return users;
     }
   };
 
-  const handleChatPress = (user: ChatUser) => {
-    // Navigate to chat screen with the selected user
+  // const handleChatPress = (user: ChatUser) => {
+  //   router.push({
+  //     pathname: "/(tabs)/Chating",
+  //     params: {
+  //       userId: user.id.toString(),
+  //       userName: `${user.first_name} ${user.last_name}`,
+  //       userType: user.type,
+  //       username: user.username,
+  //     },
+  //   });
+  // };
+
+  const handleChatPress = async (user: ChatUser) => {
+  try {
+    const token = await AsyncStorage.getItem("token");
+    const buyerId = await AsyncStorage.getItem("userId");
+
+    if (!token || !buyerId) {
+      console.warn("Token or buyerId missing");
+      return;
+    }
+
+    const response = await axios.post(`${API_BASE_URL}/chats/get-or-create`, {
+      buyerId: Number(buyerId),
+      sellerId: user.id,
+      // productId: OPTIONAL - add if needed
+    }, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const chatId = response.data?.chatId;
+
+    if (!chatId) {
+      console.warn("Chat ID not returned from server.");
+      return;
+    }
+    
     router.push({
       pathname: "/(tabs)/Chating",
       params: {
-        userId: user.id,
-        userName: `${user.first_name} ${user.last_name}`,
-        userType: user.type
-      }
+        chatId: chatId.toString(),
+        sellerId: user.id.toString(),
+        sellerName: `${user.first_name} ${user.last_name}`,
+        productId: response.data?.productId?.toString() || "", // optional
+      },
     });
-  };
+  } catch (err) {
+    console.error("Error navigating to chat:", err);
+  }
+};
+
 
   const renderChatItem = ({ item }: { item: ChatUser }) => (
     <TouchableOpacity
@@ -129,13 +149,11 @@ console.log("All Users API response:", allUsersRes.data);
       </View>
 
       <View className="flex-1 ml-3">
-        <View className="flex-row items-center">
-          <Text className="text-base font-semibold text-gray-800">
-            {item.first_name} {item.last_name}
-          </Text>
-        </View>
-        <Text className="text-sm text-gray-500">Sales</Text>
-        <Text className="text-xs text-gray-400">{item.email}</Text>
+        <Text className="text-base font-semibold text-gray-800">
+          {item.first_name} {item.last_name}
+        </Text>
+        <Text className="text-sm text-gray-500 capitalize">{item.type}</Text>
+        <Text className="text-xs text-gray-400">{item.username}</Text>
       </View>
     </TouchableOpacity>
   );
@@ -153,12 +171,16 @@ console.log("All Users API response:", allUsersRes.data);
             <TouchableOpacity
               key={tab}
               onPress={() => setActiveTab(tab)}
-              className={`pb-2 px-6 ${activeTab === tab ? "border-b-2 border-[#6345ED]" : ""
-                }`}
+              className={`pb-2 px-6 ${
+                activeTab === tab ? "border-b-2 border-[#6345ED]" : ""
+              }`}
             >
               <Text
-                className={`text-base ${activeTab === tab ? "text-[#6345ED] font-semibold" : "text-gray-400"
-                  }`}
+                className={`text-base ${
+                  activeTab === tab
+                    ? "text-[#6345ED] font-semibold"
+                    : "text-gray-400"
+                }`}
               >
                 {tab}
               </Text>
