@@ -83,8 +83,11 @@ const ExploreScreen = () => {
       if (data.length === 0) {
         setNoResults(true);
       } else {
-        setDefaultProducts(data);
-        setProducts(data);
+        const sortedData = [...data].sort(
+          (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        );
+        setDefaultProducts(sortedData);
+        setProducts(sortedData);
         setNoResults(false);
       }
     } catch (error) {
