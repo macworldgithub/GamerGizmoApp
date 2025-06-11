@@ -14,6 +14,7 @@ import LanguageModal from "../(tabs)/LanguageModal";
 import TermsModal from "../(tabs)/TermsModal";
 import { LogoutUser } from "../../store/slice/loginSlice";
 import EditProfilePhotoModal from './EditProfilePhotoModal';
+import { FontAwesome5 } from "@expo/vector-icons";
 
 const Profile = () => {
   const router = useRouter();
@@ -108,6 +109,16 @@ const Profile = () => {
             onPress={() => router.push("/adds")}
           >
             My Ads
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity className="border border-gray-200 px-6 py-3 rounded-xl w-40 flex-column items-center justify-center mr-7 ">
+          <FontAwesome5 name="store" size={18} color="purple" />
+          {/* <FontAwesome name="fa-solid fa-store" size={18} color="purple" /> */}
+          <Text
+            className="text-black font-bold ml-2 mt-3"
+            onPress={() => router.push("/StoreCategoryProducts")}
+          >
+            Store
           </Text>
         </TouchableOpacity>
 
