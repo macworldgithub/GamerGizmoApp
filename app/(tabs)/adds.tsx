@@ -10,7 +10,6 @@ import { router } from "expo-router";
 import { useLocalSearchParams, useFocusEffect } from "expo-router";
 import { useCallback } from "react";
 
-
 export default function Adds() {
   const [currentPage, setCurrentPage] = useState(1);
   const [total, setTotal] = useState(0);
@@ -51,13 +50,11 @@ export default function Adds() {
     }
   };
 
- 
- 
-useFocusEffect(
-  useCallback(() => {
-    fetchAds();
-  }, [currentPage]) // ✅ safe dependency
-);
+  useFocusEffect(
+    useCallback(() => {
+      fetchAds();
+    }, [currentPage]) 
+  );
   return (
     <ScrollView style={styles.container}>
       <Text style={styles.header}>My Ads</Text>
@@ -80,7 +77,6 @@ useFocusEffect(
     </ScrollView>
   );
 }
-
 
 const styles = StyleSheet.create({
   container: {
