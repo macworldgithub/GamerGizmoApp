@@ -36,14 +36,14 @@ const Chating = () => {
   const markMessagesAsRead = (msgs: Message[]) => {
     if (!buyerUserId) return;
 
-  
+
     const unreadMessages = msgs.filter(
       msg => !msg.is_read && msg.sender_id !== buyerUserId
     );
 
     if (unreadMessages.length > 0) {
       console.log("Marking messages as read:", unreadMessages.map(msg => msg.id));
-      
+
       // Mark each message as read individually
       unreadMessages.forEach(msg => {
         socket.emit("markMessageAsRead", {
@@ -54,8 +54,8 @@ const Chating = () => {
       });
 
       // Update local state
-      setMessages(prevMessages => 
-        prevMessages.map(msg => 
+      setMessages(prevMessages =>
+        prevMessages.map(msg =>
           unreadMessages.some(unread => unread.id === msg.id)
             ? { ...msg, is_read: true }
             : msg
@@ -108,18 +108,17 @@ const Chating = () => {
         });
         console.log("Messages response:", res.data);
 
-        if (Array.isArray(res.data)) {
-          const sortedMessages = [...res.data].sort((a, b) =>
+        if (Array.isArray(res.data?.data)) {
+          const sortedMessages = [...res.data.data].sort((a, b) =>
             new Date(a.sent_at).getTime() - new Date(b.sent_at).getTime()
           );
-          console.log("Sorted messages count:", sortedMessages.length);
           setMessages(sortedMessages);
-          // Mark messages as read after loading
           markMessagesAsRead(sortedMessages);
         } else {
-          console.log("No messages found or invalid response format:", res.data);
+          console.warn("Unexpected response structure:", res.data);
           setMessages([]);
         }
+
       } catch (error) {
         const err = error as AxiosError;
         console.error("Failed to load messages:", {
@@ -204,8 +203,8 @@ const Chating = () => {
       const localMessage: Message = {
         ...message,
         sent_at: new Date(),
-        id: Date.now(), 
-        is_read: false  
+        id: Date.now(),
+        is_read: false
       };
       setMessages((prev) => [...prev, localMessage]);
       setMessageText("");
