@@ -68,7 +68,7 @@ const categories = [
 ];
 
 export default function GamingStore() {
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState("") ;
   const [results, setResults] = useState([]);
   const router = useRouter();
 
