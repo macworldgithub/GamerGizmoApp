@@ -4,27 +4,44 @@
     "slug": "gamergizmoapp",
     "version": "1.0.0",
     "orientation": "portrait",
- "icon": "./assets/images/adaptive-icon.png",
-    "scheme": "myapp",
+    "icon": "./assets/images/adaptive-icon.png",
+    "scheme": "com.gamergizmoapp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
-    "ios": {
-      "supportsTablet": true
-    },
+
     "android": {
+      "package": "com.gamergizmoapp",
+      "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      },
-      "package": "com.gamergizmoapp"
+      }
     },
+
+    "ios": {
+      "bundleIdentifier": "com.gamergizmoapp",
+      "supportsTablet": true
+    },
+
     "web": {
       "bundler": "metro",
       "output": "static",
       "favicon": "./assets/images/favicon.png"
     },
+
     "plugins": [
       "expo-router",
+
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/images/adaptive-icon.png",
+          "imageWidth": 200,
+          "resizeMode": "contain",
+          "backgroundColor": "#ffffff"
+        }
+      ],
+
       [
         "expo-splash-screen",
         {
@@ -35,9 +52,11 @@
         }
       ]
     ],
+
     "experiments": {
       "typedRoutes": true
     },
+
     "extra": {
       "router": {
         "origin": false
@@ -46,8 +65,10 @@
         "projectId": "7289e9dc-f73f-4c31-bf6c-75a10a3b9d10"
       },
       "googleClientId": "1067596237443-61c50tr1djq6pii5oil7m3he9c2btfj4.apps.googleusercontent.com",
-      "googleClientIdAndroid": "663923789268-kpbnv7pi2mph8khmcvq420c18945mje0.apps.googleusercontent.com"
+      "googleClientIdAndroid": "663923789268-kpbnv7pi2mph8khmcvq420c18945mje0.apps.googleusercontent.com",
+      "facebookAppId": "1353257789065485"
     },
+
     "owner": "khanareeba"
   }
 }

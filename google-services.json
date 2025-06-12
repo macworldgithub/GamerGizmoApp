@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "100147817359",
+    "project_id": "gamergizmo-e9d00",
+    "storage_bucket": "gamergizmo-e9d00.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:100147817359:android:2d484e70a04f8fa79ef9fa",
+        "android_client_info": {
+          "package_name": "com.gamergizmoapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "100147817359-tqhqt1pqqc1pm5qgua1mrpf503u842m8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAwzTBXjLC-UGX9vqvwUIiSZV_w5ykaiF4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "100147817359-tqhqt1pqqc1pm5qgua1mrpf503u842m8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
