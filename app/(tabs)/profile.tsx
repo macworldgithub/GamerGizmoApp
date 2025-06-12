@@ -111,12 +111,13 @@ const Profile = () => {
             My Ads
           </Text>
         </TouchableOpacity>
-        <TouchableOpacity className="border border-gray-200 px-6 py-3 rounded-xl w-40 flex-column items-center justify-center mr-7 ">
+        <TouchableOpacity className="border border-gray-200 px-6 py-3 rounded-xl w-40 flex-column items-center justify-center mr-7 "
+        onPress={() => router.push("/store")}
+        >
           <FontAwesome5 name="store" size={18} color="purple" />
           {/* <FontAwesome name="fa-solid fa-store" size={18} color="purple" /> */}
           <Text
             className="text-black font-bold ml-2 mt-3"
-            onPress={() => router.push("/StoreCategoryProducts")}
           >
             Store
           </Text>

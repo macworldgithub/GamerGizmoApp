@@ -51,8 +51,8 @@ export default function Adds() {
     }
   };
 
- 
- 
+
+
 useFocusEffect(
   useCallback(() => {
     fetchAds();
@@ -96,3 +96,5 @@ const styles = StyleSheet.create({
     color: "#000",
   },
 });
+
+

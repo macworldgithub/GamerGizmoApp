@@ -66,10 +66,15 @@ const StoreCategoryProducts: React.FC<StoreCategoryProductsProps> = ({
         {products.length > 0 && (
           <TouchableOpacity
             className="bg-purple-700 p-2 rounded-full"
-            onPress={() => navigation.navigate('StoreCategoryScreen', { categoryId })}
+            onPress={() =>
+                router.push({
+                  pathname: '/StoreCategory/[categoryId]',
+                  params: { categoryId: categoryId.toString()},
+                })
+              }
           >
             <Image
-              source={require('../../assets/images/arrow.png')}
+              source={require('../../assets/images/right.png')}
               className="w-4 h-4 tint-white"
             />
           </TouchableOpacity>

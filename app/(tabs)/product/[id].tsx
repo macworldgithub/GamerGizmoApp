@@ -62,6 +62,7 @@ interface User {
 
 interface Product {
   id: string;
+  is_store_product?: boolean;
   name: string;
   price: number;
   stock?: string;
@@ -76,7 +77,7 @@ interface Product {
   users?: User;
   user_id: number;
   // location_product_locationTolocation: Location
-   location_product_locationTolocation: {
+  location_product_locationTolocation: {
     id: number;
     name: string;
   };
@@ -310,7 +311,7 @@ const ProductDetail = () => {
             {product.product_images.map((img, i) => {
               const imageUrl = getImageUrl(img.image_url);
               return (
-                <ScrollView 
+                <ScrollView
                   key={i}
                   maximumZoomScale={3}
                   minimumZoomScale={1}
@@ -365,127 +366,171 @@ const ProductDetail = () => {
           </TouchableOpacity>
         </View>
       </View>
-<View className="p-5">
-      <Text className="text-purple-600 text-2xl font-bold mt-4">
-        AED {product.price}
-      </Text>
-      <Text className="text-lg font-semibold text-gray-800 mt-1">
-        {product.name}
-      </Text>
-      <View className="border-b border-gray-200 my-2" />
+      <View className="p-5">
+        <Text className="text-purple-600 text-2xl font-bold mt-4">
+          AED {product.price}
+        </Text>
+        <Text className="text-lg font-semibold text-gray-800 mt-1">
+          {product.name}
+        </Text>
+        <View className="border-b border-gray-200 my-2" />
 
-      <Text className="text-lg font-bold text-gray-800 mt-4 mb-2">Details</Text>
-      <View className="border-t border-b border-gray-200">
-        <View className="flex-row justify-between items-center py-3 border-b border-gray-200 px-4">
-          <Text className="text-gray-900 font-semibold">Stock</Text>
-          <Text className="text-gray-500">{product.stock || "N/A"}</Text>
+        <Text className="text-lg font-bold text-gray-800 mt-4 mb-2">Details</Text>
+        <View className="border-t border-b border-gray-200">
+          <View className="flex-row justify-between items-center py-3 border-b border-gray-200 px-4">
+            <Text className="text-gray-900 font-semibold">Stock</Text>
+            <Text className="text-gray-500">{product.stock || "N/A"}</Text>
+          </View>
+          <View className="flex-row justify-between items-center py-3 border-b border-gray-200 px-4">
+            <Text className="text-gray-900 font-semibold">Model</Text>
+            <Text className="text-gray-500">{product.models?.name || "N/A"}</Text>
+          </View>
+          <View className="flex-row justify-between items-center py-3 border-b border-gray-200 px-4">
+            <Text className="text-gray-900 font-semibold">Brand</Text>
+            <Text className="text-gray-500">{product.brands?.name || "N/A"}</Text>
+          </View>
+          <View className="flex-row justify-between items-center py-3 px-4">
+            <Text className="text-gray-900 font-semibold">Condition</Text>
+            <Text className="text-gray-500">
+              {product.condition_product_conditionTocondition?.name || "N/A"}
+            </Text>
+          </View>
+          <View className="flex-row justify-between items-center py-3 px-4">
+            <Text className="text-gray-900 font-semibold">Posted On</Text>
+            <Text className="text-gray-500">
+              {dayjs(product.created_at).fromNow()}
+            </Text>
+          </View>
         </View>
-        <View className="flex-row justify-between items-center py-3 border-b border-gray-200 px-4">
-          <Text className="text-gray-900 font-semibold">Model</Text>
-          <Text className="text-gray-500">{product.models?.name || "N/A"}</Text>
-        </View>
-        <View className="flex-row justify-between items-center py-3 border-b border-gray-200 px-4">
-          <Text className="text-gray-900 font-semibold">Brand</Text>
-          <Text className="text-gray-500">{product.brands?.name || "N/A"}</Text>
-        </View>
-        <View className="flex-row justify-between items-center py-3 px-4">
-          <Text className="text-gray-900 font-semibold">Condition</Text>
-          <Text className="text-gray-500">
-            {product.condition_product_conditionTocondition?.name || "N/A"}
+
+        {/* <TouchableOpacity
+          onPress={handleStartChat}
+          className="mt-6 border border-purple-600 rounded-md py-2 items-center"
+          disabled={isConnecting}
+        >
+          <Text className="text-purple-600 font-semibold">
+            {isConnecting ? "Connecting..." : "Chat"}
+          </Text>
+        </TouchableOpacity> */}
+
+        {product?.is_store_product ? (
+          // ✅ Add to Cart button for store product
+          <TouchableOpacity
+            onPress={() => console.log("Add to cart")}
+            className="mt-6 bg-purple-600 rounded-md py-2 items-center"
+          >
+            <Text className="text-white font-semibold">Add to Cart</Text>
+          </TouchableOpacity>
+        ) : (
+          // ✅ Chat button for non-store product
+          <TouchableOpacity
+            onPress={handleStartChat}
+            className="mt-6 border border-purple-600 rounded-md py-2 items-center"
+            disabled={isConnecting}
+          >
+            <Text className="text-purple-600 font-semibold">
+              {isConnecting ? "Connecting..." : "Chat"}
+            </Text>
+          </TouchableOpacity>
+        )}
+
+
+        <View className="mt-6">
+          <Text className="text-lg font-semibold text-gray-800 mb-2">
+            Description
+          </Text>
+          <Text className="text-gray-700">
+            {product.description || "No description provided."}
           </Text>
         </View>
-        <View className="flex-row justify-between items-center py-3 px-4">
-          <Text className="text-gray-900 font-semibold">Posted On</Text>
-          <Text className="text-gray-500">
-            {dayjs(product.created_at).fromNow()}
+
+        <View className="border-b border-gray-200 my-4" />
+
+        {/* Location */}
+        <View>
+          <Text className="text-lg font-semibold text-gray-800 mb-2">
+            Location
           </Text>
-        </View>
-      </View>
-
-      <TouchableOpacity
-        onPress={handleStartChat}
-        className="mt-6 border border-purple-600 rounded-md py-2 items-center"
-        disabled={isConnecting}
-      >
-        <Text className="text-purple-600 font-semibold">
-          {isConnecting ? "Connecting..." : "Chat"}
-        </Text>
-      </TouchableOpacity>
-
-      <View className="mt-6">
-        <Text className="text-lg font-semibold text-gray-800 mb-2">
-          Description
-        </Text>
-        <Text className="text-gray-700">
-          {product.description || "No description provided."}
-        </Text>
-      </View>
-
-      <View className="border-b border-gray-200 my-4" />
-
-      {/* Location */}
-      <View>
-        <Text className="text-lg font-semibold text-gray-800 mb-2">
-          Location
-        </Text>
         //@ts-ignore
-        <Text className="text-gray-700">{product.location_product_locationTolocation.name }</Text>
+          <Text className="text-gray-700">{product.location_product_locationTolocation.name}</Text>
         </View>
         <View className="h-32 bg-gray-200 rounded-md mt-2 items-center justify-center">
           <Text className="text-gray-500">MAP</Text>
         </View>
       </View>
-      
+
 
       {/* User Info */}
       <View className="mt-6 p-4 border border-gray-300 rounded-md bg-gray-50 shadow-sm">
         <View className="flex-row items-center mb-2">
           <Ionicons name="person-circle-outline" size={40} color="gray" />
-          <View className="ml-2">
-            <Text className="text-base font-semibold text-gray-800">
-              {product.users?.first_name} {product.users?.last_name} (
-              {product.users?.gender})
-            </Text>
-            <Text className="text-sm text-gray-500">
-              Member Since{" "}
-              {product.users?.created_at
-                ? dayjs(product.users.created_at).format("DD MMM YYYY")
-                : "N/A"}
-            </Text>
-          </View>
+          {product?.is_store_product ? (
+            <View className="ml-2">
+              <Text className="text-xl font-bold text-black pl-2">
+                GamerGizmo
+              </Text>
+
+              <TouchableOpacity
+                onPress={() => Linking.openURL("https://wa.me/971555795213")}
+                className="flex-row items-center mt-2"
+              >
+                <Ionicons name="logo-whatsapp" size={20} color="green" />
+                <Text className="ml-2 text-gray-700">+971555795213</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={() => Linking.openURL("mailto:support@gamergizmo.com")}
+                className="flex-row items-center mt-2"
+              >
+                <Ionicons name="mail-outline" size={20} color="gray" />
+                <Text className="ml-2 text-gray-700">support@gamergizmo.com</Text>
+              </TouchableOpacity>
+            </View>
+          ) : (
+            <View className="ml-2">
+              <Text className="text-base font-semibold text-gray-800">
+                {product.users?.first_name} {product.users?.last_name} ({product.users?.gender})
+              </Text>
+              <Text className="text-sm text-gray-500">
+                Member Since{" "}
+                {product.users?.created_at
+                  ? dayjs(product.users.created_at).format("DD MMM YYYY")
+                  : "N/A"}
+              </Text>
+
+              <TouchableOpacity
+                onPress={() => {
+                  if (product.users?.phone) {
+                    const phone = product.users.phone.replace(/\s+/g, "");
+                    Linking.openURL(`https://wa.me/${phone}`).catch(() =>
+                      alert("WhatsApp not installed or link is invalid")
+                    );
+                  }
+                }}
+                className="flex-row items-center mt-2"
+              >
+                <Ionicons name="logo-whatsapp" size={20} color="green" />
+                <Text className="ml-2 text-gray-700">{product.users?.phone}</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={() => {
+                  if (product.users?.email) {
+                    Linking.openURL(`mailto:${product.users.email}`).catch(() =>
+                      alert("Unable to open email client")
+                    );
+                  }
+                }}
+                className="flex-row items-center mt-2"
+              >
+                <Ionicons name="mail-outline" size={20} color="gray" />
+                <Text className="ml-2 text-gray-700">{product.users?.email}</Text>
+              </TouchableOpacity>
+            </View>
+          )}
         </View>
-
-        {/* WhatsApp */}
-        <TouchableOpacity
-          onPress={() => {
-            if (product.users?.phone) {
-              const phone = product.users.phone.replace(/\s+/g, "");
-              Linking.openURL(`https://wa.me/${phone}`).catch(() =>
-                alert("WhatsApp not installed or link is invalid")
-              );
-            }
-          }}
-          className="flex-row items-center mt-2"
-        >
-          <Ionicons name="logo-whatsapp" size={20} color="green" />
-          <Text className="ml-2 text-gray-700">{product.users?.phone}</Text>
-        </TouchableOpacity>
-
-        {/* Email */}
-        <TouchableOpacity
-          onPress={() => {
-            if (product.users?.email) {
-              Linking.openURL(`mailto:${product.users.email}`).catch(() =>
-                alert("Unable to open email client")
-              );
-            }
-          }}
-          className="flex-row items-center mt-2"
-        >
-          <Ionicons name="mail-outline" size={20} color="gray" />
-          <Text className="ml-2 text-gray-700">{product.users?.email}</Text>
-        </TouchableOpacity>
       </View>
+
 
       {/* Report */}
       <TouchableOpacity className="mt-6 mb-10 flex-row items-center justify-center">
