@@ -68,6 +68,7 @@ interface Product {
   stock?: string;
   models?: Model;
   brands?: Brand;
+  category_id: number;
   condition_product_conditionTocondition?: Condition;
   created_at: string;
   description?: string;
@@ -83,9 +84,19 @@ interface Product {
   };
 }
 
+interface SimilarProduct {
+  id: string;
+  name: string;
+  price: number;
+  images: Array<{ image_url: string }>;
+  product_images?: Array<{ image_url: string }>;
+  category_id: number;
+}
+
 const ProductDetail = () => {
   const { id } = useLocalSearchParams<{ id: string }>();
   const [product, setProduct] = useState<Product | null>(null);
+  const [similarProducts, setSimilarProducts] = useState<SimilarProduct[]>([]);
   const [loading, setLoading] = useState(true);
   const [isFavourite, setIsFavourite] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
@@ -101,8 +112,34 @@ const ProductDetail = () => {
         const response = await axios.get(
           `${API_BASE_URL}/products/getProductById?id=${id}`
         );
-        setProduct(response.data.data);
-        console.log("product detail:", response.data.data);
+        // console.log("Full product response:", response);
+        // console.log("Product response.data:", response.data);
+        // console.log("Product response.data.data:", response.data.data);
+        // console.log("Product images:", response.data.data.product_images);
+
+        const productData = response.data.data;
+        setProduct(productData);
+
+        // Fetch similar products
+        if (productData.category_id) {
+          try {
+            const similarResponse = await axios.get(
+              `${API_BASE_URL}/products/getAll?category_id=${productData.category_id}`
+            );
+            // Filter out the current product and ensure we have valid data
+            const filteredSimilarProducts = similarResponse.data.data
+              .filter((item: SimilarProduct) => item.id !== id)
+              .map((item: SimilarProduct) => ({
+                ...item,
+                images: item.images || [],
+                product_images: item.product_images || []
+              }));
+            setSimilarProducts(filteredSimilarProducts);
+            console.log("similar.data", filteredSimilarProducts);
+          } catch (err) {
+            console.error("Error fetching similar products:", err);
+          }
+        }
       } catch (err) {
         console.error("Error fetching product", err);
       } finally {
@@ -161,22 +198,25 @@ const ProductDetail = () => {
       const sellerId = product?.user_id;
 
       // Detailed ID logging
-      console.log("🔍 CHAT CREATION - ID VERIFICATION");
-      console.log("👤 BUYER/USER INFORMATION:");
-      console.log("- Buyer User ID:", buyerUserId);
-      console.log("- Buyer ID Type:", typeof buyerUserId);
+      // console.log("🔍 CHAT CREATION - ID VERIFICATION");
+      // console.log("👤 BUYER/USER INFORMATION:");
+      // console.log("- Buyer User ID:", buyerUserId);
+      // console.log("- Buyer ID Type:", typeof buyerUserId);
 
-      console.log("\n🏪 SELLER INFORMATION:");
-      console.log("- Seller ID:", sellerId);
-      console.log("- Seller ID Type:", typeof sellerId);
+      // console.log("\n🏪 SELLER INFORMATION:");
+      // console.log("- Seller ID:", sellerId);
+      // console.log("- Seller ID Type:", typeof sellerId);
 
-      console.log("\n📦 PRODUCT DETAILS:");
-      console.log("- Product ID:", product?.id);
-      console.log("- Product User ID:", product?.user_id);
+      // console.log("\n📦 PRODUCT DETAILS:");
+      // console.log("- Product ID:", product?.id);
+      // console.log("- Product User ID:", product?.user_id);
 
       console.log("\n👥 SELLER USER DETAILS:");
       console.log("- Seller User Object:", product?.users);
-      console.log("- Seller Name:", `${product?.users?.first_name} ${product?.users?.last_name}`);
+      console.log(
+        "- Seller Name:",
+        `${product?.users?.first_name} ${product?.users?.last_name}`
+      );
 
       // Validate buyer is logged in
       if (!buyerUserId || !token) {
@@ -195,8 +235,20 @@ const ProductDetail = () => {
       const sellerIdNumber = parseInt(String(sellerId), 10);
 
       console.log("\n🔄 CONVERTED IDs:");
-      console.log("- Converted Buyer ID:", buyerIdNumber, "(Type:", typeof buyerIdNumber, ")");
-      console.log("- Converted Seller ID:", sellerIdNumber, "(Type:", typeof sellerIdNumber, ")");
+      console.log(
+        "- Converted Buyer ID:",
+        buyerIdNumber,
+        "(Type:",
+        typeof buyerIdNumber,
+        ")"
+      );
+      console.log(
+        "- Converted Seller ID:",
+        sellerIdNumber,
+        "(Type:",
+        typeof sellerIdNumber,
+        ")"
+      );
 
       // Validate number conversion
       if (isNaN(buyerIdNumber) || isNaN(sellerIdNumber)) {
@@ -213,9 +265,8 @@ const ProductDetail = () => {
       // Create payload
       const chatPayload = {
         user1Id: buyerIdNumber,
-        user2Id: sellerIdNumber
+        user2Id: sellerIdNumber,
       };
-
 
       // Create chat request
       const response = await axios.post(
@@ -223,15 +274,15 @@ const ProductDetail = () => {
         chatPayload,
         {
           headers: {
-            Authorization: `Bearer ${token}`
-          }
+            Authorization: `Bearer ${token}`,
+          },
         }
       );
 
-      console.log("\n📥 SERVER RESPONSE:");
-      console.log("==================================");
-      console.log(JSON.stringify(response.data, null, 2));
-      console.log("==================================");
+      // console.log("\n📥 SERVER RESPONSE:");
+      // console.log("==================================");
+      // console.log(JSON.stringify(response.data, null, 2));
+      // console.log("==================================");
 
       // Handle existing chat case
       if (response.data.message === "Chat already exists") {
@@ -247,24 +298,25 @@ const ProductDetail = () => {
                   chatId,
                   sellerId: sellerIdNumber,
                   productId: id,
-                  sellerName: `${product?.users?.first_name || ""} ${product?.users?.last_name || ""}`,
+                  sellerName: `${product?.users?.first_name || ""} ${product?.users?.last_name || ""
+                    }`,
                 },
               });
-            }
-          }
+            },
+          },
         ]);
         return;
       }
 
       // Handle new chat case
       const chatId = response.data.data.id;
-      console.log("✅ New chat created:", chatId);
+      // console.log("✅ New chat created:", chatId);
 
       // Connect to socket if needed
       if (!socket.connected) {
         socket.io.opts.query = { userId: buyerIdNumber };
         socket.connect();
-        console.log("🔌 Socket connected");
+        // console.log("🔌 Socket connected");
       }
 
       // Show success message and navigate
@@ -280,14 +332,14 @@ const ProductDetail = () => {
                 productId: id,
               },
             });
-          }
-        }
+          },
+        },
       ]);
-
     } catch (error: any) {
-      const errorMessage = error.response?.data?.message
-        || error.message
-        || "Failed to start chat. Please try again.";
+      const errorMessage =
+        error.response?.data?.message ||
+        error.message ||
+        "Failed to start chat. Please try again.";
 
       Alert.alert("Error", errorMessage);
     } finally {
@@ -345,7 +397,8 @@ const ProductDetail = () => {
   const productUrl = `https://gamergizmo.com/product-details/${id}`;
 
   if (loading) return <ActivityIndicator className="mt-20" />;
-  if (!product) return <Text className="text-center mt-10">Product not found</Text>;
+  if (!product)
+    return <Text className="text-center mt-10">Product not found</Text>;
 
   return (
     <ScrollView className="bg-white">
@@ -362,6 +415,7 @@ const ProductDetail = () => {
               const imageUrl = getImageUrl(img.image_url);
               return (
                 <ScrollView
+
                   key={i}
                   maximumZoomScale={3}
                   minimumZoomScale={1}
@@ -520,7 +574,16 @@ const ProductDetail = () => {
             {product.description || "No description provided."}
           </Text>
         </View>
+        <View className="mt-6">
+          <Text className="text-lg font-semibold text-gray-800 mb-2">
+            Description
+          </Text>
+          <Text className="text-gray-700">
+            {product.description || "No description provided."}
+          </Text>
+        </View>
 
+        <View className="border-b border-gray-200 my-4" />
         <View className="border-b border-gray-200 my-4" />
 
         {/* Location */}
@@ -633,8 +696,8 @@ const ProductDetail = () => {
 
 const styles = StyleSheet.create({
   image: {
-    width: '100%',
-    height: '100%',
+    width: "100%",
+    height: "100%",
   },
 });
 

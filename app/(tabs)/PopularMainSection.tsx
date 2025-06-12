@@ -5,24 +5,40 @@ import { useSelector } from "react-redux";
 import type { RootState } from "@/store/store";
 import axios from "axios";
 import { API_BASE_URL } from "@/utils/config";
+import LiveAds from "./LiveAds";
 
-import LiveAds from "./LiveAds"
+type ProductImage = {
+  id: number;
+  product_id: number;
+  image_url: string;
+  created_at: string;
+};
+
+interface Product {
+  id: number;
+  name: string;
+  price: number;
+  description: string;
+  images: ProductImage[];
+  created_at: string;
+  explorePath: string;
+}
 
 const PopularMainSection = () => {
-  const [LaptopUsedData, setLaptopUsedData] = useState([]);
-  const [LaptopNewData, setLaptopNewData] = useState([]);
-  const [consolesNewData, setConsolesNewData] = useState([]);
-  const [consolesUsedData, setConsolesUsedData] = useState([]);
-  const [desktopNewData, setDesktopNewData] = useState([]);
-  const [desktopUsedData, setDesktopUsedData] = useState([]);
+  const [LaptopUsedData, setLaptopUsedData] = useState<Product[]>([]);
+  const [LaptopNewData, setLaptopNewData] = useState<Product[]>([]);
+  const [consolesNewData, setConsolesNewData] = useState<Product[]>([]);
+  const [consolesUsedData, setConsolesUsedData] = useState<Product[]>([]);
+  const [desktopNewData, setDesktopNewData] = useState<Product[]>([]);
+  const [desktopUsedData, setDesktopUsedData] = useState<Product[]>([]);
+  const [componentsUsedData, setComponentsUsedData] = useState<Product[]>([]);
+  const [componentsNewData, setComponentsNewData] = useState<Product[]>([]);
 
   const ConsoleCategory = "Gaming Consoles";
   const consoleCondition = 2;
   const explorePath = `/${encodeURIComponent(
     ConsoleCategory
   )}?condition=${consoleCondition}`;
-  const [componentsUsedData, setComponentsUsedData] = useState([]);
-  const [componentsNewData, setComponentsNewData] = useState([]);
   const token = useSelector((state: RootState) => state.user.token);
   const [fetcher, seReftech] = useState(false);
 
@@ -35,7 +51,23 @@ const PopularMainSection = () => {
           }
       );
 
-      setDesktopUsedData(response?.data?.data || []);
+      const sortedData = [...(response?.data?.data || [])]
+        .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+        .map(product => ({
+          id: product.id,
+          name: product.name,
+          price: Number(product.price),
+          description: product.description,
+          created_at: product.created_at,
+          images: (product.images || product.product_images || []).map((img: any) => ({
+            id: img.id,
+            product_id: img.product_id,
+            image_url: img.image_url,
+            created_at: img.created_at,
+          })),
+          explorePath: `/ExploreScreen?category=desktop&condition=2`,
+        }));
+      setDesktopUsedData(sortedData);
     } catch (err) {
       console.error("Failed to fetch desktops.");
     }
@@ -50,9 +82,25 @@ const PopularMainSection = () => {
         }
       );
 
-      setDesktopNewData(response?.data?.data || []);
+      const sortedData = [...(response?.data?.data || [])]
+        .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+        .map(product => ({
+          id: product.id,
+          name: product.name,
+          price: Number(product.price),
+          description: product.description,
+          created_at: product.created_at,
+          images: (product.images || product.product_images || []).map((img: any) => ({
+            id: img.id,
+            product_id: img.product_id,
+            image_url: img.image_url,
+            created_at: img.created_at,
+          })),
+          explorePath: `/ExploreScreen?category=desktop&condition=1`,
+        }));
+      setDesktopNewData(sortedData);
     } catch (err) {
-      console.error("Failed to fetch  desktops");
+      console.error("Failed to fetch desktops");
     }
   };
   const fetchUsedConsoles = async () => {
@@ -64,7 +112,23 @@ const PopularMainSection = () => {
           }
       );
 
-      setConsolesUsedData(response?.data?.data || []);
+      const sortedData = [...(response?.data?.data || [])]
+        .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+        .map(product => ({
+          id: product.id,
+          name: product.name,
+          price: Number(product.price),
+          description: product.description,
+          created_at: product.created_at,
+          images: (product.images || product.product_images || []).map((img: any) => ({
+            id: img.id,
+            product_id: img.product_id,
+            image_url: img.image_url,
+            created_at: img.created_at,
+          })),
+          explorePath: `/ExploreScreen?category=console&condition=2`,
+        }));
+      setConsolesUsedData(sortedData);
     } catch (err) {
       console.error("Failed to fetch models.");
     }
@@ -79,7 +143,23 @@ const PopularMainSection = () => {
         }
       );
 
-      setConsolesNewData(response?.data?.data || []);
+      const sortedData = [...(response?.data?.data || [])]
+        .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+        .map(product => ({
+          id: product.id,
+          name: product.name,
+          price: Number(product.price),
+          description: product.description,
+          created_at: product.created_at,
+          images: (product.images || product.product_images || []).map((img: any) => ({
+            id: img.id,
+            product_id: img.product_id,
+            image_url: img.image_url,
+            created_at: img.created_at,
+          })),
+          explorePath: `/ExploreScreen?category=console&condition=1`,
+        }));
+      setConsolesNewData(sortedData);
     } catch (err) {
       console.error("Failed to fetch models.");
     }
@@ -93,7 +173,23 @@ const PopularMainSection = () => {
         }
       );
 
-      setLaptopUsedData(response?.data?.data || []);
+      const sortedData = [...(response?.data?.data || [])]
+        .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+        .map(product => ({
+          id: product.id,
+          name: product.name,
+          price: Number(product.price),
+          description: product.description,
+          created_at: product.created_at,
+          images: (product.images || product.product_images || []).map((img: any) => ({
+            id: img.id,
+            product_id: img.product_id,
+            image_url: img.image_url,
+            created_at: img.created_at,
+          })),
+          explorePath: `/ExploreScreen?category=laptops&condition=2`,
+        }));
+      setLaptopUsedData(sortedData);
     } catch (err) {
       console.error("Failed to fetch used laptops.");
     }
@@ -109,7 +205,23 @@ const PopularMainSection = () => {
         }
       );
 
-      setLaptopNewData(response?.data?.data || []);
+      const sortedData = [...(response?.data?.data || [])]
+        .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+        .map(product => ({
+          id: product.id,
+          name: product.name,
+          price: Number(product.price),
+          description: product.description,
+          created_at: product.created_at,
+          images: (product.images || product.product_images || []).map((img: any) => ({
+            id: img.id,
+            product_id: img.product_id,
+            image_url: img.image_url,
+            created_at: img.created_at,
+          })),
+          explorePath: `/ExploreScreen?category=laptops&condition=1`,
+        }));
+      setLaptopNewData(sortedData);
     } catch (err) {
       console.error("Failed to fetch models.");
     }
@@ -117,14 +229,30 @@ const PopularMainSection = () => {
 
   const fetchUsedComponents = async () => {
     try {
-      const response =await axios.get(
+      const response = await axios.get(
           `${API_BASE_URL}/products/getAll?category_id=3&condition=2`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }
       );
 
-      setComponentsUsedData(response?.data?.data || []);
+      const sortedData = [...(response?.data?.data || [])]
+        .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+        .map(product => ({
+          id: product.id,
+          name: product.name,
+          price: Number(product.price),
+          description: product.description,
+          created_at: product.created_at,
+          images: (product.images || product.product_images || []).map((img: any) => ({
+            id: img.id,
+            product_id: img.product_id,
+            image_url: img.image_url,
+            created_at: img.created_at,
+          })),
+          explorePath: `/ExploreScreen?category=components&condition=2`,
+        }));
+      setComponentsUsedData(sortedData);
     } catch (err) {
       console.error("Failed to fetch used components.");
     }
@@ -139,7 +267,23 @@ const PopularMainSection = () => {
         }
       );
 
-      setComponentsNewData(response?.data?.data || []);
+      const sortedData = [...(response?.data?.data || [])]
+        .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+        .map(product => ({
+          id: product.id,
+          name: product.name,
+          price: Number(product.price),
+          description: product.description,
+          created_at: product.created_at,
+          images: (product.images || product.product_images || []).map((img: any) => ({
+            id: img.id,
+            product_id: img.product_id,
+            image_url: img.image_url,
+            created_at: img.created_at,
+          })),
+          explorePath: `/ExploreScreen?category=components&condition=1`,
+        }));
+      setComponentsNewData(sortedData);
     } catch (err) {
       console.error("Failed to fetch components.");
     }
@@ -161,19 +305,13 @@ const PopularMainSection = () => {
         <Productcarrd
           title="Popular in Used Gaming PCs"
           productList={desktopUsedData}
-          seReftech={seReftech}
-          refetch={fetcher}
           explorePath={`/ExploreScreen?category=desktop&condition=2`}
-          // explorePath={`/desktop?condition=2`}
-
         />
       </View>
       <View className="mt-6">
         <Productcarrd
           title="Popular in New Gaming PCs"
           productList={desktopNewData}
-          seReftech={seReftech}
-          refetch={fetcher}
           explorePath={`/ExploreScreen?category=desktop&condition=1`}
         />
       </View>
@@ -184,19 +322,14 @@ const PopularMainSection = () => {
         <Productcarrd
           title="Popular in Used Laptops"
           productList={LaptopUsedData}
-          seReftech={seReftech}
-          refetch={fetcher}
           explorePath={`/ExploreScreen?category=laptops&condition=2`}
-
         />
       </View>
       <View className="mt-6">
         <Productcarrd
           title="Popular in New Laptops"
           productList={LaptopNewData}
-          seReftech={seReftech}
           explorePath={`/ExploreScreen?category=laptops&condition=1`}
-          refetch={fetcher}
         />
       </View>
       <View className="mt-4">
@@ -206,8 +339,6 @@ const PopularMainSection = () => {
         <Productcarrd
           title="Popular in Used Consoles"
           productList={consolesUsedData}
-          seReftech={seReftech}
-          refetch={fetcher}
           explorePath={`/ExploreScreen?category=console&condition=2`}
         />
       </View>
@@ -215,8 +346,6 @@ const PopularMainSection = () => {
         <Productcarrd
           title="Popular in New Consoles"
           productList={consolesNewData}
-          seReftech={seReftech}
-          refetch={fetcher}
           explorePath={`/ExploreScreen?category=console&condition=1`}
         />
       </View>
@@ -227,8 +356,6 @@ const PopularMainSection = () => {
         <Productcarrd
           title="Popular in Used Components and Accessories"
           productList={componentsUsedData}
-          seReftech={seReftech}
-          refetch={fetcher}
           explorePath={`/ExploreScreen?category=components&condition=2`}
         />
       </View>
@@ -236,8 +363,6 @@ const PopularMainSection = () => {
         <Productcarrd
           title="Popular in New Components and Accessories"
           productList={componentsNewData}
-          seReftech={seReftech}
-          refetch={fetcher}
           explorePath={`/ExploreScreen?category=components&condition=1`}
         />
       </View>
