@@ -91,6 +91,9 @@ const ProductDetail = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [isConnecting, setIsConnecting] = useState(false);
   const navigation = useNavigation();
+  const [showCounter, setShowCounter] = useState(false);
+  const [adding, setAdding] = useState(false);
+  const [quantity, setQuantity] = useState(1);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -292,6 +295,53 @@ const ProductDetail = () => {
     }
   };
 
+  const handleAddToCart = async () => {
+    const token = await AsyncStorage.getItem("token");
+    if (!token) {
+      Alert.alert("Please log in to add items to your cart.");
+      return;
+    }
+
+    if (!showCounter) {
+      // First click reveals the counter
+      setShowCounter(true);
+      return;
+    }
+
+    if (!product?.id) return;
+
+    setAdding(true);
+    try {
+      const response = await axios.post(
+        `${API_BASE_URL}/cart`,
+        {
+          product_id: product.id,
+          quantity: quantity,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      Alert.alert("Added to cart successfully!");
+      console.log("Cart response:", response?.data);
+      // Optional: Reset state
+      setShowCounter(false);
+      setQuantity(1);
+    } catch (error: any) {
+      const errorMessage =
+        error?.response?.data?.message || "Failed to add to cart.";
+      Alert.alert(errorMessage);
+      console.error("Add to cart error:", error);
+    } finally {
+      setAdding(false);
+    }
+  };
+
+
+
   const productUrl = `https://gamergizmo.com/product-details/${id}`;
 
   if (loading) return <ActivityIndicator className="mt-20" />;
@@ -367,9 +417,57 @@ const ProductDetail = () => {
         </View>
       </View>
       <View className="p-5">
-        <Text className="text-purple-600 text-2xl font-bold mt-4">
-          AED {product.price}
-        </Text>
+        {product?.is_store_product ? (
+          <View className="flex-row items-center justify-between mt-4">
+            <Text className="text-purple-600 text-2xl font-bold">
+              AED {product.price}
+            </Text>
+
+            <View className="flex-row items-center space-x-4">
+              <TouchableOpacity
+                onPress={() => {
+                  if (showCounter) {
+                    handleAddToCart();
+                  } else {
+                    setShowCounter(true);
+                  }
+                }}
+                disabled={adding}
+                className="flex-row items-center bg-purple-600 px-4 py-2 rounded-full disabled:opacity-50"
+              >
+                <FontAwesome name="cart-plus" size={18} color="white" />
+                <Text className="text-white font-semibold ml-2">
+                  {adding ? "Adding..." : showCounter ? "Confirm" : "Add to Cart"}
+                </Text>
+              </TouchableOpacity>
+
+              {showCounter && (
+                <View className="flex-row items-center space-x-2">
+                  <TouchableOpacity
+                    className="w-8 h-8 bg-gray-200 rounded-full items-center justify-center"
+                    onPress={() => setQuantity((prev) => Math.max(prev - 1, 1))}
+                  >
+                    <Text className="text-lg font-bold text-gray-600">−</Text>
+                  </TouchableOpacity>
+                  <Text className="w-6 text-center text-black">{quantity}</Text>
+                  <TouchableOpacity
+                    className="w-8 h-8 bg-gray-200 rounded-full items-center justify-center"
+                    onPress={() => setQuantity((prev) => prev + 1)}
+                  >
+                    <Text className="text-lg font-bold text-gray-600">+</Text>
+                  </TouchableOpacity>
+                </View>
+              )}
+            </View>
+          </View>
+
+        ) : (
+          <Text className="text-purple-600 text-2xl font-bold mt-4">
+            AED {product.price}
+          </Text>
+        )}
+
+
         <Text className="text-lg font-semibold text-gray-800 mt-1">
           {product.name}
         </Text>
@@ -402,27 +500,7 @@ const ProductDetail = () => {
             </Text>
           </View>
         </View>
-
-        {/* <TouchableOpacity
-          onPress={handleStartChat}
-          className="mt-6 border border-purple-600 rounded-md py-2 items-center"
-          disabled={isConnecting}
-        >
-          <Text className="text-purple-600 font-semibold">
-            {isConnecting ? "Connecting..." : "Chat"}
-          </Text>
-        </TouchableOpacity> */}
-
-        {product?.is_store_product ? (
-          // ✅ Add to Cart button for store product
-          <TouchableOpacity
-            onPress={() => console.log("Add to cart")}
-            className="mt-6 bg-purple-600 rounded-md py-2 items-center"
-          >
-            <Text className="text-white font-semibold">Add to Cart</Text>
-          </TouchableOpacity>
-        ) : (
-          // ✅ Chat button for non-store product
+        {!product?.is_store_product && (
           <TouchableOpacity
             onPress={handleStartChat}
             className="mt-6 border border-purple-600 rounded-md py-2 items-center"
@@ -433,7 +511,6 @@ const ProductDetail = () => {
             </Text>
           </TouchableOpacity>
         )}
-
 
         <View className="mt-6">
           <Text className="text-lg font-semibold text-gray-800 mb-2">
