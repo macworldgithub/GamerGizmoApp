@@ -102,11 +102,12 @@ const Profile = () => {
       </View>
 
       <View className="flex-row justify-center space-x-4 mt-6 mx-4">
-        <TouchableOpacity className="border border-gray-200 px-6 py-3 rounded-xl w-40 flex-column items-center justify-center mr-7 ">
+        <TouchableOpacity className="border border-gray-200 px-6 py-3 rounded-xl w-40 flex-column items-center justify-center mr-7 "
+        onPress={() => router.push("/adds")}>
           <FontAwesome name="th-list" size={18} color="purple" />
           <Text
             className="text-black font-bold ml-2 mt-3"
-            onPress={() => router.push("/adds")}
+            
           >
             My Ads
           </Text>
