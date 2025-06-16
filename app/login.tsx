@@ -1,4 +1,5 @@
 import * as Google from 'expo-auth-session/providers/google';
+import * as Facebook from 'expo-auth-session/providers/facebook';
 import Constants from 'expo-constants';
 import { useRouter } from "expo-router";
 import * as WebBrowser from 'expo-web-browser';
@@ -22,10 +23,76 @@ export default function LoginScreen() {
     androidClientId: Constants.expoConfig?.extra?.googleClientIdAndroid,
   });
 
+  const [fbRequest, fbResponse, fbPromptAsync] = Facebook.useAuthRequest({
+    clientId: Constants.expoConfig?.extra?.facebookAppId as string,
+  });
+
 
   const router = useRouter();
   const dispatch = useDispatch();
 
+
+  useEffect(() => {
+    const fetchFacebookUser = async (accessToken: string, region: string | null) => {
+      try {
+        const backendRes = await fetch(`https://backend.gamergizmo.com/auth/facebook-signin`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            accessToken: accessToken,
+            platform: Platform.OS,
+            region: region || 'PK',
+          }),
+        });
+
+        const responseText = await backendRes.text();
+
+        const backendData = JSON.parse(responseText);
+
+        if (!backendRes.ok) {
+          alert(backendData.message || "Backend signup failed");
+          return;
+        }
+
+        if (!backendData.id) {
+          throw new Error("User data missing from backend response");
+        }
+
+        await AsyncStorage.setItem("token", backendData.token);
+    
+        await AsyncStorage.setItem("userId", String(backendData.id));
+
+        // alert("User ID backend:"+ backendData.id);
+        dispatch(InitializeUserData({
+          token: backendData.token,
+          id: backendData.id,
+          username: backendData.username,
+          email: backendData.email,
+          first_name: backendData.first_name,
+          last_name: backendData.last_name || "",
+          profile: backendData.profile,
+          phone: backendData.phone || null,
+          dob: backendData.dob || null,
+          gender: backendData.gender || null,
+          address: backendData.address || null,
+          isLoggedIn: true,
+        }));
+
+        router.replace("/home");
+      } catch (error) {
+        alert("Facebook login failed. Try again.");
+      }
+    };
+
+    if (
+      fbResponse?.type === "success" &&
+      fbResponse.authentication?.accessToken
+    ) {
+      fetchFacebookUser(fbResponse.authentication.accessToken, locationCity);
+    }
+  }, [fbResponse, locationCity]);
 
   useEffect(() => {
     const fetchGoogleUser = async (idToken: string, region: string | null) => {
@@ -88,12 +155,18 @@ export default function LoginScreen() {
     ) {
       fetchGoogleUser(response.authentication.idToken, locationCity);
     }
-  }, [response]);
+  }, [response, locationCity]);
 
   const handleGoogleLogin = async () => {
     const city = await getLocation();
     setLocationCity(city); // set to state for later use
     promptAsync();
+  };
+
+  const handleFacebookLogin = async () => {
+    const city = await getLocation();
+    setLocationCity(city);
+    await fbPromptAsync();
   };
 
   return (
@@ -119,7 +192,8 @@ export default function LoginScreen() {
       </Text>
 
       <TouchableOpacity className="w-4/5 mb-3"
-        onPress={() => router.push('/home')}
+        onPress={handleFacebookLogin}
+        disabled={!fbRequest}
       >
         <Image
           source={require("../assets/images/facebbok.png")}
