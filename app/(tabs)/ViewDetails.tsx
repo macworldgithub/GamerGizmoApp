@@ -13,12 +13,14 @@ import { RootState } from "../../store/store";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { API_BASE_URL } from "@/utils/config";
+import { useRouter } from "expo-router";
 
 const ViewDetails: React.FC = ({ navigation }: any) => {
   const adData = useSelector((state: RootState) => state.ad);
   const [userData, setUserData] = useState<any>(null);
   const userid = useSelector((state: RootState) => state.user.id);
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   const isComponentsCategory = adData.category?.id === 3;
 
@@ -119,7 +121,18 @@ const ViewDetails: React.FC = ({ navigation }: any) => {
         },
       });
       console.log("Success:", response.data);
-      Alert.alert("Success", "Ad posted successfully.");
+      Alert.alert(
+        "Success", 
+        "Ad posted successfully.",
+        [
+          {
+            text: "OK",
+            onPress: () => {
+              router.push("/home");
+            }
+          }
+        ]
+      );
     } catch (error: any) {
       console.error("Error:", error.response?.data || error.message);
       Alert.alert("Error", "Failed to post ad.");

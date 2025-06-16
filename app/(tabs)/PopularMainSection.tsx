@@ -6,6 +6,7 @@ import type { RootState } from "@/store/store";
 import axios from "axios";
 import { API_BASE_URL } from "@/utils/config";
 import LiveAds from "./LiveAds";
+import { useFocusEffect } from "@react-navigation/native";
 
 type ProductImage = {
   id: number;
@@ -289,7 +290,7 @@ const PopularMainSection = () => {
     }
   };
 
-  useEffect(() => {
+  const refreshAllData = () => {
     fetchUsedLaptops();
     fetchNewLaptops();
     fetchUsedConsoles();
@@ -298,7 +299,20 @@ const PopularMainSection = () => {
     fetchNewDesktops();
     fetchUsedComponents();
     fetchNewComponents();
-  }, [fetcher]);
+  };
+
+  // Initial load
+  useEffect(() => {
+    refreshAllData();
+  }, []);
+
+  // Refresh when screen comes into focus
+  useFocusEffect(
+    React.useCallback(() => {
+      refreshAllData();
+    }, [])
+  );
+
   return (
     <View>
       <View className="mt-6">
