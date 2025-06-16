@@ -1,12 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   View, Text, Image, TouchableOpacity, ScrollView, TextInput, Alert,
 } from 'react-native';
 import { AntDesign, MaterialIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
-
-const API_BASE = 'https://backend.gamergizmo.com';
+import { useFocusEffect } from '@react-navigation/native';
+import { router } from 'expo-router';
+import { API_BASE_URL } from '@/utils/config';
 
 interface CartItem {
   id: number;
@@ -21,53 +22,57 @@ interface CartItem {
 
 const AddToCart = () => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
-  const [shippingAddress, setShippingAddress] = useState('123 Test Street, City, Country');
+  const [shippingAddress, setShippingAddress] = useState('');
   const [paymentMethod, setPaymentMethod] = useState<'online' | 'cod'>('online');
   const shippingCost = 10;
 
   const fetchCart = async () => {
-  try {
-    const token = await AsyncStorage.getItem('token');
-    const response = await axios.get(`${API_BASE}/cart`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    console.log('Cart response:', response.data);
+    try {
+      const token = await AsyncStorage.getItem('token');
+      const response = await axios.get(`${API_BASE_URL}/cart`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      console.log('Cart response:', JSON.stringify(response.data, null, 2));
 
-    const data = response.data;
 
-    if (!data || !Array.isArray(data.cart_items)) {
-      console.error('Unexpected cart response:', data);
-      return;
+      const data = response.data;
+
+      if (!data || !Array.isArray(data.cart_items)) {
+        console.error('Unexpected cart response:', data);
+        return;
+      }
+
+      const transformed = data.cart_items.map((item: any) => {
+        const product = item.product || {};
+        const firstImage = product.product_images?.[0]?.image_url;
+        return {
+          id: item.id,
+          name: product.name || 'Unnamed Product',
+          color: product.color || 'N/A',
+          itemId: `#${item.id}`,
+          price: parseFloat(item.price),
+          quantity: item.quantity,
+          image: {
+            uri: firstImage || 'https://via.placeholder.com/150',
+          },
+          productId: item.product_id,
+        };
+      });
+
+      setCartItems(transformed);
+    } catch (error: any) {
+      console.error('Failed to fetch cart:', error?.response?.data || error.message);
     }
-
-    const transformed = data.cart_items.map((item: any) => {
-      const product = item.product || {};
-      return {
-        id: item.id,
-        name: product.name || 'Unnamed Product',
-        color: product.color || 'N/A',
-        itemId: `#${item.id}`,
-        price: parseFloat(item.price),
-        quantity: item.quantity,
-        image: { uri: product.imageUrl || product.image || 'https://via.placeholder.com/150' },
-        productId: item.product_id,
-      };
-    });
-
-    setCartItems(transformed);
-  } catch (error: any) {
-    console.error('Failed to fetch cart:', error?.response?.data || error.message);
-  }
-};
+  };
 
 
 
   const deleteItem = async (productId: number) => {
     try {
       const token = await AsyncStorage.getItem('token');
-      await axios.delete(`${API_BASE}/cart/item/${productId}`, {
+      await axios.delete(`${API_BASE_URL}/cart/item/${productId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -82,7 +87,7 @@ const AddToCart = () => {
   const clearCart = async () => {
     try {
       const token = await AsyncStorage.getItem('token');
-      await axios.delete(`${API_BASE}/cart`, {
+      await axios.delete(`${API_BASE_URL}/cart`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -94,7 +99,6 @@ const AddToCart = () => {
     }
   };
 
-
   const getSubtotal = () => {
     return cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
   };
@@ -102,6 +106,56 @@ const AddToCart = () => {
   useEffect(() => {
     fetchCart();
   }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchCart();
+    }, [])
+  )
+
+  const handleCheckout = async () => {
+    if (!shippingAddress.trim()) {
+      Alert.alert('Address Required', 'Please enter a shipping address.');
+      return;
+    }
+
+    if (paymentMethod !== 'cod') {
+      Alert.alert('Unsupported', 'Only Cash on Delivery is currently supported.');
+      return;
+    }
+
+    try {
+      const token = await AsyncStorage.getItem('token');
+      if (!token) {
+        Alert.alert('Authentication Error', 'User not authenticated.');
+        return;
+      }
+
+      const response = await axios.post(
+        `${API_BASE_URL}/orders`,
+        {
+          shipping_address: shippingAddress,
+          payment_method: 'cash_on_delivery',
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      Alert.alert('Success', 'Order placed successfully (COD).');
+      console.log('Order response:', response.data);
+      setCartItems([]); // Clear cart after successful order
+      // Navigate to Orders page
+      router.push('/Orders'); // Adjust based on your router (expo-router or React Navigation)
+
+    } catch (error: any) {
+      console.error('Checkout error:', error?.response?.data || error.message);
+      Alert.alert('Checkout Failed', 'Something went wrong during checkout.');
+    }
+  };
+
 
   return (
     <ScrollView className="bg-gray-100 flex-1 px-4 py-6">
@@ -172,9 +226,12 @@ const AddToCart = () => {
       <TouchableOpacity
         className="py-4 rounded-lg mb-3"
         style={{ backgroundColor: '#9341f3' }}
+        onPress={handleCheckout}
       >
         <Text className="text-white text-center font-bold">Proceed to Checkout</Text>
       </TouchableOpacity>
+
+
 
       <TouchableOpacity
         onPress={clearCart}

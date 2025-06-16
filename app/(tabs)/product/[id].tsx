@@ -377,7 +377,24 @@ const ProductDetail = () => {
         }
       );
 
-      Alert.alert("Added to cart successfully!");
+      // Alert.alert("Added to cart successfully!");
+
+      Alert.alert(
+  "Added to cart successfully!",
+  "",
+  [
+    {
+      text: "OK",
+      onPress: () => {
+        router.push('/AddToCart');
+      },
+    },
+  ],
+  { cancelable: false }
+);
+
+
+
       console.log("Cart response:", response?.data);
       // Optional: Reset state
       setShowCounter(false);

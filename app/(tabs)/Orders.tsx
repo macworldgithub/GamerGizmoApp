@@ -1,0 +1,179 @@
+import React, { useEffect, useState } from 'react';
+import { View, Text, ScrollView, Image, TouchableOpacity, Alert } from 'react-native';
+import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { API_BASE_URL } from '@/utils/config';
+import UpdateOrderModal from './UpdateOrderModal';
+import DeleteConfirmModal from './DeleteConfirmModal';
+
+
+type OrderItem = {
+    id: number;
+    quantity: number;
+    product_id: number;
+    price: string;
+    product: {
+        name: string;
+        product_images: {
+            image_url: string;
+        }[];
+    };
+};
+
+type Order = {
+    id: number;
+    created_at: string;
+    total_amount: string;
+    order_status: string;
+    order_items: OrderItem[];
+    shipping_address: string;
+};
+
+
+const Orders = () => {
+    const [orders, setOrders] = useState<Order[]>([]);
+    const [showUpdateModal, setShowUpdateModal] = useState(false);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [selectedOrderId, setSelectedOrderId] = useState<number | null>(null);
+    const [selectedShippingAddress, setSelectedShippingAddress] = useState('');
+
+
+
+    const fetchOrders = async () => {
+        try {
+            const token = await AsyncStorage.getItem('token');
+            const response = await axios.get(`${API_BASE_URL}/orders`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            const ordersData = Array.isArray(response.data) ? response.data : [response.data];
+            setOrders(ordersData);
+        } catch (error: any) {
+            console.error('Failed to fetch orders:', error?.response?.data || error.message);
+        }
+    };
+
+    const openUpdateModal = (orderId: number, currentAddress: string) => {
+        setSelectedOrderId(orderId);
+        setSelectedShippingAddress(currentAddress);
+        setShowUpdateModal(true);
+    };
+
+    const handleUpdate = async (newAddress: string) => {
+        try {
+            const token = await AsyncStorage.getItem('token');
+            await axios.patch(
+                `${API_BASE_URL}/orders/${selectedOrderId}`,
+                { shipping_address: newAddress },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+            Alert.alert('Updated', 'Shipping address updated successfully');
+            setShowUpdateModal(false);
+            fetchOrders();
+        } catch (error: any) {
+            console.error('Update error:', error?.response?.data || error.message);
+            Alert.alert('Error', 'Failed to update shipping address');
+        }
+    };
+
+    const openDeleteModal = (orderId: number) => {
+        setSelectedOrderId(orderId);
+        setShowDeleteModal(true);
+    };
+
+    const handleDelete = async () => {
+        try {
+            const token = await AsyncStorage.getItem('token');
+            await axios.delete(`${API_BASE_URL}/orders/${selectedOrderId}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            Alert.alert('Deleted', `Order #${selectedOrderId} deleted`);
+            setShowDeleteModal(false);
+            fetchOrders();
+        } catch (error: any) {
+            console.error('Delete error:', error?.response?.data || error.message);
+            Alert.alert('Error', 'Failed to delete order');
+        }
+    };
+
+
+
+    const formatDate = (dateString: string) => {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('en-GB', {
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric',
+        });
+    };
+
+    useEffect(() => {
+        fetchOrders();
+    }, []);
+
+    return (
+        <ScrollView className="p-4 bg-gray-100">
+            <Text className="text-xl font-bold mb-4" style={{ color: '#9341f3' }}>My Orders</Text>
+            {orders.map((order: Order) => (
+                <View key={order.id} className="bg-white p-4 mb-4 rounded-md shadow-sm">
+                    <Text className="font-semibold mb-1">Order #{order.id}</Text>
+                    <Text className="text-sm text-gray-600 mb-1">Date: {formatDate(order.created_at)}</Text>
+
+                    {order.order_items?.map((item: OrderItem) => (
+                        <View key={item.id} className="flex-row items-center mb-2">
+                            <Image
+                                source={{ uri: item.product?.product_images?.[0]?.image_url || '' }}
+                                className="w-14 h-14 rounded-md"
+                            />
+                            <View className="ml-3">
+                                <Text>{item.product?.name}</Text>
+                                <Text className="text-sm text-gray-500">Qty: {item.quantity}</Text>
+                            </View>
+                        </View>
+                    ))}
+
+                    <Text className="mt-1 font-bold">Total: AED {order.total_amount}</Text>
+                    <Text className="text-sm text-gray-600">Status: {order.order_status}</Text>
+
+                    <View className="flex-row justify-end mt-3 gap-2">
+                        <TouchableOpacity
+                            onPress={() => openUpdateModal(order.id, order.shipping_address)}
+                            className="bg-[#9341f3] px-4 py-2 rounded"
+                        >
+                            <Text className="text-white font-medium">Update</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            onPress={() => openDeleteModal(order.id)}
+                            className="bg-[#D53AFB] px-4 py-2 rounded"
+                        >
+                            <Text className="text-white font-medium">Delete</Text>
+                        </TouchableOpacity>
+
+                    </View>
+                </View>
+            ))}
+             <UpdateOrderModal
+                        visible={showUpdateModal}
+                        onClose={() => setShowUpdateModal(false)}
+                        currentAddress={selectedShippingAddress}
+                        onUpdate={handleUpdate}
+                    />
+
+                    <DeleteConfirmModal
+                        visible={showDeleteModal}
+                        onCancel={() => setShowDeleteModal(false)}
+                        onConfirm={handleDelete}
+                    />
+        </ScrollView>
+    );
+};
+
+export default Orders;
