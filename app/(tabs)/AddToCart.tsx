@@ -9,6 +9,8 @@ import { useFocusEffect } from '@react-navigation/native';
 import { router } from 'expo-router';
 import { API_BASE_URL } from '@/utils/config';
 
+import { initPaymentSheet, presentPaymentSheet } from '@stripe/stripe-react-native';
+
 interface CartItem {
   id: number;
   name: string;
@@ -119,43 +121,74 @@ const AddToCart = () => {
       return;
     }
 
-    if (paymentMethod !== 'cod') {
-      Alert.alert('Unsupported', 'Only Cash on Delivery is currently supported.');
+    const token = await AsyncStorage.getItem('token');
+    if (!token) {
+      Alert.alert('Authentication Error', 'User not authenticated.');
       return;
     }
 
-    try {
-      const token = await AsyncStorage.getItem('token');
-      if (!token) {
-        Alert.alert('Authentication Error', 'User not authenticated.');
-        return;
-      }
-
-      const response = await axios.post(
-        `${API_BASE_URL}/orders`,
-        {
-          shipping_address: shippingAddress,
-          payment_method: 'cash_on_delivery',
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
+    if (paymentMethod === 'cod') {
+      // COD Flow
+      try {
+        const response = await axios.post(
+          `${API_BASE_URL}/orders`,
+          {
+            shipping_address: shippingAddress,
+            payment_method: 'cash_on_delivery',
           },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+
+        Alert.alert('Success', 'Order placed successfully (COD).');
+        setCartItems([]);
+        router.push('/Orders');
+      } catch (error: any) {
+        console.error('COD Error:', error?.response?.data || error.message);
+        Alert.alert('Checkout Failed', 'Something went wrong during COD checkout.');
+      }
+    } else {
+      // Online Payment Flow
+      try {
+        const response = await axios.post(
+          `${API_BASE_URL}/orders/create-intent`,
+          {
+            shipping_address: shippingAddress,
+            payment_method: 'online',
+          },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+
+        const { clientSecret } = response.data;
+        const initResult = await initPaymentSheet({
+          paymentIntentClientSecret: clientSecret,
+          merchantDisplayName: 'GamerGizmo',
+        });
+
+        if (initResult.error) {
+          Alert.alert('Stripe Init Error', initResult.error.message);
+          return;
         }
-      );
 
-      Alert.alert('Success', 'Order placed successfully (COD).');
-      console.log('Order response:', response.data);
-      setCartItems([]); // Clear cart after successful order
-      // Navigate to Orders page
-      router.push('/Orders'); // Adjust based on your router (expo-router or React Navigation)
+        const paymentResult = await presentPaymentSheet();
 
-    } catch (error: any) {
-      console.error('Checkout error:', error?.response?.data || error.message);
-      Alert.alert('Checkout Failed', 'Something went wrong during checkout.');
+        if (paymentResult.error) {
+          Alert.alert('Payment Failed', paymentResult.error.message);
+        } else {
+          router.push({
+            pathname: '/OrderSuccess',
+            params: {
+              payment_intent: clientSecret.split('_secret')[0],
+              client_secret: clientSecret,
+              redirect_status: 'succeeded',
+            },
+          });
+        }
+      } catch (error: any) {
+        console.error('Stripe Error:', error?.response?.data || error.message);
+        Alert.alert('Checkout Failed', 'Something went wrong during online checkout.');
+      }
     }
   };
-
 
   return (
     <ScrollView className="bg-gray-100 flex-1 px-4 py-6">
