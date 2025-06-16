@@ -10,6 +10,7 @@ import {
 import { useLocalSearchParams, router } from 'expo-router';
 import axios from 'axios';
 import { API_BASE_URL } from '@/utils/config';
+import { AntDesign } from '@expo/vector-icons';
 
 interface Product {
   id: number;
@@ -70,7 +71,20 @@ const StoreCategory: React.FC = () => {
 
   return (
     <View className="px-4 py-2">
-      <Text className="text-lg font-bold mb-3 text-black">{categoryName}</Text>
+      <View className="py-6 px-4">
+        <View className="relative items-center justify-center">
+          {/* Back Arrow - absolute positioned on the left */}
+          <TouchableOpacity
+            onPress={() => router.push('/store')}
+            className="absolute left-0"
+          >
+            <AntDesign name="arrowleft" size={28} color="black" />
+          </TouchableOpacity>
+
+          {/* Title - centered */}
+          <Text className="text-2xl font-bold text-[#A93EF6]">{categoryName}</Text>
+        </View>
+      </View>
 
       <FlatList
         data={products}

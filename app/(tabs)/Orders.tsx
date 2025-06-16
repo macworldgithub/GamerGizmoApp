@@ -5,6 +5,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { API_BASE_URL } from '@/utils/config';
 import UpdateOrderModal from './UpdateOrderModal';
 import DeleteConfirmModal from './DeleteConfirmModal';
+import { router } from 'expo-router';
+import { AntDesign } from '@expo/vector-icons';
 
 
 type OrderItem = {
@@ -120,60 +122,96 @@ const Orders = () => {
     }, []);
 
     return (
-        <ScrollView className="p-4 bg-gray-100">
-            <Text className="text-xl font-bold mb-4" style={{ color: '#9341f3' }}>My Orders</Text>
-            {orders.map((order: Order) => (
-                <View key={order.id} className="bg-white p-4 mb-4 rounded-md shadow-sm">
-                    <Text className="font-semibold mb-1">Order #{order.id}</Text>
-                    <Text className="text-sm text-gray-600 mb-1">Date: {formatDate(order.created_at)}</Text>
+  <View className="flex-1 bg-gray-100 relative">
+   
+    <TouchableOpacity
+      onPress={() => router.push('/profile')}
+      className="absolute top-12 left-4 z-10"
+    >
+      <AntDesign name="arrowleft" size={28} color="black" />
+    </TouchableOpacity>
 
-                    {order.order_items?.map((item: OrderItem) => (
-                        <View key={item.id} className="flex-row items-center mb-2">
-                            <Image
-                                source={{ uri: item.product?.product_images?.[0]?.image_url || '' }}
-                                className="w-14 h-14 rounded-md"
-                            />
-                            <View className="ml-3">
-                                <Text>{item.product?.name}</Text>
-                                <Text className="text-sm text-gray-500">Qty: {item.quantity}</Text>
-                            </View>
-                        </View>
-                    ))}
+    {orders.length === 0 ? (
+      <View className="flex-1 justify-center items-center px-6">
+        <Image
+          source={require('../../assets/images/empty-cart.png')} 
+          className="w-60 h-60"
+          resizeMode="contain"
+        />
+        <Text className="text-xl font-bold text-center mt-4">No Orders Placed</Text>
+        <Text className="text-gray-500 text-center mt-2">
+          You haven't placed any orders yet. Start shopping now!
+        </Text>
+        <TouchableOpacity
+          onPress={() => router.push('/home')}
+          className="mt-6 px-6 py-3 rounded-lg"
+          style={{ backgroundColor: '#9341f3' }}
+        >
+          <Text className="text-white font-semibold">Continue Shopping</Text>
+        </TouchableOpacity>
+      </View>
+    ) : (
+      <ScrollView className="p-4 pt-20">
+        <Text className="text-2xl font-bold mb-4 text-center" style={{ color: '#9341f3' }}>
+          My Orders
+        </Text>
 
-                    <Text className="mt-1 font-bold">Total: AED {order.total_amount}</Text>
-                    <Text className="text-sm text-gray-600">Status: {order.order_status}</Text>
+        {orders.map((order: Order) => (
+          <View key={order.id} className="bg-white p-4 mb-4 rounded-md shadow-sm">
+            <Text className="font-semibold mb-1">Order #{order.id}</Text>
+            <Text className="text-sm text-gray-600 mb-1">Date: {formatDate(order.created_at)}</Text>
 
-                    <View className="flex-row justify-end mt-3 gap-2">
-                        <TouchableOpacity
-                            onPress={() => openUpdateModal(order.id, order.shipping_address)}
-                            className="bg-[#9341f3] px-4 py-2 rounded"
-                        >
-                            <Text className="text-white font-medium">Update</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                            onPress={() => openDeleteModal(order.id)}
-                            className="bg-[#D53AFB] px-4 py-2 rounded"
-                        >
-                            <Text className="text-white font-medium">Delete</Text>
-                        </TouchableOpacity>
-
-                    </View>
+            {order.order_items?.map((item: OrderItem) => (
+              <View key={item.id} className="flex-row items-center mb-2">
+                <Image
+                  source={{ uri: item.product?.product_images?.[0]?.image_url || '' }}
+                  className="w-14 h-14 rounded-md"
+                />
+                <View className="ml-3">
+                  <Text>{item.product?.name}</Text>
+                  <Text className="text-sm text-gray-500">Qty: {item.quantity}</Text>
                 </View>
+              </View>
             ))}
-             <UpdateOrderModal
-                        visible={showUpdateModal}
-                        onClose={() => setShowUpdateModal(false)}
-                        currentAddress={selectedShippingAddress}
-                        onUpdate={handleUpdate}
-                    />
 
-                    <DeleteConfirmModal
-                        visible={showDeleteModal}
-                        onCancel={() => setShowDeleteModal(false)}
-                        onConfirm={handleDelete}
-                    />
-        </ScrollView>
-    );
+            <Text className="mt-1 font-bold">Total: AED {order.total_amount}</Text>
+            <Text className="text-sm text-gray-600">Status: {order.order_status}</Text>
+
+            <View className="flex-row justify-end mt-3 gap-2">
+              <TouchableOpacity
+                onPress={() => openUpdateModal(order.id, order.shipping_address)}
+                className="bg-[#9341f3] px-4 py-2 rounded"
+              >
+                <Text className="text-white font-medium">Update</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => openDeleteModal(order.id)}
+                className="bg-[#D53AFB] px-4 py-2 rounded"
+              >
+                <Text className="text-white font-medium">Delete</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        ))}
+
+        {/* Modals */}
+        <UpdateOrderModal
+          visible={showUpdateModal}
+          onClose={() => setShowUpdateModal(false)}
+          currentAddress={selectedShippingAddress}
+          onUpdate={handleUpdate}
+        />
+
+        <DeleteConfirmModal
+          visible={showDeleteModal}
+          onCancel={() => setShowDeleteModal(false)}
+          onConfirm={handleDelete}
+        />
+      </ScrollView>
+    )}
+  </View>
+);
+
 };
 
 export default Orders;
