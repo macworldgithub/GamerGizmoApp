@@ -112,10 +112,6 @@ const ProductDetail = () => {
         const response = await axios.get(
           `${API_BASE_URL}/products/getProductById?id=${id}`
         );
-        // console.log("Full product response:", response);
-        // console.log("Product response.data:", response.data);
-        // console.log("Product response.data.data:", response.data.data);
-        // console.log("Product images:", response.data.data.product_images);
 
         const productData = response.data.data;
         setProduct(productData);
@@ -123,9 +119,15 @@ const ProductDetail = () => {
         // Fetch similar products
         if (productData.category_id) {
           try {
+            // If it's a store product, fetch only store products
+            const queryParams = productData.is_store_product 
+              ? `category_id=${productData.category_id}&is_store_product=true`
+              : `category_id=${productData.category_id}&is_store_product=false`;
+
             const similarResponse = await axios.get(
-              `${API_BASE_URL}/products/getAll?category_id=${productData.category_id}`
+              `${API_BASE_URL}/products/getAll?${queryParams}`
             );
+
             // Filter out the current product and ensure we have valid data
             const filteredSimilarProducts = similarResponse.data.data
               .filter((item: SimilarProduct) => item.id !== id)
@@ -615,6 +617,58 @@ const ProductDetail = () => {
           <Text className="text-gray-500">MAP</Text>
         </View>
       </View>
+
+ {/* Similar Products Section */}
+      {similarProducts.length > 0 && (
+        <View className="mt-6 mb-10">
+          <Text className="text-lg font-bold text-gray-800 mb-4 px-4">
+            Similar Products
+          </Text>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={{ paddingHorizontal: 15 }}
+          >
+            {similarProducts.map((item) => (
+              <TouchableOpacity
+                key={item.id}
+                onPress={() => {
+                  if (item.id !== id) {
+                    router.push(`/product/${item.id}`);
+                  }
+                }}
+                className="mr-4 w-40"
+              >
+                <View className="w-40 h-40 bg-gray-100 rounded-lg overflow-hidden">
+                  {(item.images && item.images.length > 0) || (item.product_images && item.product_images.length > 0) ? (
+                    <Image
+                      source={{
+                        uri: (item.images?.[0]?.image_url || item.product_images?.[0]?.image_url)?.startsWith("http")
+                          ? (item.images?.[0]?.image_url || item.product_images?.[0]?.image_url)
+                          : `${API_BASE_URL}${item.images?.[0]?.image_url || item.product_images?.[0]?.image_url}`,
+                      }}
+                      style={{ width: "100%", height: "100%" }}
+                      resizeMode="cover"
+                    />
+                  ) : (
+                    <View className="w-full h-full items-center justify-center bg-gray-200">
+                      <Ionicons name="image-outline" size={40} color="gray" />
+                      <Text className="text-gray-500 mt-2">No Image</Text>
+                    </View>
+                  )}
+                </View>
+                <Text className="text-purple-600 font-bold mt-2">
+                  AED {item.price}
+                </Text>
+                <Text className="text-gray-800 text-sm" numberOfLines={2}>
+                  {item.name}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        </View>
+      )}
+
 
 
       {/* User Info */}
