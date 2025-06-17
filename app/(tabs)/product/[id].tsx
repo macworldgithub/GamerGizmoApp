@@ -613,9 +613,9 @@ const ProductDetail = () => {
         //@ts-ignore
           <Text className="text-gray-700">{product.location_product_locationTolocation.name}</Text>
         </View>
-        <View className="h-32 bg-gray-200 rounded-md mt-2 items-center justify-center">
+        {/* <View className="h-32 bg-gray-200 rounded-md mt-2 items-center justify-center">
           <Text className="text-gray-500">MAP</Text>
-        </View>
+        </View> */}
       </View>
 
  {/* Similar Products Section */}
