@@ -159,6 +159,7 @@ const AddToCart = () => {
         );
 
         const { clientSecret } = response.data;
+        console.log('Stripe Client Secret:', clientSecret);
         const initResult = await initPaymentSheet({
           paymentIntentClientSecret: clientSecret,
           merchantDisplayName: 'GamerGizmo',

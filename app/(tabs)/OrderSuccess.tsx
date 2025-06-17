@@ -1,4 +1,4 @@
-import { useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams, router } from 'expo-router';
 import { View, Text, ActivityIndicator } from 'react-native';
 import { useEffect, useState } from 'react';
 
@@ -22,6 +22,17 @@ export default function OrderSuccess() {
     setLoading(false);
   }, [redirectStatus]);
 
+  
+  useEffect(() => {
+    if (!loading) {
+      const timeout = setTimeout(() => {
+        router.replace('/Orders');
+      }, 5000);
+
+      return () => clearTimeout(timeout);
+    }
+  }, [loading]);
+
   if (loading) {
     return (
       <View className="flex-1 justify-center items-center bg-white">
@@ -41,6 +52,9 @@ export default function OrderSuccess() {
         </Text>
         <Text className="text-sm text-gray-600 text-center">
           Client Secret: {clientSecret}
+        </Text>
+        <Text className="text-xs text-gray-500 text-center mt-4">
+          Redirecting to orders screen in 5 seconds...
         </Text>
       </View>
     </View>
