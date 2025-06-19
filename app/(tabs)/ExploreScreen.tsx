@@ -14,6 +14,7 @@ import { API_BASE_URL } from "@/utils/config";
 import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
 import LiveAds from "./LiveAds";
 import SortModal from "../(tabs)/SortModal";
+import FilterModal from "./FilterModal";
 
 type ProductImage = {
   id: number;
@@ -34,26 +35,41 @@ const extractFeature = (desc: string, key: string): string | null => {
   const match = desc.match(regex);
   return match ? match[1].trim() : null;
 };
+
 const ExploreScreen = () => {
   const { category, condition } = useLocalSearchParams();
   const [products, setProducts] = useState<Product[]>([]);
   const [defaultProducts, setDefaultProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [noResults, setNoResults] = useState(false);
   const [isSortVisible, setSortVisible] = useState(false);
   const [selectedSort, setSelectedSort] = useState("Default");
+  const [isFilterVisible, setFilterVisible] = useState(false);
+  const [showModal, setShowModal] = useState(false);
   const router = useRouter();
+
   const categoryIdMap: Record<string, number> = {
     laptops: 1,
     desktop: 2,
     components: 3,
     console: 4,
   };
+
+  const resetStates = () => {
+    setNoResults(false);
+    setProducts(defaultProducts);
+    setSelectedSort("Default");
+    setShowModal(false);
+  };
+
   const fetchProducts = async () => {
     try {
+      if (!category || !condition) return;
+
       setLoading(true);
+      setNoResults(false);
       const categoryId = categoryIdMap[String(category).toLowerCase()];
-      if (!categoryId || !condition) {
+      if (!categoryId) {
         setNoResults(true);
         return;
       }
@@ -67,24 +83,28 @@ const ExploreScreen = () => {
       if (data.length === 0) {
         setNoResults(true);
       } else {
-        setDefaultProducts(data);
-        applySorting(selectedSort, data);
+        const sortedData = [...data].sort(
+          (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        );
+        setDefaultProducts(sortedData);
+        setProducts(sortedData);
         setNoResults(false);
       }
     } catch (error) {
       console.error("Failed to fetch products", error);
+      setNoResults(true);
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {    
+  useEffect(() => {
     if (category && condition) {
       fetchProducts();
     }
   }, [category, condition]);
 
-  const applySorting = (option: string, list: Product[] = defaultProducts) => {
+  const applySorting = (option: string, list: Product[] = products) => {
     const sorted = [...list];
 
     switch (option) {
@@ -108,24 +128,91 @@ const ExploreScreen = () => {
         break;
       case "Default":
       default:
-        setProducts(defaultProducts);
+        setProducts([...defaultProducts]);
         return;
     }
 
     setProducts(sorted);
   };
 
+  const handleFilter = async ({
+    location_id,
+    priceRange,
+  }: {
+    location_id?: number;
+    priceRange?: { min: number; max: number };
+  }) => {
+    try {
+      if (!category || !condition) return;
+
+      setLoading(true);
+      setNoResults(false);
+
+      const categoryId = categoryIdMap[String(category).toLowerCase()];
+      if (!categoryId) {
+        setNoResults(true);
+        return;
+      }
+
+      let query = `category_id=${categoryId}&condition=${condition}`;
+      if (location_id) query += `&location=${location_id}`;
+
+      const response = await axios.get(
+        `${API_BASE_URL}/products/getAll?${query}`
+      );
+      let data = response.data?.data || [];
+
+      if (priceRange) {
+        data = data.filter((product: Product) => {
+          const productPrice = Number(product.price);
+          if (priceRange.max === null) {
+            return productPrice >= priceRange.min;
+          }
+          return (
+            productPrice >= priceRange.min && productPrice <= priceRange.max
+          );
+        });
+      }
+
+      if (data.length === 0) {
+        setNoResults(true);
+      } else {
+        setDefaultProducts(data);
+        setProducts(data);
+        if (selectedSort !== "Default") {
+          applySorting(selectedSort, data);
+        }
+        setNoResults(false);
+      }
+    } catch (error) {
+      console.error("Error applying filter", error);
+      setNoResults(true);
+    } finally {
+      setLoading(false);
+      setShowModal(false);
+    }
+  };
+
   const getImageUrl = (image_url: string) => {
     return image_url?.startsWith("https") ? image_url : image_url;
   };
 
-  const getAdsInfo = (category: string | string[], condition: string | string[]) => {
+  const getAdsInfo = (
+    category: string | string[],
+    condition: string | string[]
+  ) => {
     const lowerCategory = String(category).toLowerCase();
     const conditionValue = String(condition);
 
-    if (lowerCategory === "laptops" && (conditionValue === "1" || conditionValue === "2")) {
+    if (
+      lowerCategory === "laptops" &&
+      (conditionValue === "1" || conditionValue === "2")
+    ) {
       return { pageName: "Laptops", adId: 1 };
-    } else if (lowerCategory === "components" || lowerCategory === "accessories") {
+    } else if (
+      lowerCategory === "components" ||
+      lowerCategory === "accessories"
+    ) {
       return { pageName: "Components and Accessories", adId: 1 };
     } else if (lowerCategory === "desktop") {
       return { pageName: "Gaming PCS", adId: 1 };
@@ -157,10 +244,33 @@ const ExploreScreen = () => {
 
   if (noResults) {
     return (
-      <View className="flex-1 justify-center items-center">
-        <Text className="text-xl font-bold text-gray-700">
-          No products found
-        </Text>
+      <View className="flex-1 bg-white">
+        <View className="mt-5 px-4">
+          <TouchableOpacity
+            onPress={() => {
+              resetStates();
+              fetchProducts();
+              router.push("/home");
+            }}
+          >
+            <FontAwesome name="arrow-left" size={20} color="black" />
+          </TouchableOpacity>
+        </View>
+        <View className="flex-1 justify-center items-center">
+          <Text className="text-xl font-bold text-gray-700 mb-4">
+            No products found
+          </Text>
+          <TouchableOpacity
+            onPress={() => {
+              resetStates();
+              fetchProducts();
+              router.push("/home");
+            }}
+            className="bg-purple-700 px-6 py-3 rounded-lg"
+          >
+            <Text className="text-white font-semibold">Back to Home</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     );
   }
@@ -180,15 +290,19 @@ const ExploreScreen = () => {
 
         {/* Action Bar */}
         <View className="mt-4 flex-row items-center justify-center px-4 py-4 border-t border-gray-200">
-          {/* <TouchableOpacity className="flex-row items-center mx-3 mr-10 gap-3">
-            <FontAwesome name="bookmark-o" size={18} color="black" />
-            <Text className="ml-1 text-gray-600 font-semibold">SAVE</Text>
-          </TouchableOpacity> */}
           <Text className="text-gray-400">|</Text>
-          <TouchableOpacity className="flex-row items-center mx-3 gap-3">
+          <TouchableOpacity
+            className="flex-row items-center mx-3 gap-3"
+            onPress={() => setShowModal(true)}
+          >
             <FontAwesome5 name="sliders-h" size={18} color="black" />
             <Text className="ml-1 text-gray-600 font-semibold">FILTERS</Text>
           </TouchableOpacity>
+          <FilterModal
+            isVisible={showModal}
+            onClose={() => setShowModal(false)}
+            onApplyFilter={handleFilter}
+          />
           <Text className="text-gray-400">|</Text>
           <TouchableOpacity
             onPress={() => setSortVisible(true)}
@@ -207,7 +321,7 @@ const ExploreScreen = () => {
           onSelect={(option: string) => {
             setSelectedSort(option);
             setSortVisible(false);
-            applySorting(option); // apply sort
+            applySorting(option);
           }}
         />
       </View>
@@ -244,25 +358,25 @@ const ExploreScreen = () => {
                   resizeMode="cover"
                 />
               )}
-            <TouchableOpacity
-              onPress={() => router.push(`/product/${item.id}`)}
-            >
-              <Text className="text-purple-600 font-bold text-lg mt-2">
-                AED {item.price}
+              <TouchableOpacity
+                onPress={() => router.push(`/product/${item.id}`)}
+              >
+                <Text className="text-purple-600 font-bold text-lg mt-2">
+                  AED {item.price}
+                </Text>
+              </TouchableOpacity>
+
+              <Text
+                className="text-black font-bold mt-1"
+                numberOfLines={1}
+                ellipsizeMode="tail"
+              >
+                {item.name}
               </Text>
-            </TouchableOpacity>
 
-            <Text
-              className="text-black font-bold mt-1"
-              numberOfLines={1}
-              ellipsizeMode="tail"
-            >
-              {item.name}
-            </Text>
-
-            <Text className="text-gray-500 text-sm">
-              {daysAgo(item.created_at)}
-            </Text> 
+              <Text className="text-gray-500 text-sm">
+                {daysAgo(item.created_at)}
+              </Text>
 
               {(() => {
                 const lifespan = extractFeature(item.description, "Lifespan");
@@ -289,20 +403,14 @@ const ExploreScreen = () => {
                       )}
                     </View>
                   );
-                } else {
-                  return (
-                    <TouchableOpacity onPress={() => router.push(`/product/${item.id}`)}>
-                      <Text className="text-gray-600 text-sm mt-1 underline" numberOfLines={1} ellipsizeMode="tail">
-                        {item.description}
-                      </Text>
-                    </TouchableOpacity>
-                  );
                 }
               })()}
 
               <View className="flex-row justify-between mt-3">
                 <TouchableOpacity className="bg-[#e8e3fc] w-32 mx-1 py-2 rounded-full">
-                  <Text className="text-black text-center font-semibold">Chat</Text>
+                  <Text className="text-black text-center font-semibold">
+                    Chat
+                  </Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -310,7 +418,8 @@ const ExploreScreen = () => {
             {/* Ads after every 3 items */}
             {(index + 1) % 5 === 0 && adData && (
               <View className="mt-4">
-                <LiveAds pageName={adData.pageName}
+                <LiveAds
+                  pageName={adData.pageName}
                   adId={adData.adId + Math.floor((index + 1) / 3) - 1}
                 />
               </View>

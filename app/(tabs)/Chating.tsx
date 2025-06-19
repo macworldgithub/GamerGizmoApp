@@ -20,11 +20,9 @@ interface Message {
   id?: number;
   chat_id: number;
   sender_id: number;
-  receiver_id: number;
   message_text: string;
-  product_id: number;
   sent_at: Date;
-  is_read: boolean;
+  is_read?: boolean;
 }
 
 const Chating = () => {
@@ -33,6 +31,45 @@ const Chating = () => {
   const [messageText, setMessageText] = useState("");
   const [buyerUserId, setBuyerUserId] = useState<number | null>(null);
   const flatListRef = useRef<FlatList | null>(null);
+
+  // Function to mark messages as read
+  const markMessagesAsRead = (msgs: Message[]) => {
+    if (!buyerUserId) return;
+
+
+    const unreadMessages = msgs.filter(
+      msg => !msg.is_read && msg.sender_id !== buyerUserId
+    );
+
+    if (unreadMessages.length > 0) {
+      console.log("Marking messages as read:", unreadMessages.map(msg => msg.id));
+
+      // Mark each message as read individually
+      unreadMessages.forEach(msg => {
+        socket.emit("markMessageAsRead", {
+          messageId: msg.id
+        }, (response: any) => {
+          console.log("Backend response for message", msg.id, ":", response);
+        });
+      });
+
+      // Update local state
+      setMessages(prevMessages =>
+        prevMessages.map(msg =>
+          unreadMessages.some(unread => unread.id === msg.id)
+            ? { ...msg, is_read: true }
+            : msg
+        )
+      );
+    }
+  };
+
+  // Add a new effect to mark messages as read when they become visible
+  useEffect(() => {
+    if (messages.length > 0 && buyerUserId) {
+      markMessagesAsRead(messages);
+    }
+  }, [messages, buyerUserId]);
 
   useEffect(() => {
     const loadUserId = async () => {
@@ -53,7 +90,6 @@ const Chating = () => {
   useEffect(() => {
     const fetchMessages = async () => {
       try {
-
         const token = await AsyncStorage.getItem('token');
         console.log("Token retrieved:", token);
         if (!token) {
@@ -72,14 +108,14 @@ const Chating = () => {
         });
         console.log("Messages response:", res.data);
 
-        if (Array.isArray(res.data)) {
-          const sortedMessages = [...res.data].sort((a, b) =>
+        if (Array.isArray(res.data?.data)) {
+          const sortedMessages = [...res.data.data].sort((a, b) =>
             new Date(a.sent_at).getTime() - new Date(b.sent_at).getTime()
           );
-          console.log("Sorted messages count:", sortedMessages.length);
           setMessages(sortedMessages);
+          markMessagesAsRead(sortedMessages);
         } else {
-          console.log("No messages found or invalid response format:", res.data);
+          console.warn("Unexpected response structure:", res.data);
           setMessages([]);
         }
 
@@ -101,18 +137,36 @@ const Chating = () => {
     } else {
       console.log("No chat ID provided");
     }
-  }, [chatId]);
+  }, [chatId, buyerUserId]);
 
-  // Socket receive message
+  // Update the socket event handlers
   useEffect(() => {
+    // Handle message received
     socket.on("receiveMessage", (msg: Message) => {
+      console.log("Received message:", msg);
       if (msg.chat_id === Number(chatId)) {
-        setMessages((prev) => {
-          // Remove any temp messages (optional logic)
+        setMessages(prev => {
           const filtered = prev.filter(m => m.id !== msg.id);
-          return [...filtered, msg];
+          const newMessages = [...filtered, msg];
+          // Mark new message as read if we are the receiver (not the sender)
+          if (msg.sender_id !== buyerUserId) {
+            markMessagesAsRead([msg]);
+          }
+          return newMessages;
         });
       }
+    });
+
+    // Handle message read status update
+    socket.on("messageRead", (messageData: any) => {
+      console.log("Message read event received:", messageData);
+      setMessages(prev =>
+        prev.map(msg =>
+          msg.id === messageData.id
+            ? { ...msg, is_read: true }
+            : msg
+        )
+      );
     });
 
     socket.on("messageSendError", (error) => {
@@ -122,10 +176,10 @@ const Chating = () => {
 
     return () => {
       socket.off("receiveMessage");
+      socket.off("messageRead");
       socket.off("messageSendError");
     };
-  }, [chatId]);
-
+  }, [chatId, buyerUserId]);
 
   const sendMessage = async () => {
     if (!messageText.trim() || !buyerUserId) return;
@@ -133,9 +187,7 @@ const Chating = () => {
     const message = {
       chat_id: Number(chatId),
       sender_id: buyerUserId,
-      receiver_id: Number(sellerId),
       message_text: messageText,
-      product_id: Number(productId),
     };
 
     try {
@@ -148,12 +200,11 @@ const Chating = () => {
         messageText: messageText
       });
 
-      // Add message to local state immediately for UI responsiveness
       const localMessage: Message = {
         ...message,
         sent_at: new Date(),
-        id: Date.now(), 
-        is_read: false  
+        id: Date.now(),
+        is_read: false
       };
       setMessages((prev) => [...prev, localMessage]);
       setMessageText("");
@@ -164,32 +215,6 @@ const Chating = () => {
       alert("Failed to send message. Please try again.");
     }
   };
-
-  // Update socket message handler to handle server response
-  useEffect(() => {
-    // Handle successful message send
-    socket.on("receiveMessage", (msg: Message) => {
-      console.log("Received message:", msg);
-      if (msg.chat_id === Number(chatId)) {
-        setMessages((prev) => {
-          // Remove temporary message if it exists
-          const filtered = prev.filter(m => m.id !== Date.now());
-          return [...filtered, msg];
-        });
-      }
-    });
-
-    // Handle message send error
-    socket.on("messageSendError", (error) => {
-      console.error("Socket message send error:", error);
-      alert("Failed to send message. Please try again.");
-    });
-
-    return () => {
-      socket.off("receiveMessage");
-      socket.off("messageSendError");
-    };
-  }, [chatId]);
 
   const renderItem = ({ item }: { item: Message }) => {
     const isOwnMessage = item.sender_id === buyerUserId;
@@ -220,7 +245,6 @@ const Chating = () => {
     );
   };
 
-
   return (
     <KeyboardAvoidingView
       className="flex-1 bg-white"
@@ -228,12 +252,7 @@ const Chating = () => {
     >
       <View className="p-4 border-b border-gray-200 bg-white">
         <TouchableOpacity
-          onPress={() =>
-            router.push({
-              pathname: "/product/[id]",
-              params: { id: productId?.toString() },
-            })
-          }
+          onPress={() => router.back()}
           className="absolute top-2 left-2 bg-white/70 p-2 rounded-full"
         >
           <FontAwesome name="arrow-left" size={20} color="black" />
@@ -249,7 +268,7 @@ const Chating = () => {
         keyExtractor={(item, index) => index.toString()}
         contentContainerStyle={{ padding: 10 }}
       />
-      <View className="flex-row items-center p-2 border-t border-gray-300">
+      <View className="flex-row items-center p-4 border-t border-gray-300">
         <TextInput
           value={messageText}
           onChangeText={setMessageText}

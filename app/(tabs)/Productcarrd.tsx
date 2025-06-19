@@ -44,7 +44,8 @@ const Productcarrd = ({
     return image_url?.startsWith("https") ? image_url : image_url;
   };
   return (
-    <>
+    <TouchableOpacity className="transform px-3 py-2 bg-white rounded-lg shadow-md mb-4">
+
       <View className="flex-row items-center justify-between">
         <TouchableOpacity onPress={handleExplore}>
           <Text className="text-black font-bold text-lg mb-3">{title}</Text>
@@ -81,9 +82,15 @@ const Productcarrd = ({
                     // console.log("Final URL", getImageUrl(productImage));
 
                     return (
-                      <View
+                      <TouchableOpacity
                         key={`${item.id}-${itemIndex}`}
                         className="bg-white p-3 rounded-lg shadow-md border border-gray-200 w-44"
+                        onPress={() =>
+                          router.push({
+                            pathname: "/product/[id]",
+                            params: { id: item.id.toString() },
+                          })
+                        }
                       >
                         {imageUrl ? (
                           <Image
@@ -125,7 +132,7 @@ const Productcarrd = ({
                             {item.description}
                           </Text>
                         </TouchableOpacity>
-                      </View>
+                      </TouchableOpacity>
                     );
                   })}
                 </View>
@@ -137,7 +144,7 @@ const Productcarrd = ({
           </Text>
         )}
       </View>
-    </>
+    </TouchableOpacity>
   );
 };
 

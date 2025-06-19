@@ -13,6 +13,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
+import { router } from "expo-router";
 
 const ITEMS_PER_PAGE = 5;
 
@@ -134,7 +135,7 @@ const Favorite = () => {
           <TouchableOpacity
             className="bg-white border border-gray-400 px-6 py-3 rounded-md mt-6"
             //@ts-ignore
-            onPress={() => navigation.navigate("Home")}
+            onPress={() => router.push('/home')}
           >
             <Text className="text-black font-semibold">
               Continue Searching
@@ -170,8 +171,10 @@ const Favorite = () => {
 
               return (
                 <TouchableOpacity
+                  onPress={() => router.push(`/product/${product.id}`)}
                   className="bg-white rounded-xl shadow-lg mb-4 overflow-hidden"
                   style={{ width: "100%" }}
+
                 >
                   <View className="flex-row">
                     <Image
@@ -206,7 +209,7 @@ const Favorite = () => {
             }}
             ListFooterComponent={() => (
               <View className="flex-row justify-between items-center mt-4 px-4">
-                <TouchableOpacity 
+                <TouchableOpacity
                   onPress={goToPreviousPage}
                   disabled={currentPage === 1}
                   className={`px-4 py-2 rounded-lg ${currentPage === 1 ? 'bg-gray-300' : 'bg-purple-600'}`}
@@ -216,7 +219,7 @@ const Favorite = () => {
                 <Text className="text-black font-semibold">
                   Page {currentPage} of {totalPages}
                 </Text>
-                <TouchableOpacity 
+                <TouchableOpacity
                   onPress={goToNextPage}
                   disabled={currentPage === totalPages}
                   className={`px-4 py-2 rounded-lg ${currentPage === totalPages ? 'bg-gray-300' : 'bg-purple-600'}`}

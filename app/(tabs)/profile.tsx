@@ -3,7 +3,8 @@ import { API_BASE_URL } from "@/utils/config";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import { useRouter } from "expo-router";
-import { Pencil } from "lucide-react-native";
+import {  Pencil } from "lucide-react-native";
+import { Feather } from '@expo/vector-icons';
 import React, { useState } from "react";
 import { Alert, Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
@@ -14,6 +15,7 @@ import LanguageModal from "../(tabs)/LanguageModal";
 import TermsModal from "../(tabs)/TermsModal";
 import { LogoutUser } from "../../store/slice/loginSlice";
 import EditProfilePhotoModal from './EditProfilePhotoModal';
+import { Entypo, FontAwesome5, Ionicons, MaterialIcons } from "@expo/vector-icons";
 
 const Profile = () => {
   const router = useRouter();
@@ -110,6 +112,17 @@ const Profile = () => {
             My Ads
           </Text>
         </TouchableOpacity>
+        <TouchableOpacity className="border border-gray-200 px-6 py-3 rounded-xl w-40 flex-column items-center justify-center mr-7 "
+        onPress={() => router.push("/store")}
+        >
+          <FontAwesome5 name="store" size={18} color="purple" />
+          {/* <FontAwesome name="fa-solid fa-store" size={18} color="purple" /> */}
+          <Text
+            className="text-black font-bold ml-2 mt-3"
+          >
+            Store
+          </Text>
+        </TouchableOpacity>
 
       </View>
 
@@ -119,22 +132,21 @@ const Profile = () => {
           className="flex-row items-center justify-between py-4 "
         >
           <View className="flex-row items-center space-x-3">
-            <Image source={require("../../assets/images/profile1.png")} />
+            <FontAwesome5 name="user" size={22} color="#9341f3" />
             <Text className="text-black ml-3">Profile</Text>
           </View>
           <Image
             source={require("../../assets/images/next.png")}
             className="w-4 h-4"
-          />
+          />  
         </TouchableOpacity>
 
-        <TouchableOpacity className="flex-row items-center justify-between py-4">
+        <TouchableOpacity className="flex-row items-center justify-between py-4"
+        onPress={() => router.push("/AddToCart")}
+        >
           <View className="flex-row items-center space-x-3">
-            <Image
-              source={require("../../assets/images/notification.png")}
-              className="w-6 h-6"
-            />
-            <Text className="text-black ml-3">Notification Setting</Text>
+            <FontAwesome5 name="cart-plus" size={22} color="#9341f3" />
+            <Text className="text-black ml-3">My Cart Items</Text>
           </View>
           <Image
             source={require("../../assets/images/next.png")}
@@ -142,13 +154,12 @@ const Profile = () => {
           />
         </TouchableOpacity>
 
-        <TouchableOpacity className="flex-row items-center justify-between py-4 border-b border-gray-200">
+        <TouchableOpacity className="flex-row items-center justify-between py-4 border-b border-gray-200"
+        onPress={() => router.push("/Orders")}
+        >
           <View className="flex-row items-center space-x-3">
-            <Image
-              source={require("../../assets/images/lock.png")}
-              className="w-6 h-6"
-            />
-            <Text className="text-black ml-3">Security</Text>
+            <FontAwesome5 name="shopping-bag" size={22} color="#9341f3" />
+            <Text className="text-black ml-3">My Orders</Text>
           </View>
           <Image
             source={require("../../assets/images/next.png")}
@@ -161,10 +172,7 @@ const Profile = () => {
           onPress={() => setCityModalVisible(true)}
         >
           <View className="flex-row items-center space-x-3">
-            <Image
-              source={require("../../assets/images/city.png")}
-              className="w-6 h-6"
-            />
+            <MaterialIcons name="location-city" size={22} color="#9341f3" />
             <Text className="text-black ml-3">City</Text>
           </View>
           <Text className="text-gray-500">{selectedCity}</Text>
@@ -185,10 +193,8 @@ const Profile = () => {
           onPress={() => setLanguageModalVisible(true)}
         >
           <View className="flex-row items-center space-x-3">
-            <Image
-              source={require("../../assets/images/lock.png")}
-              className="w-6 h-6"
-            />
+            <Feather name="globe" size={22} color="#9341f3" />
+
             <Text className="text-black ml-3">Language</Text>
           </View>
           <Text className="text-gray-500">{selectedLanguage}</Text>
@@ -204,10 +210,8 @@ const Profile = () => {
         <TouchableOpacity className="flex-row items-center justify-between py-4 "
           onPress={() => router.push("/blog")}>
           <View className="flex-row items-center space-x-3">
-            <Image
-              source={require("../../assets/images/lock.png")}
-              className="w-6 h-6"
-            />
+            <MaterialIcons name="article" size={22} color="#9341f3" />
+
             <Text className="text-black ml-3">Blogs</Text>
           </View>
           <Image
@@ -222,10 +226,8 @@ const Profile = () => {
             className="flex-row items-center space-x-3"
             onPress={() => setContactModalVisible(true)}
           >
-            <Image
-              source={require("../../assets/images/call.png")}
-              className="w-6 h-6 mr-3"
-            />
+            <Ionicons name="call" size={22} color="#9341f3" />
+
             <Text className="text-black  ">Call Us</Text>
           </TouchableOpacity>
 
@@ -240,10 +242,8 @@ const Profile = () => {
           onPress={() => setTermsModalVisible(true)}
         >
           <View className="flex-row items-center space-x-3">
-            <Image
-              source={require("../../assets/images/term.png")}
-              className="w-6 h-6"
-            />
+            <Entypo name="text-document" size={22} color="#9341f3" />
+
             <Text className="text-black ml-3">Terms & Condition</Text>
           </View>
           <Image

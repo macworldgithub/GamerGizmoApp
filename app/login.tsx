@@ -60,7 +60,7 @@ export default function LoginScreen() {
 
         await AsyncStorage.setItem("userId", String(backendData.id));
 
-        alert("User ID backend:" + backendData.id);
+        // alert("User ID backend:"+ backendData.id);
         dispatch(InitializeUserData({
           token: backendData.token,
           id: backendData.id,

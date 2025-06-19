@@ -61,20 +61,14 @@ const categories = [
   },
   {
     name: "New Gaming Consoles",
-    img: require("../../assets/images/both.png"),
+    img: require("../../assets/images/gaming1.png"),
     category: "console",
     condition: 1,
-  },
-  {
-    name: "Customization & Gaming Gears",
-    img: require("../../assets/images/gear.png"),
-    category: "components",
-    condition: 1,
-  },
+  }
 ];
 
 export default function GamingStore() {
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState("") ;
   const [results, setResults] = useState([]);
   const router = useRouter();
 
@@ -154,13 +148,31 @@ export default function GamingStore() {
         {/* Categories List */}
         <View className="bg-white mt-6 px-2 py-3 border-t border-gray-200 rounded-2xl">
           <View className="mt-6 flex flex-wrap flex-row justify-between">
-            {categories.map((item, index) => (
+            {categories.slice(0, 6).map((item, index) => (
               <TouchableOpacity
                 key={index}
                 onPress={() =>
                   handleCategoryClick(item.category, item.condition)
                 }
                 className="bg-white w-[30%] m-1 p-3 rounded-lg shadow-lg shadow-purple-500 items-center"
+              >
+                <Image source={item.img} />
+                <Text className="text-center text-gray-700 mt-2 text-xs">
+                  {item.name}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+          
+          {/* Last row with equal width items */}
+          <View className="mt-2 flex-row justify-between">
+            {categories.slice(6).map((item, index) => (
+              <TouchableOpacity
+                key={index + 6}
+                onPress={() =>
+                  handleCategoryClick(item.category, item.condition)
+                }
+                className="bg-white w-[48%] p-3 rounded-lg shadow-lg shadow-purple-500 items-center"
               >
                 <Image source={item.img} />
                 <Text className="text-center text-gray-700 mt-2 text-xs">
