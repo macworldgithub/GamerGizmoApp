@@ -15,6 +15,9 @@ import socket from "../socket";
 import dayjs from "dayjs";
 import { API_BASE_URL } from "@/utils/config";
 import { FontAwesome } from "@expo/vector-icons";
+import { Icon } from "lucide-react-native";
+import Feather from 'react-native-vector-icons/Feather';
+
 
 interface Message {
   id?: number;
@@ -31,6 +34,25 @@ const Chating = () => {
   const [messageText, setMessageText] = useState("");
   const [buyerUserId, setBuyerUserId] = useState<number | null>(null);
   const flatListRef = useRef<FlatList | null>(null);
+  const [isNavigatingBack, setIsNavigatingBack] = useState(false);
+
+  //functions start
+  const handleBack = () => {
+    if (isNavigatingBack) return;
+    setIsNavigatingBack(true);
+
+    setTimeout(() => {
+      router.replace({
+        pathname: "/(tabs)/chat",
+        //@ts-ignore
+        query: { productId, sellerId },
+        //@ts-ignore
+        params: { refresh: true },
+      });
+
+      setIsNavigatingBack(false);
+    }, 100); // slight delay to allow UI to settle
+  };
 
   // Function to mark messages as read
   const markMessagesAsRead = (msgs: Message[]) => {
@@ -63,6 +85,14 @@ const Chating = () => {
       );
     }
   };
+  useEffect(() => {
+    return () => {
+      socket.emit("leaveRoom", chatId);
+      socket.off("receiveMessage");
+      socket.off("messageRead");
+      socket.off("messageSendError");
+    };
+  }, [chatId]);
 
   // Add a new effect to mark messages as read when they become visible
   useEffect(() => {
@@ -222,7 +252,7 @@ const Chating = () => {
 
     return (
       <View
-        className={`my-1 px-4 py-2 rounded-lg max-w-[75%] ${isOwnMessage ? "bg-purple-600 self-end" : "bg-gray-200 self-start"
+        className={`my-1 px-4 py-2 rounded-lg max-w-[75%]  ${isOwnMessage ? "bg-purple-600 self-end" : "bg-gray-200 self-start"
           }`}
       >
         <Text className={isOwnMessage ? "text-white" : "text-black"}>
@@ -252,10 +282,13 @@ const Chating = () => {
     >
       <View className="p-4 border-b border-gray-200 bg-white">
         <TouchableOpacity
-          onPress={() => router.back()}
-          className="absolute top-2 left-2 bg-white/70 p-2 rounded-full"
+
+          onPress={handleBack}
+          className="absolute  top-2 left-2  p-2 rounded-full"
         >
-          <FontAwesome name="arrow-left" size={20} color="black" />
+          {/* <FontAwesome name="arrow-left" size={20} color="black" /> */}
+          <Feather name="arrow-left" size={24} color="black" />
+
         </TouchableOpacity>
         <Text className="text-lg font-bold text-black text-center">
           {sellerName || "Seller"}

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   View,
   Text,
@@ -9,8 +9,9 @@ import {
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { API_BASE_URL } from "@/utils/config";
-import { router } from "expo-router";
+import { router, useFocusEffect } from "expo-router";
 import { FontAwesome } from "@expo/vector-icons";
+import { useRoute } from "@react-navigation/native";
 
 const tabs = ["All", "Buying", "Selling"];
 
@@ -88,6 +89,26 @@ export default function chat() {
       setLoading(false);
     }
   };
+  // useFocusEffect(
+  //   useCallback(() => {
+  //     fetchBuyersAndSellers();
+  //   }, [])
+  // );
+
+  // useFocusEffect(
+  //   useCallback(() => {
+  //     const route = useRoute();
+  //     if ((route.params as any)?.refresh) {
+  //       fetchBuyersAndSellers();
+  //     }
+  //   }, [])
+  // );
+  useFocusEffect(
+    useCallback(() => {
+      fetchBuyersAndSellers();
+    }, [])
+  );
+
   const getFilteredUsers = () => {
     if (!Array.isArray(users)) return [];
 
@@ -126,34 +147,34 @@ export default function chat() {
 
 
   const handleChatPress = async (user: ChatUser) => {
-  try {
-    const chatId = user?.last_message ? (user as any).chat_id : null;
+    try {
+      const chatId = user?.last_message ? (user as any).chat_id : null;
 
-    if (!chatId) {
-      alert("No existing chat found for this user.");
-      return;
+      if (!chatId) {
+        alert("No existing chat found for this user.");
+        return;
+      }
+
+      // Set unread_count to 0 locally
+      setUsers((prevUsers) =>
+        prevUsers.map((u) =>
+          u.chat_id === chatId ? { ...u, unread_count: 0 } : u
+        )
+      );
+
+      router.push({
+        pathname: "/(tabs)/Chating",
+        params: {
+          chatId: chatId.toString(),
+          sellerId: user.id.toString(),
+          sellerName: `${user.first_name} ${user.last_name}`,
+          productId: "",
+        },
+      });
+    } catch (err) {
+      console.error("Error navigating to chat:", err);
     }
-
-    // Set unread_count to 0 locally
-    setUsers((prevUsers) =>
-      prevUsers.map((u) =>
-        u.chat_id === chatId ? { ...u, unread_count: 0 } : u
-      )
-    );
-
-    router.push({
-      pathname: "/(tabs)/Chating",
-      params: {
-        chatId: chatId.toString(),
-        sellerId: user.id.toString(),
-        sellerName: `${user.first_name} ${user.last_name}`,
-        productId: "",
-      },
-    });
-  } catch (err) {
-    console.error("Error navigating to chat:", err);
-  }
-};
+  };
 
 
 

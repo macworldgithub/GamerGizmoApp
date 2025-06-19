@@ -106,6 +106,7 @@ const ProductDetail = () => {
   const [showCounter, setShowCounter] = useState(false);
   const [adding, setAdding] = useState(false);
   const [quantity, setQuantity] = useState(1);
+  const [isToggling, setIsToggling] = useState(false);
 
 
   useEffect(() => {
@@ -135,23 +136,53 @@ const ProductDetail = () => {
 
     if (id) fetchProductAndFavourite();
   }, [id]);
+  // useFocusEffect(
+  //   useCallback(() => {
+  //     if (id) {
+  //       // refetch favorite status again
+  //       (async () => {
+  //         const userId = await AsyncStorage.getItem("userId");
+  //         const favResponse = await axios.get(
+  //           `https://backend.gamergizmo.com/product/favourite/getAll?userId=${userId}`
+  //         );
+  //         const favs = favResponse.data?.data || [];
+  //         const isFav = favs.some((f: any) => f.product.id.toString() === id.toString());
+  //         setIsFavourite(isFav);
+  //       })();
+  //     }
+  //   }, [id])
+  // );
   useFocusEffect(
     useCallback(() => {
-      if (id) {
-        // refetch favorite status again
-        (async () => {
-          const userId = await AsyncStorage.getItem("userId");
-          const favResponse = await axios.get(
-            `https://backend.gamergizmo.com/product/favourite/getAll?userId=${userId}`
-          );
-          const favs = favResponse.data?.data || [];
-          const isFav = favs.some((f: any) => f.product.id.toString() === id.toString());
+      let isActive = true;
+
+      const fetchFavoriteStatus = async () => {
+        setIsFavourite(false); // ✅ Reset before fetching
+        const userId = await AsyncStorage.getItem("userId");
+        const favResponse = await axios.get(
+          `https://backend.gamergizmo.com/product/favourite/getAll?userId=${userId}`
+        );
+        const favs = favResponse.data?.data || [];
+        const isFav = favs.some(
+          (f: any) => f.product.id.toString() === id.toString()
+        );
+        if (isActive) {
           setIsFavourite(isFav);
-        })();
-      }
+        }
+      };
+
+      fetchFavoriteStatus();
+
+      return () => {
+        isActive = false;
+      };
     }, [id])
   );
 
+  useEffect(() => {
+    // Reset to avoid stale favorite state when navigating
+    setIsFavourite(false);
+  }, [id]);
 
   if (loading) return <ActivityIndicator className="mt-20" />;
   if (!product)
@@ -162,10 +193,21 @@ const ProductDetail = () => {
   };
 
 
-  const handleFavourite = () => {
-    if (!product) return;
-    toggleFavourite(product.id, isFavourite, setIsFavourite);
+  const handleFavourite = async () => {
+    if (isToggling) return;
+
+    setIsToggling(true); // ✅ Block
+    await toggleFavourite(product.id, isFavourite, (val) => {
+      setIsFavourite(val);
+    });
+
+    // Optional delay to throttle multiple taps
+    setTimeout(() => {
+      setIsToggling(false); // ✅ Re-enable
+    }, 1000); // 1 second
   };
+
+
   const handleStartChat = async () => {
     setIsConnecting(true);
     try {
@@ -436,6 +478,7 @@ const ProductDetail = () => {
           <TouchableOpacity
             onPress={handleFavourite}
             className="bg-white/70 p-2 rounded-full"
+            disabled={isToggling}
           >
             <FontAwesome
               color={isFavourite ? "red" : "black"}

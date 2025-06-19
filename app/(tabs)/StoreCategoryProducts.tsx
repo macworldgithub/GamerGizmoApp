@@ -67,11 +67,11 @@ const StoreCategoryProducts: React.FC<StoreCategoryProductsProps> = ({
           <TouchableOpacity
             className="bg-purple-700 p-2 rounded-full"
             onPress={() =>
-                router.push({
-                  pathname: '/StoreCategory/[categoryId]',
-                  params: { categoryId: categoryId.toString()},
-                })
-              }
+              router.push({
+                pathname: '/StoreCategory/[categoryId]',
+                params: { categoryId: categoryId.toString() },
+              })
+            }
           >
             <Image
               source={require('../../assets/images/right.png')}
@@ -83,9 +83,15 @@ const StoreCategoryProducts: React.FC<StoreCategoryProductsProps> = ({
 
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
         {products.map((product) => (
-          <View
+          <TouchableOpacity
+            onPress={() =>
+              router.push({
+                pathname: '/product/[id]',
+                params: { id: product.id.toString() },
+              })
+            }
             key={product.id}
-            className="w-[150px] p-2 mr-3 bg-gray-100 rounded-lg shadow-md"
+            className="w-[150px] bg-red-950 p-2 mr-3  rounded-lg shadow-md"
           >
             <Image
               source={{
@@ -115,7 +121,7 @@ const StoreCategoryProducts: React.FC<StoreCategoryProductsProps> = ({
             >
               <Text className="text-white text-xs text-center">View Details</Text>
             </TouchableOpacity>
-          </View>
+          </TouchableOpacity>
         ))}
       </ScrollView>
     </View>

@@ -406,13 +406,7 @@ const ExploreScreen = () => {
                 }
               })()}
 
-              <View className="flex-row justify-between mt-3">
-                <TouchableOpacity className="bg-[#e8e3fc] w-32 mx-1 py-2 rounded-full">
-                  <Text className="text-black text-center font-semibold">
-                    Chat
-                  </Text>
-                </TouchableOpacity>
-              </View>
+
             </View>
 
             {/* Ads after every 3 items */}
