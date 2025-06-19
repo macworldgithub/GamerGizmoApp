@@ -22,7 +22,7 @@ export default function LoginScreen() {
     androidClientId: Constants.expoConfig?.extra?.googleClientIdAndroid,
   });
 
-
+  const [isNavigating, setIsNavigating] = useState(false);
   const router = useRouter();
   const dispatch = useDispatch();
 
@@ -30,6 +30,7 @@ export default function LoginScreen() {
   useEffect(() => {
     const fetchGoogleUser = async (idToken: string, region: string | null) => {
       try {
+        setIsNavigating(true);
         const backendRes = await fetch(`${API_BASE_URL}/auth/google-signin`, {
           method: "POST",
           headers: {
@@ -56,10 +57,10 @@ export default function LoginScreen() {
         }
 
         await AsyncStorage.setItem("token", backendData.token);
-    
+
         await AsyncStorage.setItem("userId", String(backendData.id));
 
-        alert("User ID backend:"+ backendData.id);
+        alert("User ID backend:" + backendData.id);
         dispatch(InitializeUserData({
           token: backendData.token,
           id: backendData.id,
@@ -75,7 +76,9 @@ export default function LoginScreen() {
           isLoggedIn: true,
         }));
 
-        router.replace("/home");
+        // router.replace("/home");
+        // router.replace("/(tabs)/home")
+          await router.replace("/(tabs)/home");
       } catch (error) {
         alert("Google login failed. Try again.");
       }
