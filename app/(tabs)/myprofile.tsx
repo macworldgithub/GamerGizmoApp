@@ -47,7 +47,7 @@ const EditProfileScreen = () => {
         },
       });
       const data = res.data.data;
-      alert("data"+ data)
+     
       setFormData({
         first_name: data?.first_name || '',
         last_name: data?.last_name || '',

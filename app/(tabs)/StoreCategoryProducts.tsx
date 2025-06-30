@@ -81,6 +81,9 @@ const StoreCategoryProducts: React.FC<StoreCategoryProductsProps> = ({
         )}
       </View>
 
+      {products.length === 0 ? (
+      <Text className="text-red-500 mt-2">No products available</Text>
+    ) : (
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
         {products.map((product) => (
           <TouchableOpacity
@@ -91,7 +94,7 @@ const StoreCategoryProducts: React.FC<StoreCategoryProductsProps> = ({
               })
             }
             key={product.id}
-            className="w-[150px] bg-red-950 p-2 mr-3  rounded-lg shadow-md"
+            className="w-[150px] p-4 p-2 mr-3  rounded-lg shadow-md"
           >
             <Image
               source={{
@@ -124,6 +127,7 @@ const StoreCategoryProducts: React.FC<StoreCategoryProductsProps> = ({
           </TouchableOpacity>
         ))}
       </ScrollView>
+       )}
     </View>
   );
 };

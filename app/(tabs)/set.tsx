@@ -60,14 +60,16 @@ const Set = () => {
 
   return (
     <ScrollView className="flex-1 bg-white px-4 py-6 pb-24">
-      <View className="flex-row items-center border-b border-gray-200 pb-4 mb-6">
-        <TouchableOpacity onPress={handleBack}>
+      <TouchableOpacity className="flex-row items-center border-b border-gray-200 pb-4 mb-6"
+      onPress={handleBack}
+      >
+        <TouchableOpacity >
           <Image source={require("../../assets/images/left.png")} />
         </TouchableOpacity>
         <Text className="text-black text-base font-semibold flex-1 text-center -ml-6">
           Set Price
         </Text>
-      </View>
+      </TouchableOpacity>
 
       {/* Price Input */}
       {/* <View className="border border-gray-200 rounded-md mb-4 p-3 flex-row items-center justify-between">
