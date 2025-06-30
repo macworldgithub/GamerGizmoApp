@@ -75,7 +75,7 @@ export default function chat() {
         unread_count: user.unread_count || 0,
       }));
 
-      // Combine and sort by last message timestamp (desc)
+      
       const combinedUsers = [...buyers, ...sellers].sort((a, b) => {
         const aTime = a.last_message?.sent_at ? new Date(a.last_message.sent_at).getTime() : 0;
         const bTime = b.last_message?.sent_at ? new Date(b.last_message.sent_at).getTime() : 0;
@@ -89,20 +89,7 @@ export default function chat() {
       setLoading(false);
     }
   };
-  // useFocusEffect(
-  //   useCallback(() => {
-  //     fetchBuyersAndSellers();
-  //   }, [])
-  // );
-
-  // useFocusEffect(
-  //   useCallback(() => {
-  //     const route = useRoute();
-  //     if ((route.params as any)?.refresh) {
-  //       fetchBuyersAndSellers();
-  //     }
-  //   }, [])
-  // );
+  
   useFocusEffect(
     useCallback(() => {
       fetchBuyersAndSellers();
@@ -122,46 +109,47 @@ export default function chat() {
     }
   };
 
-  // const handleChatPress = async (user: ChatUser) => {
-  //   try {
-  //     const chatId = user?.last_message ? (user as any).chat_id : null;
-
-  //     if (!chatId) {
-  //       alert("No existing chat found for this user.");
-  //       return;
-  //     }
-
-  //     router.push({
-  //       pathname: "/(tabs)/Chating",
-  //       params: {
-  //         chatId: chatId.toString(),
-  //         sellerId: user.id.toString(),
-  //         sellerName: `${user.first_name} ${user.last_name}`,
-  //         productId: "",
-  //       },
-  //     });
-  //   } catch (err) {
-  //     console.error("Error navigating to chat:", err);
-  //   }
-  // };
-
-
   const handleChatPress = async (user: ChatUser) => {
     try {
-      const chatId = user?.last_message ? (user as any).chat_id : null;
-
+      let chatId = user.chat_id;
+  
+      // Step 1: If no chatId exists, create a new chat
       if (!chatId) {
-        alert("No existing chat found for this user.");
-        return;
+        const token = await AsyncStorage.getItem("token");
+  
+        const response = await axios.post(
+          `${API_BASE_URL}/chats/create-or-get-chat`,
+          { receiver_id: user.id },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+  
+        chatId = response.data?.data?.chat_id;
+  
+        if (!chatId) {
+          alert("Unable to create or retrieve chat.");
+          return;
+        }
+  
+        // Step 2: Update local state with new chatId
+        setUsers((prevUsers) =>
+          prevUsers.map((u) =>
+            u.id === user.id ? { ...u, chat_id: chatId } : u
+          )
+        );
       }
-
-      // Set unread_count to 0 locally
+  
+      // Reset unread count locally
       setUsers((prevUsers) =>
         prevUsers.map((u) =>
           u.chat_id === chatId ? { ...u, unread_count: 0 } : u
         )
       );
-
+  
+      // Step 3: Navigate to chat room
       router.push({
         pathname: "/(tabs)/Chating",
         params: {
@@ -173,8 +161,10 @@ export default function chat() {
       });
     } catch (err) {
       console.error("Error navigating to chat:", err);
+      alert("Something went wrong. Please try again.");
     }
   };
+  
 
 
 

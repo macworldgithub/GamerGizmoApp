@@ -280,12 +280,15 @@ const Chating = () => {
       className="flex-1 bg-white"
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
-      <View className="p-4 border-b border-gray-200 bg-white">
+      <TouchableOpacity className="p-4 border-b border-gray-200 bg-white"
+      onPress={handleBack}
+      >
         <TouchableOpacity
-
-          onPress={handleBack}
-          className="absolute  top-2 left-2  p-2 rounded-full"
+          
+          hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
+          className="absolute top-2 left-2 p-2 rounded-full"
         >
+
           {/* <FontAwesome name="arrow-left" size={20} color="black" /> */}
           <Feather name="arrow-left" size={24} color="black" />
 
@@ -293,7 +296,7 @@ const Chating = () => {
         <Text className="text-lg font-bold text-black text-center">
           {sellerName || "Seller"}
         </Text>
-      </View>
+      </TouchableOpacity>
       <FlatList
         ref={flatListRef}
         data={messages}
