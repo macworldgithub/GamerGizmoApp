@@ -66,8 +66,10 @@ const BlogDetail = () => {
 
   return (
     <>
-      <View className="flex-row items-center justify-between px-4 py-2 bg-white border-b border-gray-200 pt-4">
-        <TouchableOpacity onPress={() => router.push("/blog")}>
+      <TouchableOpacity className="flex-row items-center justify-between px-4 py-2 bg-white border-b border-gray-200 pt-4"
+      onPress={() => router.push("/blog")}
+      >
+        <TouchableOpacity >
           <ArrowLeftIcon size={24} color="black" />
         </TouchableOpacity>
         <Text
@@ -76,7 +78,7 @@ const BlogDetail = () => {
         >
           Blogs
         </Text>
-      </View>
+      </TouchableOpacity>
 
       <ScrollView className="bg-white p-4">
         <Image

@@ -148,14 +148,16 @@ const BlogScreen = () => {
   return (
     <ScrollView className="h-full ">
       {/* Navbar */}
-      <View className="flex-row items-center justify-between px-4 py-2 bg-white border-b border-gray-200 pt-4">
-        <TouchableOpacity onPress={() => router.push("/profile")}>
+      <TouchableOpacity className="flex-row items-center justify-between px-4 py-2 bg-white border-b border-gray-200 pt-4"
+      onPress={() => router.push("/profile")}
+      >
+        <TouchableOpacity >
           <ArrowLeftIcon size={24} color="black" />
         </TouchableOpacity>
         <Text className="text-center font-semibold text-base flex-1 ml-[-20]">
           Blogs
         </Text>
-      </View>
+      </TouchableOpacity>
 
       {/* Header Image */}
       <View className="relative w-full h-48">
