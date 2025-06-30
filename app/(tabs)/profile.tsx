@@ -111,6 +111,7 @@ const Profile = () => {
                 <FontAwesome name="check-circle" size={14} color="purple" />
               </View>
             </TouchableOpacity>
+
             <NicUploadModal open={openNicModal} setOpen={setOpenNicModal} />
             <Text className="text-xs text-gray-500 mt-3">
               Joined on {user?.created_at?.slice(0, 10) || "Unknown"}
