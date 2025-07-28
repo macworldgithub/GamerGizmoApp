@@ -53,19 +53,24 @@ const PopularMainSection = () => {
       );
 
       const sortedData = [...(response?.data?.data || [])]
-        .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
-        .map(product => ({
+        .sort(
+          (a, b) =>
+            new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        )
+        .map((product) => ({
           id: product.id,
           name: product.name,
           price: Number(product.price),
           description: product.description,
           created_at: product.created_at,
-          images: (product.images || product.product_images || []).map((img: any) => ({
-            id: img.id,
-            product_id: img.product_id,
-            image_url: img.image_url,
-            created_at: img.created_at,
-          })),
+          images: (product.images || product.product_images || []).map(
+            (img: any) => ({
+              id: img.id,
+              product_id: img.product_id,
+              image_url: img.image_url,
+              created_at: img.created_at,
+            })
+          ),
           explorePath: `/ExploreScreen?category=desktop&condition=2`,
         }));
       setDesktopUsedData(sortedData);
@@ -84,19 +89,24 @@ const PopularMainSection = () => {
       );
 
       const sortedData = [...(response?.data?.data || [])]
-        .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
-        .map(product => ({
+        .sort(
+          (a, b) =>
+            new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        )
+        .map((product) => ({
           id: product.id,
           name: product.name,
           price: Number(product.price),
           description: product.description,
           created_at: product.created_at,
-          images: (product.images || product.product_images || []).map((img: any) => ({
-            id: img.id,
-            product_id: img.product_id,
-            image_url: img.image_url,
-            created_at: img.created_at,
-          })),
+          images: (product.images || product.product_images || []).map(
+            (img: any) => ({
+              id: img.id,
+              product_id: img.product_id,
+              image_url: img.image_url,
+              created_at: img.created_at,
+            })
+          ),
           explorePath: `/ExploreScreen?category=desktop&condition=1`,
         }));
       setDesktopNewData(sortedData);
@@ -114,19 +124,24 @@ const PopularMainSection = () => {
       );
 
       const sortedData = [...(response?.data?.data || [])]
-        .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
-        .map(product => ({
+        .sort(
+          (a, b) =>
+            new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        )
+        .map((product) => ({
           id: product.id,
           name: product.name,
           price: Number(product.price),
           description: product.description,
           created_at: product.created_at,
-          images: (product.images || product.product_images || []).map((img: any) => ({
-            id: img.id,
-            product_id: img.product_id,
-            image_url: img.image_url,
-            created_at: img.created_at,
-          })),
+          images: (product.images || product.product_images || []).map(
+            (img: any) => ({
+              id: img.id,
+              product_id: img.product_id,
+              image_url: img.image_url,
+              created_at: img.created_at,
+            })
+          ),
           explorePath: `/ExploreScreen?category=console&condition=2`,
         }));
       setConsolesUsedData(sortedData);
@@ -145,19 +160,24 @@ const PopularMainSection = () => {
       );
 
       const sortedData = [...(response?.data?.data || [])]
-        .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
-        .map(product => ({
+        .sort(
+          (a, b) =>
+            new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        )
+        .map((product) => ({
           id: product.id,
           name: product.name,
           price: Number(product.price),
           description: product.description,
           created_at: product.created_at,
-          images: (product.images || product.product_images || []).map((img: any) => ({
-            id: img.id,
-            product_id: img.product_id,
-            image_url: img.image_url,
-            created_at: img.created_at,
-          })),
+          images: (product.images || product.product_images || []).map(
+            (img: any) => ({
+              id: img.id,
+              product_id: img.product_id,
+              image_url: img.image_url,
+              created_at: img.created_at,
+            })
+          ),
           explorePath: `/ExploreScreen?category=console&condition=1`,
         }));
       setConsolesNewData(sortedData);
@@ -175,19 +195,24 @@ const PopularMainSection = () => {
       );
 
       const sortedData = [...(response?.data?.data || [])]
-        .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
-        .map(product => ({
+        .sort(
+          (a, b) =>
+            new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        )
+        .map((product) => ({
           id: product.id,
           name: product.name,
           price: Number(product.price),
           description: product.description,
           created_at: product.created_at,
-          images: (product.images || product.product_images || []).map((img: any) => ({
-            id: img.id,
-            product_id: img.product_id,
-            image_url: img.image_url,
-            created_at: img.created_at,
-          })),
+          images: (product.images || product.product_images || []).map(
+            (img: any) => ({
+              id: img.id,
+              product_id: img.product_id,
+              image_url: img.image_url,
+              created_at: img.created_at,
+            })
+          ),
           explorePath: `/ExploreScreen?category=laptops&condition=2`,
         }));
       setLaptopUsedData(sortedData);
@@ -195,7 +220,6 @@ const PopularMainSection = () => {
       console.error("Failed to fetch used laptops.");
     }
   };
-
 
   const fetchNewLaptops = async () => {
     try {
@@ -207,19 +231,24 @@ const PopularMainSection = () => {
       );
 
       const sortedData = [...(response?.data?.data || [])]
-        .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
-        .map(product => ({
+        .sort(
+          (a, b) =>
+            new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        )
+        .map((product) => ({
           id: product.id,
           name: product.name,
           price: Number(product.price),
           description: product.description,
           created_at: product.created_at,
-          images: (product.images || product.product_images || []).map((img: any) => ({
-            id: img.id,
-            product_id: img.product_id,
-            image_url: img.image_url,
-            created_at: img.created_at,
-          })),
+          images: (product.images || product.product_images || []).map(
+            (img: any) => ({
+              id: img.id,
+              product_id: img.product_id,
+              image_url: img.image_url,
+              created_at: img.created_at,
+            })
+          ),
           explorePath: `/ExploreScreen?category=laptops&condition=1`,
         }));
       setLaptopNewData(sortedData);
@@ -238,19 +267,24 @@ const PopularMainSection = () => {
       );
 
       const sortedData = [...(response?.data?.data || [])]
-        .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
-        .map(product => ({
+        .sort(
+          (a, b) =>
+            new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        )
+        .map((product) => ({
           id: product.id,
           name: product.name,
           price: Number(product.price),
           description: product.description,
           created_at: product.created_at,
-          images: (product.images || product.product_images || []).map((img: any) => ({
-            id: img.id,
-            product_id: img.product_id,
-            image_url: img.image_url,
-            created_at: img.created_at,
-          })),
+          images: (product.images || product.product_images || []).map(
+            (img: any) => ({
+              id: img.id,
+              product_id: img.product_id,
+              image_url: img.image_url,
+              created_at: img.created_at,
+            })
+          ),
           explorePath: `/ExploreScreen?category=components&condition=2`,
         }));
       setComponentsUsedData(sortedData);
@@ -269,19 +303,24 @@ const PopularMainSection = () => {
       );
 
       const sortedData = [...(response?.data?.data || [])]
-        .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
-        .map(product => ({
+        .sort(
+          (a, b) =>
+            new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        )
+        .map((product) => ({
           id: product.id,
           name: product.name,
           price: Number(product.price),
           description: product.description,
           created_at: product.created_at,
-          images: (product.images || product.product_images || []).map((img: any) => ({
-            id: img.id,
-            product_id: img.product_id,
-            image_url: img.image_url,
-            created_at: img.created_at,
-          })),
+          images: (product.images || product.product_images || []).map(
+            (img: any) => ({
+              id: img.id,
+              product_id: img.product_id,
+              image_url: img.image_url,
+              created_at: img.created_at,
+            })
+          ),
           explorePath: `/ExploreScreen?category=components&condition=1`,
         }));
       setComponentsNewData(sortedData);

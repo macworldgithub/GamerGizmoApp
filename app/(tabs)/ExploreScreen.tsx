@@ -30,6 +30,9 @@ type Product = {
   images: ProductImage[];
   created_at: string;
 };
+
+const PAGE_LIMIT = 10;
+
 const extractFeature = (desc: string, key: string): string | null => {
   const regex = new RegExp(`${key}\\s*[:：]\\s*(.*)`, "i");
   const match = desc.match(regex);
@@ -46,6 +49,10 @@ const ExploreScreen = () => {
   const [selectedSort, setSelectedSort] = useState("Default");
   const [isFilterVisible, setFilterVisible] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [pageNo, setPageNo] = useState(1);
+  const [limit, setLimit] = useState(10); // You can adjust this as needed
+  const [total, setTotal] = useState<number | null>(null);
+  const [loadingMore, setLoadingMore] = useState(false);
   const router = useRouter();
 
   const categoryIdMap: Record<string, number> = {
@@ -57,16 +64,20 @@ const ExploreScreen = () => {
 
   const resetStates = () => {
     setNoResults(false);
-    setProducts(defaultProducts);
+    setProducts([]);
+    setDefaultProducts([]);
     setSelectedSort("Default");
     setShowModal(false);
+    setPageNo(1);
+    setTotal(null);
   };
 
-  const fetchProducts = async () => {
+  const fetchProducts = async (loadMore = false) => {
     try {
       if (!category || !condition) return;
 
-      setLoading(true);
+      if (loadMore) setLoadingMore(true);
+      else setLoading(true);
       setNoResults(false);
       const categoryId = categoryIdMap[String(category).toLowerCase()];
       if (!categoryId) {
@@ -75,33 +86,46 @@ const ExploreScreen = () => {
       }
 
       const response = await axios.get(
-        `${API_BASE_URL}/products/getAll?category_id=${categoryId}&condition=${condition}`
+        `${API_BASE_URL}/products/getAll?category_id=${categoryId}&condition=${condition}&pageNo=${loadMore ? pageNo + 1 : 1}&limit=${limit}`
       );
 
       const data = response.data?.data || [];
+      const totalCount = response.data?.totalCount || null;
+      if (totalCount !== null) setTotal(totalCount);
 
-      if (data.length === 0) {
+      if (data.length === 0 && !loadMore) {
         setNoResults(true);
       } else {
         const sortedData = [...data].sort(
-          (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+          (a, b) =>
+            new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
         );
-        setDefaultProducts(sortedData);
-        setProducts(sortedData);
+        if (loadMore) {
+          setProducts((prev) => [...prev, ...sortedData]);
+          setDefaultProducts((prev) => [...prev, ...sortedData]);
+          setPageNo((prev) => prev + 1);
+        } else {
+          setDefaultProducts(sortedData);
+          setProducts(sortedData);
+          setPageNo(1);
+        }
         setNoResults(false);
       }
     } catch (error) {
       console.error("Failed to fetch products", error);
       setNoResults(true);
     } finally {
-      setLoading(false);
+      if (loadMore) setLoadingMore(false);
+      else setLoading(false);
     }
   };
 
   useEffect(() => {
     if (category && condition) {
+      resetStates();
       fetchProducts();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [category, condition]);
 
   const applySorting = (option: string, list: Product[] = products) => {
@@ -283,7 +307,7 @@ const ExploreScreen = () => {
             <FontAwesome name="arrow-left" size={20} color="black" />
           </TouchableOpacity>
           <Text className="text-xl font-bold text-gray-700">
-            {products.length} Results
+            {products.length}{total !== null ? ` / ${total}` : ""} Results
           </Text>
           <View style={{ width: 20 }} />
         </View>
@@ -405,8 +429,6 @@ const ExploreScreen = () => {
                   );
                 }
               })()}
-
-
             </View>
 
             {/* Ads after every 3 items */}
@@ -420,6 +442,18 @@ const ExploreScreen = () => {
             )}
           </React.Fragment>
         ))}
+        {/* Load More Button */}
+        {total !== null && products.length < total && (
+          <TouchableOpacity
+            className="bg-purple-700 px-6 py-3 rounded-lg mb-4 items-center"
+            onPress={() => fetchProducts(true)}
+            disabled={loadingMore}
+          >
+            <Text className="text-white font-semibold">
+              {loadingMore ? "Loading..." : "Load More"}
+            </Text>
+          </TouchableOpacity>
+        )}
       </ScrollView>
     </>
   );

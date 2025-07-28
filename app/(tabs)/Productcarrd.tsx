@@ -45,7 +45,6 @@ const Productcarrd = ({
   };
   return (
     <TouchableOpacity className="transform px-3 py-2 bg-white rounded-lg shadow-md mb-4">
-
       <View className="flex-row items-center justify-between">
         <TouchableOpacity onPress={handleExplore}>
           <Text className="text-black font-bold text-lg mb-3">{title}</Text>
