@@ -4,6 +4,7 @@ import {
   Text,
   Image,
   ScrollView,
+  Platform,
   TouchableOpacity,
   ActivityIndicator,
 } from 'react-native';
@@ -61,7 +62,7 @@ const StoreCategoryProducts: React.FC<StoreCategoryProductsProps> = ({
 
   return (
     <View className="px-4 mb-4">
-      <View className="flex-row justify-between items-center mb-2">
+      <View className="flex-row justify-between items-center mb-2 ">
         <Text className="text-base font-bold text-black">{categoryName}</Text>
         {products.length > 0 && (
           <TouchableOpacity

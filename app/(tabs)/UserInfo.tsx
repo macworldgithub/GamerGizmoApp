@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, TouchableOpacity, ScrollView, Image } from "react-native";
+import { View, Text, TouchableOpacity, ScrollView, Image, Platform } from "react-native";
 import { useSelector } from "react-redux";
 import { useRouter } from "expo-router";
 
@@ -19,11 +19,11 @@ const UserInfoScreen = () => {
   return (
     <ScrollView className="flex-1 bg-white px-5 pt-5">
       {/* Header */}
-      <View className="flex-row items-center pb-4 mb-4">
+      <View className={`flex-row items-center pb-4 mb-4 ${Platform.OS === "ios" ? "mt-16" : "mt-0"}`}>
         <TouchableOpacity onPress={() => router.push("/profile")}>
           <Image source={require("../../assets/images/arrow.png")} />
         </TouchableOpacity>
-        <Text className="text-lg font-semibold ml-28">My Profile</Text>
+        <Text className={`text-lg font-semibold  ${Platform.OS === "ios" ? "ml-8" : "ml-28"}`}>My Profile</Text>
       </View>
 
       {/* Profile Avatar & Name */}
@@ -38,7 +38,7 @@ const UserInfoScreen = () => {
       </View>
 
       {/* Profile Details Cards */}
-      <View className="space-y-4">
+      <View className="gap-4">
         <ProfileCard label="Phone" value={phone} />
         <ProfileCard label="Date of Birth" value={dob} />
         <ProfileCard label="Gender" value={gender} />

@@ -1,5 +1,5 @@
 import React from 'react';
-import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { ScrollView, Text, TouchableOpacity, View , Platform} from 'react-native';
 import StoreCategoryProducts from './StoreCategoryProducts';
 import { router } from 'expo-router';
 import { AntDesign } from '@expo/vector-icons';
@@ -7,7 +7,7 @@ import { AntDesign } from '@expo/vector-icons';
 const Store = () => {
   return (
     <ScrollView className="bg-[#F5F0FA]">
-      <View className="py-6 px-4 bg-[#A93EF6]">
+      <View className={`py-6 px-4 bg-[#A93EF6] ${Platform.OS === "ios" ? "mt-16" : "mt-0"} `}>
         <View className="relative items-center justify-center">
           <TouchableOpacity
             onPress={() => router.push('/profile')}

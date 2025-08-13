@@ -4,6 +4,7 @@ import {
   View,
   Text,
   Image,
+  Platform,
   ActivityIndicator,
   TouchableOpacity,
 } from "react-native";
@@ -302,7 +303,7 @@ const ExploreScreen = () => {
   return (
     <>
       <View className="bg-white">
-        <View className="mt-5 px-4 flex-row items-center justify-between">
+        <View className={`mt-5 px-4 flex-row items-center justify-between ${Platform.OS === "ios" ? "mt-24" : "mt-2"}`}>
           <TouchableOpacity onPress={() => router.push("/home")}>
             <FontAwesome name="arrow-left" size={20} color="black" />
           </TouchableOpacity>

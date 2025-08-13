@@ -4,6 +4,7 @@ import {
   Text,
   TouchableOpacity,
   ScrollView,
+  Platform,
   ActivityIndicator,
 } from "react-native";
 import { Modal as RNModal } from "react-native";
@@ -108,7 +109,7 @@ const FilterModal: React.FC<FilterModalProps> = ({
       <RNModal visible={isVisible} animationType="slide" transparent={false}>
         <View className="flex-1 bg-white">
           {/* Header */}
-          <View className="flex-row justify-between items-center p-4 border-b border-gray-200">
+          <View className={`flex-row justify-between items-center p-4 border-b border-gray-200 ${Platform.OS === "ios" ? "mt-16" : "mt-0"}`}>
             <TouchableOpacity onPress={onClose}>
               <FontAwesome name="times" size={24} color="black" />
             </TouchableOpacity>
@@ -167,12 +168,12 @@ const FilterModal: React.FC<FilterModalProps> = ({
           </ScrollView>
 
           {/* Show Results Button */}
-          <View className="p-4">
+          <View className={`p-4 ${Platform.OS === "ios" ? "mb-10" : "mb-0"}`}>
             <TouchableOpacity
               className="bg-purple-700 rounded-lg py-4"
               onPress={handleApplyFilters}
             >
-              <Text className="text-white text-center font-semibold text-lg">
+              <Text className="text-white text-center font-semibold text-lg ">
                 Show Results
               </Text>
             </TouchableOpacity>

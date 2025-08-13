@@ -13,6 +13,7 @@ import {
   ScrollView,
   Text,
   TouchableOpacity,
+  Platform,
   View,
 } from "react-native";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
@@ -55,7 +56,7 @@ const Profile = () => {
 
   return (
     <ScrollView className="bg-white">
-      <View className="bg-white rounded-2xl mx-4 mt-4 py-4 px-4 border border-gray-200 ">
+      <View className={`bg-white rounded-2xl mx-4 mt-4 py-4 px-4 border border-gray-200 ${Platform.OS === "ios" ? "mt-24" : "mt-4"}`}>
         <View className="flex-row items-center space-x-4 gap-4">
           <View className="items-center ">
             <TouchableOpacity onPress={() => setModalVisible(true)}>
@@ -105,7 +106,7 @@ const Profile = () => {
               onPress={() => setOpenNicModal(true)}
               className=" px-4 py-2 rounded-lg"
             >
-              <View className="border border-gray-200 px-4 py-2 rounded-lg flex-row gap-2 ">
+              <View className={`border border-gray-200 px-4 py-2 rounded-lg flex-row gap-2 ${Platform.OS === "ios" ? "-ml-6" : "ml-0"}`}>
                 <Text className="text-black text-xs">Get Verified</Text>
 
                 <FontAwesome name="check-circle" size={14} color="purple" />

@@ -152,7 +152,7 @@ const Tell = () => {
 
   return (
     <ScrollView className="flex-1 bg-white px-4 py-6">
-      <View>
+      <View className={`${Platform.OS === "ios" ? "mt-16" : "mt-0"}`}>
         <Link href="/category" asChild>
           <TouchableOpacity>
             <Image source={require("../../assets/images/left.png")} />

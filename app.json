@@ -10,7 +10,11 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.gamergizmoapp"
+      "bundleIdentifier": "com.gamergizmoapp",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "We need your location to find nearby gamers.",
+        "NSLocationAlwaysUsageDescription": "We use your location to provide real-time location features."
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -47,7 +51,8 @@
         "projectId": "e08f8e1b-3acd-4a7b-ae69-861a0229ac0b"
       },
       "googleClientId": "1067596237443-61c50tr1djq6pii5oil7m3he9c2btfj4.apps.googleusercontent.com",
-      "googleClientIdAndroid": "663923789268-kpbnv7pi2mph8khmcvq420c18945mje0.apps.googleusercontent.com"
+      "googleClientIdAndroid": "663923789268-kpbnv7pi2mph8khmcvq420c18945mje0.apps.googleusercontent.com",
+      "googleClientIdIos": "663923789268-8p0ekjpcn7n0r4n60alkoimvc321evdo.apps.googleusercontent.com"
     },
     "owner": "ayla02"
   }

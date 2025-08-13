@@ -280,7 +280,7 @@ const Chating = () => {
       className="flex-1 bg-white"
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
-      <TouchableOpacity className="p-4 border-b border-gray-200 bg-white"
+      <TouchableOpacity className={`p-4 border-b border-gray-200 bg-white ${Platform.OS === "ios" ? "mt-16" : "mt-4"}`}
       onPress={handleBack}
       >
         <TouchableOpacity

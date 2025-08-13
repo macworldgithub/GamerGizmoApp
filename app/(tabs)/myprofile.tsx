@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, ScrollView, Alert, Image } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, ScrollView, Alert, Image, Platform } from 'react-native';
 import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../store/store';
@@ -114,8 +114,8 @@ const EditProfileScreen = () => {
   };
  
   return (
-    <ScrollView className="flex-1 bg-white p-5">
-      <View className="flex-row items-center p-4 border-b border-gray-200 mt-1 mb-2">
+    <ScrollView className="flex-1 p-5">
+      <View className={`flex-row items-center p-4 border-b border-gray-200 mt-1 mb-2  ${Platform.OS === "ios" ? "mt-10" : "mt-0"}`}>
         <TouchableOpacity onPress={() => router.push('/UserInfo')}>
           <Image source={require("../../assets/images/arrow.png")} />
         </TouchableOpacity>

@@ -4,6 +4,7 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
+  Platform,
   Alert,
   Switch,
 } from "react-native";
@@ -101,7 +102,7 @@ export default function RegisterScreen({ onClose }: Props) {
   };
 
   return (
-    <View className="flex-1 gap-6 bg-white px-5 py-6">
+    <View className={`flex-1 gap-6 bg-white px-5 py-6 ${Platform.OS === 'ios' ? 'mt-16' : 'mt-0'}`}>
       <TouchableOpacity onPress={onClose} className="self-start mb-4">
         <Text className="text-2xl">✕</Text>
       </TouchableOpacity>

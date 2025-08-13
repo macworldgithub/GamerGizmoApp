@@ -7,6 +7,7 @@ import {
   Linking,
   ScrollView,
   Text,
+  Platform,
   TextInput,
   TouchableOpacity,
   View,
@@ -146,9 +147,9 @@ const BlogScreen = () => {
 
 
   return (
-    <ScrollView className="h-full ">
+    <ScrollView className="h-full">
       {/* Navbar */}
-      <TouchableOpacity className="flex-row items-center justify-between px-4 py-2 bg-white border-b border-gray-200 pt-4"
+      <TouchableOpacity className={`flex-row items-center justify-between px-4 py-2 bg-white border-b border-gray-200 pt-4 ${Platform.OS === "ios" ? "mt-16" : "mt-0"}`}
       onPress={() => router.push("/profile")}
       >
         <TouchableOpacity >

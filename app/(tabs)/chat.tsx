@@ -4,6 +4,7 @@ import {
   Text,
   TouchableOpacity,
   FlatList,
+  Platform,
   Image,
 } from "react-native";
 import axios from "axios";
@@ -233,7 +234,7 @@ export default function chat() {
 
   return (
     <View className="flex-1 bg-white">
-      <View className="px-4 pt-12 pb-2">
+      <View className={`px-4 pt-12 pb-2 ${Platform.OS === "ios" ? "mt-8" : "mt-4"}`}>
         <Text className="text-2xl font-bold text-gray-800">Chats</Text>
       </View>
 

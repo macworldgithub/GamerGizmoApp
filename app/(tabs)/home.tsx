@@ -6,6 +6,7 @@ import {
   Image,
   TouchableOpacity,
   ScrollView,
+  Platform,
   FlatList,
 } from "react-native";
 import { useRouter } from "expo-router";
@@ -110,7 +111,7 @@ export default function GamingStore() {
 
   return (
     <View className="p-6 bg-gray-100 h-full">
-      <View className="flex-row items-center bg-gray-100 border border-gray-300 rounded-full px-4 py-2 shadow-sm">
+      <View className={`flex-row items-center bg-gray-100 border border-gray-300 rounded-full px-4 py-2 shadow-sm ${Platform.OS === "ios" ? "mt-10" : "mt-4"}`}>
         <MagnifyingGlassIcon size={20} color="#6b7280" className="mr-2" />
         <TextInput
           placeholder="Search for products..."

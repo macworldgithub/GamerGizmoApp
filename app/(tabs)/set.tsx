@@ -60,7 +60,7 @@ const Set = () => {
 
   return (
     <ScrollView className="flex-1 bg-white px-4 py-6 pb-24">
-      <TouchableOpacity className="flex-row items-center border-b border-gray-200 pb-4 mb-6"
+      <TouchableOpacity className={`flex-row items-center border-b border-gray-200 pb-4 mb-6 ${Platform.OS === "ios" ? "mt-16" : "mt-4"}`}
       onPress={handleBack}
       >
         <TouchableOpacity >

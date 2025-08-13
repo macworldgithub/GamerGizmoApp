@@ -1,4 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools">
+  <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+  <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
   <uses-permission android:name="android.permission.INTERNET"/>
   <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
   <uses-permission android:name="android.permission.RECORD_AUDIO"/>
@@ -28,6 +30,7 @@
         <data android:scheme="myapp"/>
         <data android:scheme="com.gamergizmoapp"/>
         <data android:scheme="exp+gamergizmoapp"/>
+        <data android:scheme="exp+gamer-app"/>
       </intent-filter>
     </activity>
   </application>

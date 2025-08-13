@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { View, Text, ScrollView, StyleSheet, TextInput } from "react-native";
+import { View, Text, ScrollView, StyleSheet, TextInput,Platform } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import Toast from "react-native-toast-message";
@@ -128,6 +128,7 @@ const styles = StyleSheet.create({
   },
   header: {
     fontSize: 28,
+    marginTop: Platform.OS === "ios" ? 32 : 2,
     fontWeight: "bold",
     marginBottom: 16,
     color: "#000",

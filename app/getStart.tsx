@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, Image, TouchableOpacity } from "react-native";
+import { View, Text, Image, TouchableOpacity,Platform } from "react-native";
 import Swiper from "react-native-swiper";
 import { useRouter } from 'expo-router';
 const slides = [
@@ -31,7 +31,7 @@ const uae = () => {
   const router = useRouter();
   return (
     <View className="flex-1 bg-white">
-      <View className="absolute top-5 right-5">
+      <View className={`absolute top-5 right-5 ${Platform.OS === 'ios' ? 'mt-20' : 'mt-5'}`}>
         <TouchableOpacity>
           <Image
             source={require("../assets/images/cross.png")}

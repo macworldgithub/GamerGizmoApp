@@ -136,7 +136,7 @@ const Login = ({ onClose }: Props) => {
 
 
   return (
-    <View className="flex-1 bg-white justify-center px-5">
+    <View className={`flex-1 bg-white justify-center px-5 ${Platform.OS === 'ios' ? 'mt-16' : 'mt-0'}`}>
       <TouchableOpacity onPress={onClose} className="absolute top-10 left-5">
         <Text className="text-2xl">✕</Text>
       </TouchableOpacity>

@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   ScrollView,
   ActivityIndicator,
+  Platform,
   FlatList,
   Alert,
 } from "react-native";
@@ -108,12 +109,12 @@ const Favorite = () => {
   return (
     <View className="flex-1 bg-white">
       {/* Header */}
-      <View className="border-b border-gray-200 pb-4">
+      <View className={`border-b border-gray-200 pb-4 ${Platform.OS === "ios" ? "mt-14" : "mt-4"}`}>
         <View className="px-4 py-4 flex-row items-center">
           <TouchableOpacity onPress={() => navigation.goBack()}>
             <Image source={require("../../assets/images/left.png")} />
           </TouchableOpacity>
-          <View className="flex-1 items-center -ml-48">
+          <View className={`flex-1 items-center -ml-48 ${Platform.OS === "ios" ? "-ml-64" : "-ml-48"}`}>
             <Text className="text-black font-semibold text-lg">Favorite</Text>
           </View>
         </View>

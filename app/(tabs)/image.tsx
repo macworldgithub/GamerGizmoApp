@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   Image,
   ScrollView,
+  Platform,
   Alert,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
@@ -37,12 +38,18 @@ const Images = () => {
 
 
   const pickFromGallery = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: false,
-      aspect: [4, 3],
-      quality: 1,
-    });
+  const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+  if (status !== "granted") {
+    Alert.alert("Permission Denied", "Photo library access is required.");
+    return;
+  }
+
+  let result = await ImagePicker.launchImageLibraryAsync({
+    mediaTypes: ImagePicker.MediaTypeOptions.Images,
+    allowsEditing: false,
+    aspect: [4, 3],
+    quality: 1,
+  });
 
     if (!result.canceled) {
       const newImage = result.assets[0].uri;
@@ -86,25 +93,25 @@ const Images = () => {
         type: "image/jpeg",
       } as any);
 
-      try {
-        const response = await fetch("https://your-backend.com/upload", {
-          method: "POST",
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-          body: formData,
-        });
+      // try {
+      //   const response = await fetch("https://your-backend.com/upload", {
+      //     method: "POST",
+      //     headers: {
+      //       "Content-Type": "multipart/form-data",
+      //     },
+      //     body: formData,
+      //   });
 
-        if (!response.ok) {
-          Alert.alert("Upload Failed", `Error uploading image: ${uri}`);
-        }
-      } catch (error) {
-        console.error(error);
-        Alert.alert("Error", "Something went wrong during upload.");
-      }
-      finally {
-        setIsUploading(false); // end loading
-      }
+      //   if (!response.ok) {
+      //     Alert.alert("Upload Failed", `Error uploading image: ${uri}`);
+      //   }
+      // } catch (error) {
+      //   console.error(error);
+      //   Alert.alert("Error", "Something went wrong during upload.");
+      // }
+      // finally {
+      //   setIsUploading(false); // end loading
+      // }
     }
 
     Alert.alert("Success", "All images uploaded successfully!");
@@ -176,7 +183,7 @@ const Images = () => {
 
 
       <ScrollView className="flex-1 bg-white px-4 py-6">
-        <TouchableOpacity className="flex-row items-center border-b border-gray-200 pb-4 mb-6"
+        <TouchableOpacity className={`flex-row items-center border-b border-gray-200 pb-4 mb-6 ${Platform.OS === "ios" ? "mt-16" : "mt-4"}`}
           onPress={() => router.push('/set')}
         >
 

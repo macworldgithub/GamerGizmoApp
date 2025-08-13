@@ -5,6 +5,7 @@ import {
   FlatList,
   Image,
   TouchableOpacity,
+  Platform,
   ActivityIndicator,
 } from 'react-native';
 import { useLocalSearchParams, router } from 'expo-router';
@@ -70,7 +71,7 @@ const StoreCategory: React.FC = () => {
   if (error) return <Text style={{ color: 'red', textAlign: 'center', marginTop: 8 }}>{error}</Text>;
 
   return (
-    <View className="px-4 py-2">
+    <View className={`px-4 py-2 ${Platform.OS === "ios" ? "mt-10" : "mt-0"}`}>
       <View className="py-6 px-4">
         <View className="relative items-center justify-center">
           {/* Back Arrow - absolute positioned on the left */}

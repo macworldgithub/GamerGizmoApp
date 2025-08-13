@@ -5,6 +5,7 @@ import {
   Image,
   ScrollView,
   TextInput,
+  Platform,
   TouchableOpacity,
   Alert,
 } from "react-native";
@@ -142,7 +143,7 @@ const ViewDetails: React.FC = ({ navigation }: any) => {
   };
   return (
     <ScrollView className="flex-1 px-5">
-      <Text className="mt-4 text-2xl font-bold mb-5 text-center">Review Your Details</Text>
+      <Text className={`mt-4 text-2xl font-bold mb-5 text-center ${Platform.OS === "ios" ? "mt-24" : "mt-4"}`}>Review Your Details</Text>
 
       <View className="mb-4">
         <Text className="font-semibold">City:</Text>

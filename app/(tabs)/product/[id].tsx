@@ -8,6 +8,7 @@ import {
   ActivityIndicator,
   ScrollView,
   TouchableOpacity,
+  Platform,
   Alert,
   Linking,
   StyleSheet,
@@ -425,7 +426,7 @@ const ProductDetail = () => {
 
   return (
     <ScrollView className="bg-white">
-      <View className="h-80 relative">
+      <View className={`h-80 relative ${Platform.OS === "ios" ? "mt-20" : "mt-4"}`}>
         {product.product_images && product.product_images.length > 0 ? (
           <Swiper
             style={{ height: 320 }}

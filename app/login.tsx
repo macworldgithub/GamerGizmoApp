@@ -19,7 +19,8 @@ export default function LoginScreen() {
 
   const [request, response, promptAsync] = Google.useAuthRequest({
     clientId: Constants.expoConfig?.extra?.googleClientId,
-    androidClientId: Constants.expoConfig?.extra?.googleClientIdAndroid,
+    androidClientId: Constants.expoConfig?.extra?.googleClientIdAndroid,  
+    iosClientId: Constants.expoConfig?.extra?.googleClientIdIos, 
   });
 
   const [isNavigating, setIsNavigating] = useState(false);
@@ -100,7 +101,7 @@ export default function LoginScreen() {
   };
 
   return (
-    <View className="flex-1 bg-white justify-start items-center px-5 pt-20">
+    <View className={`flex-1 bg-white justify-start items-center px-5 pt-20 ${Platform.OS === 'ios' ? 'mt-20' : 'mt-5'}`}>
       <TouchableOpacity className="absolute top-3 right-5">
         <Image source={require("../assets/images/cross.png")} />
       </TouchableOpacity>
@@ -121,7 +122,7 @@ export default function LoginScreen() {
         Login to contact the seller
       </Text>
 
-      <TouchableOpacity className="w-4/5 mb-3"
+      {/* <TouchableOpacity className="w-4/5 mb-3"
         onPress={() => router.push('/home')}
       >
         <Image
@@ -129,7 +130,7 @@ export default function LoginScreen() {
           className="w-full h-10"
           resizeMode="contain"
         />
-      </TouchableOpacity>
+      </TouchableOpacity> */}
       <TouchableOpacity
         className="w-4/5 mb-3"
         disabled={!request}
@@ -146,7 +147,7 @@ export default function LoginScreen() {
       <Text className="text-[#6345ED] text-xl mt-3 font-semibold">
         Already have an account?{" "}
         <TouchableOpacity onPress={() => setShowLoginModal(true)}>
-          <Text className="text-[#6345ED] font-semibold mt-2"> Login</Text>
+          <Text className={`text-[#6345ED] font-semibold mt-2  ${Platform.OS === "ios" ? "-mt-4" : "mt-2"}`}> Login</Text>
         </TouchableOpacity>
       </Text>
 
