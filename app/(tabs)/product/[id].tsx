@@ -384,8 +384,6 @@ const ProductDetail = () => {
         }
       );
 
-      // Alert.alert("Added to cart successfully!");
-
       Alert.alert(
         "Added to cart successfully!",
         "",
@@ -399,8 +397,6 @@ const ProductDetail = () => {
         ],
         { cancelable: false }
       );
-
-
 
       console.log("Cart response:", response?.data);
       // Optional: Reset state
@@ -416,13 +412,19 @@ const ProductDetail = () => {
     }
   };
 
+  // Create a clean, SEO-friendly slug from a product name
+  const slugify = (str: string) =>
+    str
+      .toLowerCase()
+      .trim()
+      .replace(/&/g, "and")
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "");
 
-
-  const productUrl = `https://gamergizmo.com/product-details/${id}`;
-
-  if (loading) return <ActivityIndicator className="mt-20" />;
-  if (!product)
-    return <Text className="text-center mt-10">Product not found</Text>;
+  // Build share URL as /products/{slug}/{id}
+  const productUrl = product
+    ? `https://gamergizmo.com/products/${slugify(product.name)}/${product.id}`
+    : "";
 
   return (
     <ScrollView className="bg-white">
