@@ -11,11 +11,10 @@ import {
 } from "react-native";
 import { useRouter } from "expo-router";
 import PopularMainSection from "./PopularMainSection";
-import LiveAds from "./LiveAds"
+import LiveAds from "./LiveAds";
 import GetStartedBadge from "@/components/GetStartedBadge";
 import axios from "axios";
 import { MagnifyingGlassIcon } from "react-native-heroicons/outline";
-
 
 const categories = [
   {
@@ -65,11 +64,11 @@ const categories = [
     img: require("../../assets/images/gaming1.png"),
     category: "console",
     condition: 1,
-  }
+  },
 ];
 
 export default function GamingStore() {
-  const [search, setSearch] = useState("") ;
+  const [search, setSearch] = useState("");
   const [results, setResults] = useState([]);
   const router = useRouter();
 
@@ -111,7 +110,11 @@ export default function GamingStore() {
 
   return (
     <View className="p-6 bg-gray-100 h-full">
-      <View className={`flex-row items-center bg-gray-100 border border-gray-300 rounded-full px-4 py-2 shadow-sm ${Platform.OS === "ios" ? "mt-10" : "mt-4"}`}>
+      <View
+        className={`flex-row items-center bg-gray-100 border border-gray-300 rounded-full px-4 py-2 shadow-sm ${
+          Platform.OS === "ios" ? "mt-10" : "mt-4"
+        }`}
+      >
         <MagnifyingGlassIcon size={20} color="#6b7280" className="mr-2" />
         <TextInput
           placeholder="Search for products..."
@@ -125,7 +128,6 @@ export default function GamingStore() {
       {/* Search Results */}
       <FlatList
         data={results}
-
         keyExtractor={(item: any) => item.id.toString()}
         className="mt-4"
         renderItem={({ item }) => (
@@ -138,9 +140,9 @@ export default function GamingStore() {
             }
             className="mb-3 bg-white p-4 rounded-xl shadow-md border border-gray-100"
           >
-
-            <Text className="text-lg font-semibold text-gray-800">{item.name}</Text>
-
+            <Text className="text-lg font-semibold text-gray-800">
+              {item.name}
+            </Text>
           </TouchableOpacity>
         )}
       />
@@ -164,7 +166,7 @@ export default function GamingStore() {
               </TouchableOpacity>
             ))}
           </View>
-          
+
           {/* Last row with equal width items */}
           <View className="mt-2 flex-row justify-between">
             {categories.slice(6).map((item, index) => (
